@@ -1,61 +1,87 @@
-import React, { Component, useRef } from 'react'
+import React, { Component, useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { apply as applyThree, useThree, useRender } from 'react-three-fiber'
 import Voronoi3D from './Voronoi3D'
 import SecondScene from './SecondScene'
+import ThirdScene from './ThirdScene'
 import Transition from '../transition/Transition'
-import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
+import clock from '../util/Clock'
+import midi from '../util/WebMidi'
 
 applyThree({ Transition })
+
+class TransitionManager {
+  // scenes: [sceneRef0, sceneRef1, ...]
+  constructor(scenes, transition) {
+    this.scenes = scenes
+    this.transition = transition
+    this.currentScene = 0
+    this.numScenesSet = 0
+  }
+
+  update(elapsedTime) {
+    const { transition, scenes } = this
+    transition.update(elapsedTime)
+
+    if (
+      JSON.stringify(midi.lastNotes.slice(0, 3)) === JSON.stringify([79, 77, 76]) &&
+      this.currentScene === 0 &&
+      this.numScenesSet === 0
+    ) {
+      //transition.setNextScene(scenes[2], this.numScenesSet % 2 === 0)
+      transition.setupTransition(elapsedTime)
+      this.numScenesSet++
+      this.currentScene = 1
+    } else if (
+      JSON.stringify(midi.lastNotes.slice(0, 3)) === JSON.stringify([80, 77, 76]) &&
+      this.currentScene === 1 &&
+      this.numScenesSet === 1
+    ) {
+      transition.setNextScene(scenes[2], false)
+      transition.setupTransition(elapsedTime)
+      this.numScenesSet++
+      this.currentScene = 2
+    }
+    /*
+    if (transition.numTimesTransitioned > 1 && this.currentScene === 0 && this.numScenesSet === 0) {
+      transition.setNextScene(scenes[2], this.numScenesSet % 2 === 0)
+      this.numScenesSet++
+    }
+    */
+  }
+}
 
 const Monolith = ({ top }) => {
   const { gl: renderer, scene, camera, size } = useThree()
   const voronoiSceneRef = useRef()
   const secondSceneRef = useRef()
-  const transitionRef = useRef()
+  const thirdSceneRef = useRef()
 
-  const renderTargetParameters = {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    format: THREE.RGBFormat,
-    stencilBuffer: false,
-  }
+  let transitionManager = null
+  let transition = null
 
-  const voronoiSceneFbo = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParameters)
-  const secondSceneFbo = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParameters)
-  const transition = new Transition()
-  transition.setActiveCamera(camera)
+  useEffect(() => {
+    const scenes = [
+      voronoiSceneRef.current.sceneRef.current,
+      secondSceneRef.current.sceneRef.current,
+      thirdSceneRef.current.sceneRef.current,
+    ]
+    transition = new Transition(camera)
+    transition.initializeScenes(...scenes.slice(0, 2))
+    transitionManager = new TransitionManager(scenes, transition)
+  })
+
   useRender(() => {
-    if (voronoiSceneRef.current.sceneRef && secondSceneRef.current.sceneRef) {
-      /*
-      renderer.clear()
-      renderer.setRenderTarget(voronoiSceneFbo)
-      renderer.render(voronoiSceneRef.current.sceneRef.current, camera)
-      renderer.clear()
-      renderer.setRenderTarget(secondSceneFbo)
-      renderer.render(secondSceneRef.current.sceneRef.current, camera)
-      */
-      if (transition.sceneA === null && transition.sceneB === null) {
-        transition.initializeScenes(voronoiSceneRef.current.sceneRef.current, secondSceneRef.current.sceneRef.current)
-      }
-
-      transition.render(renderer)
-    } else {
-      renderer.render(scene, camera)
-    }
-    /*
-    renderer.clear()
-    renderer.setRenderTarget(null)
-    renderer.render(secondSceneRef.current.sceneRef.current, camera)
-    */
+    const elapsed = clock.getElapsedTime()
+    transitionManager.update(elapsed)
+    transition.render(renderer)
   }, true)
 
-  const voronoiScene = <Voronoi3D top={top} size={size} ref={voronoiSceneRef} onSceneLoaded={() => {}} />
-  const secondScene = <SecondScene top={top} ref={secondSceneRef} onSceneLoaded={() => {}} />
   return (
     <>
-      {voronoiScene}
-      {secondScene}
+      <Voronoi3D top={top} size={size} ref={voronoiSceneRef} />
+      <SecondScene top={top} ref={secondSceneRef} />
+      <ThirdScene top={top} ref={thirdSceneRef} />
     </>
   )
 }

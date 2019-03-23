@@ -9,13 +9,6 @@ import GuiOptions from './components/Gui'
 import Monolith from './components/Monolith'
 import clock from './util/Clock'
 
-/*
- * then manipulate the scenes in here
- *
- * reference:
- * Users/johnmarinelli/Documents/react-three-fiber/examples/components/MultiScene.js
- */
-
 const Main = () => {
   const [{ top, mouse }, set] = useSpring(() => ({ top: 0, mouse: [0, 0] }))
   const onMouseMove = useCallback(({ clientX: x, clientY: y }) => {

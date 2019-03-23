@@ -5,23 +5,22 @@ import clock from '../util/Clock'
 import { animated as anim } from 'react-spring/three'
 import { Pass } from '../postprocessing/Pass'
 
-var transitionParams = {
-  useTexture: true,
-  transition: 0.5,
-  transitionSpeed: 2.0,
-  texture: 5,
-  loopTexture: true,
-  animateTransition: true,
-  textureThreshold: 0.3,
-}
+const Transition = function(camera) {
+  this.transitionParams = {
+    useTexture: true,
+    transition: 0.0,
+    transitionSpeed: 2.0,
+    texture: 5,
+    loopTexture: true,
+    textureThreshold: 0.3,
+  }
 
-function Transition() {
   this.scene = new THREE.Scene()
   this.sceneA = null
   this.sceneB = null
   this.cameraOrtho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
   this.textures = []
-  for (var i = 0; i < 6; i++) {
+  for (let i = 0; i < 6; i++) {
     this.textures[i] = new THREE.TextureLoader().load('/textures/transition/transition' + (i + 1) + '.png')
   }
 
@@ -33,13 +32,6 @@ function Transition() {
 
   this.quad = new THREE.Mesh(this.quad, this.material)
   this.scene.add(this.quad)
-
-  const renderTargetParameters = {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    format: THREE.RGBFormat,
-    stencilBuffer: false,
-  }
 
   this.material.uniforms.tDiffuse1.value = null
   this.material.uniforms.tDiffuse2.value = null
@@ -59,6 +51,12 @@ function Transition() {
   }
 
   this.initializeScenes = function(sceneA, sceneB) {
+    const renderTargetParameters = {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      format: THREE.RGBFormat,
+      stencilBuffer: false,
+    }
     this.sceneA = sceneA
     this.sceneB = sceneB
     this.sceneAFbo = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParameters)
@@ -66,35 +64,59 @@ function Transition() {
     this.material.uniforms.tDiffuse1.value = this.sceneAFbo
     this.material.uniforms.tDiffuse2.value = this.sceneBFbo
   }
+
+  this.activeCamera = camera
+  //this.numTimesTransitioned = 0
+  //this.currentScene = -1
+  //this.numScenesSet = 0
+  this.shouldTransition = false
+  this.transitionStartedAt = 0.0
 }
 
 Transition.prototype = Object.assign(Object.create(Pass.prototype), {
   constructor: Transition,
 
-  render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
-    // Transition animation
-    if (transitionParams.animateTransition) {
-      var t = (1 + Math.sin(transitionParams.transitionSpeed * clock.getElapsedTime() / Math.PI)) / 2
-      transitionParams.transition = THREE.Math.smoothstep(t, 0.3, 0.7)
+  setupTransition(startedAt) {
+    this.shouldTransition = true
+    this.transitionStartedAt = startedAt
+  },
 
-      // Change the current alpha texture after each transition
+  finishTransition() {
+    this.shouldTransition = false
+  },
+
+  update(elapsedTime) {
+    // Transition animation
+    const { transitionParams } = this
+
+    if (this.shouldTransition) {
+      const delta = elapsedTime - this.transitionStartedAt
+      //let t = (1 + Math.sin(transitionParams.transitionSpeed * delta / Math.PI)) / 2
+      //transitionParams.transition = THREE.Math.smoothstep(t, transitionParams.textureThreshold, 0.7)
+      let t = Math.sin(transitionParams.transitionSpeed * delta / Math.PI)
+      transitionParams.transition = THREE.Math.smoothstep(t, transitionParams.textureThreshold, 0.7)
+      console.log(transitionParams.transition)
+
+      // controls switching transition textures
       if (transitionParams.loopTexture && (transitionParams.transition === 0 || transitionParams.transition === 1)) {
         if (this.needChange) {
           transitionParams.texture = (transitionParams.texture + 1) % this.textures.length
           this.material.uniforms.tMixTexture.value = this.textures[transitionParams.texture]
           this.needChange = false
+          //this.numTimesTransitioned++
+          this.finishTransition()
         }
       } else this.needChange = true
+      this.material.uniforms.mixRatio.value = transitionParams.transition
     }
+  },
 
-    this.material.uniforms.mixRatio.value = transitionParams.transition
-
+  render: function(renderer) {
+    const { transitionParams } = this
     // Prevent render both scenes when it's not necessary
     if (transitionParams.transition === 0) {
-      //this.sceneB.render(delta, false)
       renderer.render(this.sceneB, this.activeCamera)
     } else if (transitionParams.transition === 1) {
-      //this.sceneA.render(delta, false)
       renderer.render(this.sceneA, this.activeCamera)
     } else {
       // When 0<transition<1 render transition between two scenes
@@ -105,7 +127,6 @@ Transition.prototype = Object.assign(Object.create(Pass.prototype), {
       renderer.render(this.sceneA, this.activeCamera)
       renderer.setRenderTarget(this.sceneBFbo)
       renderer.render(this.sceneB, this.activeCamera)
-      renderer.clear()
       renderer.setRenderTarget(null)
       renderer.render(this.scene, this.cameraOrtho)
     }
@@ -113,6 +134,17 @@ Transition.prototype = Object.assign(Object.create(Pass.prototype), {
 
   setActiveCamera: function(camera) {
     this.activeCamera = camera
+  },
+
+  setNextScene: function(scene, isSceneA) {
+    // should do some kind of cleanup for old scenes
+
+    if (isSceneA) {
+      this.sceneA = scene
+    } else {
+      this.sceneB = scene
+    }
+    //this.numScenesSet++
   },
 })
 
