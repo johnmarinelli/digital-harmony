@@ -2,9 +2,6 @@ import { ClearMaskPass, MaskPass } from './MaskPass.js'
 import { ShaderPass } from './ShaderPass.js'
 import { CopyShader } from '../shaders/CopyShader.js'
 import { LinearFilter, RGBAFormat, Vector2, WebGLRenderTarget } from 'three/src/Three'
-/**
- * @author alteredq / http://alteredqualia.com/
- */
 
 var EffectComposer = function(renderer, renderTarget) {
   this.renderer = renderer

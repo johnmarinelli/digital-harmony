@@ -9777,6 +9777,11 @@ webidl-conversions@^4.0.2:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
   integrity sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
 
+webmidi@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/webmidi/-/webmidi-2.3.2.tgz#dce4cbe5d66c5bb922edde80d8a3e378dff8219f"
+  integrity sha512-vUHWgx6JYtZKBavlNK865BxYIMsDEDrbo19xtKu6vHgPNVklaZfUtHy009yh4MJ9u771BFEv0GDESVKgx49WgQ==
+
 webpack-dev-middleware@3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-3.4.0.tgz#1132fecc9026fd90f0ecedac5cbff75d1fb45890"

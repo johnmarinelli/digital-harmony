@@ -11,7 +11,7 @@ import Text from './Text'
 applySpring({ EffectComposer, RenderPass, GlitchPass, Voronoi3DPass })
 applyThree({ EffectComposer, RenderPass, GlitchPass, Voronoi3DPass })
 
-const Effects = ({ factor, onSceneLoaded }) => {
+const Effects = ({ factor }) => {
   // scene comes from "stateContext" from here:
   // https://github.com/drcmda/react-three-fiber/blob/master/src/canvas.js
   const { gl, scene, camera, size } = useThree()
@@ -20,7 +20,6 @@ const Effects = ({ factor, onSceneLoaded }) => {
   useEffect(
     () => {
       composer.current.obj.setSize(size.width, size.height)
-      onSceneLoaded(composer.current.obj)
     },
     [size.width, size.height, composer.current]
   )
@@ -39,17 +38,7 @@ const Effects = ({ factor, onSceneLoaded }) => {
 class VoronoiScene extends Component {
   constructor() {
     super()
-    this.effectsHandle = null
     this.sceneRef = React.createRef()
-  }
-
-  componentDidMount = () => {
-    const { onSceneLoaded } = this.props
-    onSceneLoaded(this.sceneRef.current)
-  }
-
-  setEffectsHandle = fx => {
-    this.effectsHandle = fx
   }
 
   render() {
@@ -75,7 +64,7 @@ class VoronoiScene extends Component {
         >
           rêverie
         </Text>
-        this.effects = <Effects factor={top.interpolate([0, 150], [1, 0])} onSceneLoaded={this.setEffectsHandle} />
+        <Effects factor={top.interpolate([0, 150], [1, 0])} />
       </scene>
     )
   }
