@@ -8,7 +8,7 @@ import { Pass } from '../postprocessing/Pass'
 const Transition = function(camera) {
   this.transitionParams = {
     useTexture: true,
-    transition: 0.0,
+    transition: 1.0,
     transitionSpeed: 2.0,
     texture: 5,
     loopTexture: true,
@@ -68,9 +68,9 @@ const Transition = function(camera) {
   this.activeCamera = camera
   //this.numTimesTransitioned = 0
   //this.currentScene = -1
-  //this.numScenesSet = 0
   this.shouldTransition = false
   this.transitionStartedAt = 0.0
+  this.lastScene = 'a'
 }
 
 Transition.prototype = Object.assign(Object.create(Pass.prototype), {
@@ -94,7 +94,8 @@ Transition.prototype = Object.assign(Object.create(Pass.prototype), {
       //let t = (1 + Math.sin(transitionParams.transitionSpeed * delta / Math.PI)) / 2
       //transitionParams.transition = THREE.Math.smoothstep(t, transitionParams.textureThreshold, 0.7)
       let t = Math.sin(transitionParams.transitionSpeed * delta / Math.PI)
-      transitionParams.transition = THREE.Math.smoothstep(t, transitionParams.textureThreshold, 0.7)
+      const transitionFactor = THREE.Math.smoothstep(t, transitionParams.textureThreshold, 0.7)
+      transitionParams.transition = this.lastScene === 'a' ? 1.0 - transitionFactor : transitionFactor
       console.log(transitionParams.transition)
 
       // controls switching transition textures
@@ -115,8 +116,10 @@ Transition.prototype = Object.assign(Object.create(Pass.prototype), {
     const { transitionParams } = this
     // Prevent render both scenes when it's not necessary
     if (transitionParams.transition === 0) {
+      this.lastScene = 'b'
       renderer.render(this.sceneB, this.activeCamera)
     } else if (transitionParams.transition === 1) {
+      this.lastScene = 'a'
       renderer.render(this.sceneA, this.activeCamera)
     } else {
       // When 0<transition<1 render transition between two scenes
@@ -144,7 +147,6 @@ Transition.prototype = Object.assign(Object.create(Pass.prototype), {
     } else {
       this.sceneB = scene
     }
-    //this.numScenesSet++
   },
 })
 
