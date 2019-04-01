@@ -1,28 +1,21 @@
 import * as THREE from 'three'
-const Voronoi3DShader = (resolution, color) => {
-  return {
-    uniforms: {
-      resolution: {
-        type: 'v2',
-        value: resolution,
-      },
-      time: { type: 'f', value: 0 },
-      scale: { type: 'f', value: 10.0 },
-      color: { value: new THREE.Color(parseInt(color, 16)) },
-    },
-    vertexShader: Voronoi3DVertexShader,
-    fragmentShader: Voronoi3DFragmentShader,
-  }
-}
-
-const Voronoi3DVertexShader = `
+const Uniforms = (resolution, color) => ({
+  resolution: {
+    type: 'v2',
+    value: resolution,
+  },
+  time: { type: 'f', value: 0 },
+  scale: { type: 'f', value: 10.0 },
+  color: { value: new THREE.Color(color) },
+})
+const VertexShader = `
   void main() {
     vec4 pos = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     gl_Position = pos;
   }
 `
 
-const Voronoi3DFragmentShader = `
+const FragmentShader = `
 // Author: Stefan Gustavson
 // Title: Classic 3D cellular noise
 
@@ -220,4 +213,4 @@ void main(void) {
 }
 
 `
-export default Voronoi3DShader
+export { VertexShader, FragmentShader, Uniforms }

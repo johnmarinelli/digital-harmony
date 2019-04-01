@@ -72,8 +72,9 @@ class GuiImpl {
     this.instance = this
 
     this.options = {
-      voronoi3DScale: 10.0,
+      //voronoi3DScale: 10.0,
       feelsLike: '#2FA1D6',
+      currentScene: 0,
     }
 
     this.setOptions = this.setOptions.bind(this)

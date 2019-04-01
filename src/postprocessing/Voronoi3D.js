@@ -2,24 +2,21 @@ import React, { useRef } from 'react'
 import { useRender, useThree } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import * as THREE from 'three/src/Three'
-/*
-import Voronoi3DVertex from '../shaders/Voronoi3D.vert.js'
-import Voronoi3DShader from '../shaders/Voronoi3D.frag.js'
-*/
 import { Pass } from './Pass.js'
-import Voronoi3DShader from '../shaders/Voronoi3D'
+import { VertexShader, FragmentShader, Uniforms } from '../shaders/Voronoi3D'
 import GuiOptions from '../components/Gui'
 
 // use as <anim.voronoi3DPass />
 let Voronoi3DPass = function(clock) {
   Pass.call(this)
-  const shader = Voronoi3DShader([window.innerWidth, window.innerHeight], GuiOptions.options.feelsLike)
+  const initialColor = GuiOptions.options.feelsLike
+  const resolution = [window.innerWidth, window.innerHeight]
   this.elapsed = 0.0
-  this.uniforms = THREE.UniformsUtils.clone(shader.uniforms)
+  this.uniforms = Uniforms(resolution, parseInt(initialColor, 16))
   this.material = new THREE.ShaderMaterial({
     uniforms: this.uniforms,
-    vertexShader: shader.vertexShader,
-    fragmentShader: shader.fragmentShader,
+    vertexShader: VertexShader,
+    fragmentShader: FragmentShader,
   })
   this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
   this.scene = new THREE.Scene()
@@ -50,33 +47,29 @@ Voronoi3DPass.prototype = Object.assign(Object.create(Pass.prototype), {
   },
 })
 
-const Voronoi3D = ({ clock, color, voronoiScale }) => {
+/*
+ * this is the one being used - 29/03/2019
+ */
+const Voronoi3D = ({ clock, segments, colorPalette, top, voronoiScale, datGuiOverride = false }) => {
   const { viewport } = useThree()
   const { width, height } = viewport()
   let shaderRef = useRef()
   let mesh = useRef()
-  let uniforms = {
-    resolution: {
-      type: 'v2',
-      value: [window.innerWidth, window.innerHeight],
-    },
-    time: { type: 'f', value: 0 },
-    scale: { type: 'f', value: 10.0 },
-    color: { value: new THREE.Color(parseInt(color, 16)) },
-  }
-
-  const shader = Voronoi3DShader([window.innerWidth, window.innerHeight], color)
+  let color = colorPalette[0]
+  let uniforms = Uniforms([window.innerWidth, window.innerHeight], parseInt(color.slice(1, 7), 16))
 
   useRender(() => {
     mesh.current.material.uniforms.time.value = clock.getElapsedTime()
     mesh.current.material.uniforms.scale.value = voronoiScale.getValue()
-    //mesh.current.material.uniforms.scale.value = GuiOptions.options.voronoi3DScale
-    mesh.current.material.uniforms.color.value = new THREE.Color(color.getValue())
-    /*
-    mesh.current.material.uniforms.color.value = new THREE.Color(
-      new THREE.Color(parseInt(GuiOptions.options.feelsLike.slice(1, 7), 16))
-    )
-    */
+    if (datGuiOverride) {
+      mesh.current.material.uniforms.color.value = new THREE.Color(
+        new THREE.Color(parseInt(GuiOptions.options.feelsLike.slice(1, 7), 16))
+      )
+      //mesh.current.material.uniforms.scale.value = GuiOptions.options.voronoi3DScale
+    } else {
+      const calculatedColor = top.interpolate(segments, colorPalette)
+      mesh.current.material.uniforms.color.value = new THREE.Color(calculatedColor.getValue())
+    }
   })
 
   return (
@@ -87,9 +80,9 @@ const Voronoi3D = ({ clock, color, voronoiScale }) => {
         ref={shaderRef}
         color={color}
         depthTest={false}
-        vertexShader={shader.vertexShader}
-        fragmentShader={shader.fragmentShader}
-        uniforms={shader.uniforms}
+        vertexShader={VertexShader}
+        fragmentShader={FragmentShader}
+        uniforms={uniforms}
       />
     </mesh>
   )
