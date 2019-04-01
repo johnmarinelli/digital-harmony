@@ -91,12 +91,9 @@ Transition.prototype = Object.assign(Object.create(Pass.prototype), {
 
     if (this.shouldTransition) {
       const delta = elapsedTime - this.transitionStartedAt
-      //let t = (1 + Math.sin(transitionParams.transitionSpeed * delta / Math.PI)) / 2
-      //transitionParams.transition = THREE.Math.smoothstep(t, transitionParams.textureThreshold, 0.7)
       let t = Math.sin(transitionParams.transitionSpeed * delta / Math.PI)
       const transitionFactor = THREE.Math.smoothstep(t, transitionParams.textureThreshold, 0.7)
       transitionParams.transition = this.lastScene === 'a' ? 1.0 - transitionFactor : transitionFactor
-      console.log(transitionParams.transition)
 
       // controls switching transition textures
       if (transitionParams.loopTexture && (transitionParams.transition === 0 || transitionParams.transition === 1)) {
@@ -104,7 +101,6 @@ Transition.prototype = Object.assign(Object.create(Pass.prototype), {
           transitionParams.texture = (transitionParams.texture + 1) % this.textures.length
           this.material.uniforms.tMixTexture.value = this.textures[transitionParams.texture]
           this.needChange = false
-          //this.numTimesTransitioned++
           this.finishTransition()
         }
       } else this.needChange = true

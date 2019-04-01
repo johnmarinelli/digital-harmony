@@ -1,15 +1,15 @@
 import React, { Component, useRef, useEffect } from 'react'
 import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
 import { apply as applyThree, Canvas, useRender, useThree } from 'react-three-fiber'
-import { Voronoi3D, Voronoi3DPass } from '../postprocessing/Voronoi3D'
+import { Voronoi3D } from '../postprocessing/Voronoi3D'
 import { EffectComposer } from '../postprocessing/EffectComposer'
 import { RenderPass } from '../postprocessing/RenderPass'
 import { GlitchPass } from '../postprocessing/GlitchPass'
 import clock from '../util/Clock'
 import Text from './Text'
 
-applySpring({ EffectComposer, RenderPass, GlitchPass, Voronoi3DPass })
-applyThree({ EffectComposer, RenderPass, GlitchPass, Voronoi3DPass })
+applySpring({ EffectComposer, RenderPass, GlitchPass })
+applyThree({ EffectComposer, RenderPass, GlitchPass })
 
 const Effects = ({ factor }) => {
   // scene comes from "stateContext" from here:
@@ -50,11 +50,11 @@ class VoronoiScene extends Component {
         <anim.spotLight intensity={1.2} color="black" />
         <Voronoi3D
           clock={clock}
-          color={top.interpolate(
-            [0, scrollMax * 0.25, scrollMax * 0.8, scrollMax],
-            ['#D358B1', '#AE1B85', '#FF7070', '#F3B1E1']
-          )}
+          segments={[0, scrollMax * 0.25, scrollMax * 0.8, scrollMax]}
+          colorPalette={['#D358B1', '#AE1B85', '#FF7070', '#F3B1E1']}
+          top={top}
           voronoiScale={top.interpolate([0, scrollMax * 0.25, scrollMax * 0.8, scrollMax], [0.0, 5.0, 10.0, 20.0])}
+          datGuiOverride={true}
         />
         <Text
           opacity={top.interpolate([0, 200], [1, 0])}
