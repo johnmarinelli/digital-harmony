@@ -2,19 +2,9 @@ import React, { useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useRender, useThree } from 'react-three-fiber'
 import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
-import Text from './Text'
 import clock from '../util/Clock'
-
-function Background({ color }) {
-  const { viewport } = useThree()
-  const { width, height } = viewport()
-  return (
-    <mesh scale={[width, height, 1]}>
-      <planeGeometry name="geometry" args={[1, 1]} />
-      <anim.meshBasicMaterial name="material" color={color} depthTest={false} />
-    </mesh>
-  )
-}
+import Background from './Background'
+import { DEG } from '../util/Constants'
 
 function Octahedron() {
   const [active, setActive] = useState(false)
@@ -46,7 +36,6 @@ function Octahedron() {
     </group>
   )
 }
-const DEG = 0.0174533
 
 const DifferentialMotion = props => {
   let group = useRef()
@@ -119,10 +108,6 @@ class FirstScene extends React.Component {
   constructor() {
     super()
     this.sceneRef = React.createRef()
-    /*
-    const geometry = new THREE.TetrahedronBufferGeometry(0.075)
-    geometry.rotateX(90 * DEG)
-    */
     this.differentialMotionProps = {
       timeScale: 0.005,
       radius: 3,
@@ -141,9 +126,7 @@ class FirstScene extends React.Component {
             ['#27282F', '#247BA0', '#70C1B3', '#f8f3f1']
           )}
         />
-        <group>
-          <DifferentialMotion {...this.differentialMotionProps} />
-        </group>
+        <DifferentialMotion {...this.differentialMotionProps} />
       </scene>
     )
   }
