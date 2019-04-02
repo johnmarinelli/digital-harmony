@@ -54,7 +54,6 @@ class TransitionManager {
 const Monolith = ({ top }) => {
   const { gl: renderer, scene, camera, size } = useThree()
   const controls = new OrbitControls(camera)
-  const voronoiSceneRef = useRef()
   const firstSceneRef = useRef()
   const secondSceneRef = useRef()
   const thirdSceneRef = useRef()
@@ -66,8 +65,8 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      firstSceneRef.current.sceneRef.current,
       secondSceneRef.current.sceneRef.current,
+      firstSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
     ]
@@ -85,8 +84,7 @@ const Monolith = ({ top }) => {
   return (
     <>
       <FirstScene top={top} size={size} ref={firstSceneRef} />
-      <Voronoi3D top={top} size={size} ref={voronoiSceneRef} />
-      <SecondScene top={top} ref={secondSceneRef} />
+      <SecondScene top={top} size={size} ref={secondSceneRef} />
       <ThirdScene top={top} ref={thirdSceneRef} />
       <FourthScene top={top} ref={fourthSceneRef} />
     </>
