@@ -4,6 +4,7 @@ import 'react-dat-gui/build/react-dat-gui.css'
 import DatGui, { DatBoolean, DatColor, DatNumber, DatString } from 'react-dat-gui'
 //import { GuiContext, GuiContextConsumer } from '../contexts/GuiContext'
 
+/*
 class Gui extends Component {
   state = {
     data: {
@@ -35,6 +36,7 @@ class Gui extends Component {
     )
   }
 }
+*/
 //Gui.contextType = GuiContext
 
 /*
@@ -74,6 +76,7 @@ class GuiImpl {
     this.options = {
       //voronoi3DScale: 10.0,
       feelsLike: '#2FA1D6',
+      colorOverride: false,
       currentScene: 0,
     }
 

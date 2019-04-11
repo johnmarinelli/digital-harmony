@@ -15,76 +15,68 @@ const DifferentialMotion = props => {
   const radius = props.radius || 2
 
   const numLines = 12
-  const numPoints = 60
+  const numPoints = 240
+  const amplitude = 1.5
 
-  const [geometries, materials] = useMemo(() => {
+  const groupRef = useRef()
+
+  const [geometries, colors] = useMemo(() => {
     const geometries = [],
-      materials = []
+      colors = []
+    let color = new THREE.Color(0x0000ff)
+
     for (let i = 0; i < numLines; ++i) {
       const geometry = new THREE.BufferGeometry()
       const vertices = new Float32Array(numPoints * 3)
       let x, y, z
 
+      color.r += i * 0.1
+      color.g += i * 0.01
+      color.b -= i * 0.1
+
       for (let j = 0; j < numPoints; ++j) {
-        x = j / numPoints * 10.0
-        y = Math.sin(x)
-        z = -i
+        x = j / numPoints * 20.0 - 5.0
+        y = Math.sin(x) * amplitude
+        z = -1
 
         const verticesBaseIndex = j * 3
         vertices[verticesBaseIndex] = x
         vertices[verticesBaseIndex + 1] = y
         vertices[verticesBaseIndex + 2] = z
       }
-      /*
-      const vertices = new Float32Array([
-        -1.0,
-        -1.0,
-        -i,
-        1.0,
-        -1.0,
-        -i,
-        1.0,
-        1.0,
-        -i,
-
-        1.0,
-        1.0,
-        -i,
-        -1.0,
-        1.0,
-        -i,
-        -1.0,
-        -1.0,
-        -i,
-      ])
-      */
 
       geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3))
-      const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
       geometry.computeBoundingSphere()
 
       geometries.push(geometry)
-      materials.push(material)
+      colors.push(color.clone())
     }
 
-    return [geometries, materials]
+    return [geometries, colors]
   })
 
   useRender(() => {
     const diff = clock.getElapsedTime() - timeStart
+    let x, y
     for (let i = 0; i < numLines; ++i) {
-      const geometry = geometries[i]
-      geometry.attributes.position.array[0] += diff * 0.1
+      const geometry = groupRef.current.children[i].geometry
+      const positions = geometry.attributes.position.array
+      for (let j = 0; j < numPoints; ++j) {
+        const positionsBaseIndex = j * 3
+        x = positions[positionsBaseIndex]
+        y = 1 / (i + 1) * Math.sin((i + 1) * x + diff) * amplitude
+        positions[positionsBaseIndex + 1] = y
+      }
       geometry.attributes.position.needsUpdate = true
     }
   })
 
   return (
-    <group position={new THREE.Vector3(-3.0, 0.0, 0.0)}>
+    <group position={new THREE.Vector3(-3.0, 0.0, 0.0)} ref={groupRef}>
       {geometries.map((geometry, i) => {
         return (
           <anim.line key={i} name="mesh" geometry={geometry}>
-            <anim.lineBasicMaterial name="material" color={materials[i].color} />
+            <anim.lineBasicMaterial name="material" color={colors[i]} />
           </anim.line>
         )
       })}

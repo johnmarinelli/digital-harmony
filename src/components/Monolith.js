@@ -65,9 +65,9 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      secondSceneRef.current.sceneRef.current,
-      firstSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
+      firstSceneRef.current.sceneRef.current,
+      secondSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
     ]
     transition = new Transition(camera)
@@ -85,7 +85,7 @@ const Monolith = ({ top }) => {
     <>
       <FirstScene top={top} size={size} ref={firstSceneRef} />
       <SecondScene top={top} size={size} ref={secondSceneRef} />
-      <ThirdScene top={top} ref={thirdSceneRef} />
+      <ThirdScene top={top} size={size} ref={thirdSceneRef} />
       <FourthScene top={top} ref={fourthSceneRef} />
     </>
   )
