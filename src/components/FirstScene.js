@@ -6,6 +6,7 @@ import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
 
+/*
 function Octahedron() {
   const [active, setActive] = useState(false)
   const [hovered, setHover] = useState(false)
@@ -36,6 +37,7 @@ function Octahedron() {
     </group>
   )
 }
+*/
 
 const DifferentialMotion = props => {
   let group = useRef()
