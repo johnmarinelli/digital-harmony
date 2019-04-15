@@ -5,56 +5,94 @@ import { apply as applySpring, useSpring, animated as anim } from 'react-spring/
 import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
+import GuiOptions from './Gui'
 
-const LissajousKnot = t => {
-  const nx = 3,
-    ny = 2,
-    nz = 5,
-    px = Math.PI * 0.5,
-    py = 0.7,
-    pz = 0.0
+class LissajousKnot {
+  constructor({ numPoints, pointRatio }) {
+    this.pointRatio = pointRatio
+    this.numPoints = numPoints
+    this.points = new Array(numPoints)
+    this.getPoint = this.getPoint.bind(this)
+    this.updatePoints = this.updatePoints.bind(this)
+    this.update = this.update.bind(this)
 
-  const x = Math.cos(nz * t + px),
-    y = Math.cos(ny * t + py),
-    z = Math.cos(nz * t + pz)
+    this.updatePoints(0)
+  }
 
-  return [x, y, z]
+  updatePoints(dt) {
+    const { numPoints, getPoint, points, pointRatio } = this
+    for (let i = 0; i < numPoints; ++i) {
+      const p = getPoint(i * pointRatio)
+      const v = new THREE.Vector3(...p)
+      points[i] = v
+    }
+  }
+
+  getPoint(t) {
+    const { nX, nY, nZ, phaseShift1, phaseShift2, phaseShift3 } = GuiOptions.options
+
+    const x = Math.cos(nX * t + phaseShift1),
+      y = Math.cos(nY * t + phaseShift2),
+      z = Math.cos(nZ * t + phaseShift3)
+
+    return [x, y, z]
+  }
+
+  update(dt) {
+    this.updatePoints(dt)
+  }
 }
 
 const DifferentialMotion = props => {
-  let group = useRef()
+  let lineRef = useRef(),
+    group = useRef()
   const { viewport } = useThree()
   const { width, height } = viewport()
 
   const timeStart = clock.getElapsedTime()
   const timeScale = props.timeScale || 0.005
-  const radius = props.radius || 2
-  const numPoints = 100
+  const numPoints = 1000
 
-  const [geometry] = useMemo(() => {
-    const seedPoints = []
+  const [geometry, knot] = useMemo(() => {
+    const knot = new LissajousKnot({ numPoints, pointRatio: 1 / 20.0 })
+    const geometry = new THREE.BufferGeometry().setFromPoints(knot.points)
 
-    for (let i = 0; i < numPoints; ++i) {
-      const p = LissajousKnot(i)
-      const v = new THREE.Vector3(...p)
-      v.multiplyScalar(1.5)
-      seedPoints.push(v)
-    }
-
-    const curve = new THREE.CatmullRomCurve3(seedPoints)
-    const points = curve.getPoints(500)
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points)
-
-    return [geometry]
+    return [geometry, knot]
   })
 
-  useRender(() => {})
+  let diff = 0
+  let scale = null
+  useRender(() => {
+    knot.update(diff)
 
+    const { current: { children } } = group
+    const { options: { sphereScale } } = GuiOptions
+
+    for (let i = 0; i < children.length; ++i) {
+      const child = children[i]
+      child.position.x = knot.points[i].x
+      child.position.y = knot.points[i].y
+      child.position.z = knot.points[i].z
+
+      child.scale.x = GuiOptions.options.sphereScale
+      child.scale.y = GuiOptions.options.sphereScale
+      child.scale.z = GuiOptions.options.sphereScale
+    }
+  })
+
+  const sphereGeometry = new THREE.SphereBufferGeometry(0.05, 10, 10)
+  const material = new THREE.MeshBasicMaterial({
+    color: new THREE.Color('white'),
+    transparent: true,
+    opacity: 0.5,
+    wireframe: true,
+  })
   return (
-    <anim.line geometry={geometry}>
-      <anim.lineBasicMaterial name="material" color="white" />
-    </anim.line>
+    <anim.group ref={group}>
+      {knot.points.map((point, i) => (
+        <anim.mesh position={[point.x, point.y, point.z]} key={i} material={material} geometry={sphereGeometry} />
+      ))}
+    </anim.group>
   )
 }
 
@@ -64,7 +102,6 @@ class ThirdScene extends React.Component {
     this.sceneRef = React.createRef()
     this.differentialMotionProps = {
       timeScale: 0.1,
-      radius: 3,
     }
   }
 
