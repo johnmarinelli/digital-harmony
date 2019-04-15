@@ -53,12 +53,12 @@ class TransitionManager {
 
 const Monolith = ({ top }) => {
   const { gl: renderer, scene, camera, size } = useThree()
-  const controls = new OrbitControls(camera)
   const firstSceneRef = useRef()
   const secondSceneRef = useRef()
   const thirdSceneRef = useRef()
   const fourthSceneRef = useRef()
 
+  let controls = null
   let transitionManager = null
   let transition = null
   const scrollMax = size.height * 4.5
@@ -73,6 +73,8 @@ const Monolith = ({ top }) => {
     transition = new Transition(camera)
     transition.initializeScenes(...scenes.slice(0, 2))
     transitionManager = new TransitionManager(scenes, transition, true)
+
+    controls = new OrbitControls(camera, document.querySelector('.scroll-container'))
   })
 
   useRender(() => {

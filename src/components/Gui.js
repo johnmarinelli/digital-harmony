@@ -78,6 +78,13 @@ class GuiImpl {
       feelsLike: '#2FA1D6',
       colorOverride: false,
       currentScene: 0,
+      sphereScale: 0.5,
+      nX: 3,
+      nY: 4,
+      nZ: 7,
+      phaseShift1: 0.7,
+      phaseShift2: 1.0,
+      phaseShift3: 0.0,
     }
 
     this.setOptions = this.setOptions.bind(this)

@@ -12,9 +12,24 @@ import clock from './util/Clock'
 
 const DatGui = () => {
   const gui = new dat.GUI()
-  gui.addColor(GuiOptions.options, 'feelsLike')
-  gui.add(GuiOptions.options, 'colorOverride')
-  gui.add(GuiOptions.options, 'currentScene', 0, 4, 1)
+  const globalFolder = gui.addFolder('Global')
+  globalFolder.addColor(GuiOptions.options, 'feelsLike')
+  globalFolder.add(GuiOptions.options, 'colorOverride')
+  globalFolder.add(GuiOptions.options, 'currentScene', 0, 4, 1)
+  globalFolder.open()
+  const firstSceneFolder = gui.addFolder('First Scene')
+  firstSceneFolder.open()
+  const secondSceneFolder = gui.addFolder('Second Scene')
+  secondSceneFolder.open()
+  const thirdSceneFolder = gui.addFolder('Third Scene')
+  thirdSceneFolder.add(GuiOptions.options, 'nX', 0, 10, 1)
+  thirdSceneFolder.add(GuiOptions.options, 'nY', 0, 10, 1)
+  thirdSceneFolder.add(GuiOptions.options, 'nZ', 0, 10, 1)
+  thirdSceneFolder.add(GuiOptions.options, 'phaseShift1', 0.0, 2.0, 0.1)
+  thirdSceneFolder.add(GuiOptions.options, 'phaseShift2', 0.0, 2.0, 0.1)
+  thirdSceneFolder.add(GuiOptions.options, 'phaseShift3', 0.0, 2.0, 0.1)
+  thirdSceneFolder.add(GuiOptions.options, 'sphereScale', 0.1, 2.0, 0.1)
+  thirdSceneFolder.open()
 
   return null
 }
