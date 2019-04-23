@@ -20,9 +20,7 @@ class LissajousKnot {
   updatePoints(dt) {
     const { numPoints, points, pointRatio } = this
     for (let i = 0; i < numPoints; ++i) {
-      const p = LissajousKnot.getPoint(i * pointRatio)
-      const v = new THREE.Vector3(...p)
-      points[i] = v
+      points[i] = LissajousKnot.getPoint(i * pointRatio)
     }
   }
 
@@ -44,34 +42,75 @@ class LissajousKnot {
 class LissajousTrail {
   constructor({ numParticles }) {
     this.numParticles = numParticles
-    this.trailParticles = []
+    // array of 3d arrays
+    this.particles = []
+    this.stepMode = 'continuous'
+    this.cycleTime = 10
 
-    for (let i = 0; i < numParticles; ++i) {
-      this.trailParticles.push(null)
+    for (let i = 0; i < this.numParticles; ++i) {
+      this.particles.push({})
+    }
+  }
+
+  attachKnot(knot) {
+    this.knot = knot
+  }
+
+  setCycleTime(seconds) {
+    this.cycleTime = seconds
+  }
+
+  setStepMode(stepMode) {
+    if (['discrete', 'continuous'].indexOf(stepMode) > -1) {
+      this.stepMode = stepMode
+    } else {
+      console.warn(`Step mode "${stepMode}" for LissajousTrail is invalid.  Use either "discrete" or "continuous"`)
+    }
+  }
+
+  update(elapsed) {
+    const { numParticles, particles, stepMode } = this
+    if (stepMode === 'continuous') {
+      for (let i = numParticles - 1; i >= 0; --i) {
+        const point = LissajousKnot.getPoint(elapsed + i)
+        particles[i] = point
+      }
+    } else {
+      const { knot, cycleTime } = this
+      const { numPoints } = knot
+      const cyclePercentage = (elapsed / cycleTime) % 1.0
+      const basePointIndex = Math.floor(cyclePercentage * numPoints)
+
+      for (let i = numParticles - 1; i >= 0; --i) {
+        const pointIndex = (basePointIndex + i) % knot.points.length
+        particles[i] = knot.points[pointIndex]
+      }
     }
   }
 }
 
 const DifferentialMotion = props => {
-  //let lineRef = useRef(),
   let knotGroup = useRef(),
-    movingRef = useRef(),
-    movingGroup = useRef()
+    trailGroup = useRef()
 
   const timeStart = clock.getElapsedTime()
   const numMovingObjects = 24
   const numPoints = 1000
   const cycleTime = 50 // in seconds
 
-  const [knot, movingObjects] = useMemo(() => {
+  const [knot, movingObjects, trail] = useMemo(() => {
     const knot = new LissajousKnot({ numPoints, pointRatio: 1 / 20.0 })
+    const trail = new LissajousTrail({ numParticles: numMovingObjects })
+    trail.attachKnot(knot)
+    trail.setStepMode('discrete')
+    trail.setCycleTime(cycleTime)
     const movingObjects = []
 
     for (let i = 0; i < numMovingObjects; ++i) {
       movingObjects.push(i)
     }
 
-    return [knot, movingObjects]
+    return [knot, movingObjects, trail]
   })
 
   let diff = 0,
@@ -82,14 +121,13 @@ const DifferentialMotion = props => {
     knot.update(diff)
 
     const { current: { children } } = knotGroup
-
     if (GuiOptions.options.lissajousKnotVisible) {
       knotGroup.current.visible = true
       for (i = 0; i < children.length; ++i) {
         const child = children[i]
-        child.position.x = knot.points[i].x
-        child.position.y = knot.points[i].y
-        child.position.z = knot.points[i].z
+        child.position.x = knot.points[i][0]
+        child.position.y = knot.points[i][1]
+        child.position.z = knot.points[i][2]
 
         child.scale.x = GuiOptions.options.sphereScale
         child.scale.y = GuiOptions.options.sphereScale
@@ -99,18 +137,16 @@ const DifferentialMotion = props => {
       knotGroup.current.visible = false
     }
 
-    const { current: movingObjects } = movingGroup
-    const cyclePercentage = (diff / cycleTime) % 1.0
-    //const cyclePercentage = (Math.sin(1 / cycleTime * now) + 1.0) * 0.5
-    const basePointIndex = Math.floor(cyclePercentage * children.length)
+    if (GuiOptions.options.lissajousTrailDiscrete && trail.stepMode !== 'discrete') {
+      trail.setStepMode('discrete')
+    } else if (!GuiOptions.options.lissajousTrailDiscrete && trail.stepMode !== 'continuous') {
+      trail.setStepMode('continuous')
+    }
+    trail.update(diff)
 
-    for (i = movingObjects.children.length - 1; i >= 0; --i) {
-      /*
-      const pointIndex = (basePointIndex + i) % knot.points.length
-      const point = knot.points[pointIndex]
-      */
-      const point = LissajousKnot.getPoint(now + i)
-
+    const { current: movingObjects } = trailGroup
+    for (let i = 0; i < trail.numParticles; ++i) {
+      const point = trail.particles[i]
       const child = movingObjects.children[i]
       child.position.set(point[0], point[1], point[2])
       const scaleZ = point[2] * 2.0
@@ -134,7 +170,7 @@ const DifferentialMotion = props => {
   })
   return (
     <anim.group>
-      <anim.group ref={movingGroup}>
+      <anim.group ref={trailGroup}>
         {movingObjects.map((position, index) => (
           <anim.mesh position={[0, 0, 0]} key={index} material={movingMaterial} geometry={movingGeometry} />
         ))}
