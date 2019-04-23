@@ -30,6 +30,7 @@ const DatGui = () => {
   thirdSceneFolder.add(GuiOptions.options, 'phaseShift3', 0.0, 2.0, 0.1)
   thirdSceneFolder.add(GuiOptions.options, 'sphereScale', 0.1, 2.0, 0.1)
   thirdSceneFolder.add(GuiOptions.options, 'lissajousKnotVisible')
+  thirdSceneFolder.add(GuiOptions.options, 'lissajousTrailDiscrete')
   thirdSceneFolder.open()
 
   return null

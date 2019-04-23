@@ -83,6 +83,7 @@ class GuiImpl {
       phaseShift2: 1.0,
       phaseShift3: 0.0,
       lissajousKnotVisible: false,
+      lissajousTrailDiscrete: false,
     }
 
     this.setOptions = this.setOptions.bind(this)
