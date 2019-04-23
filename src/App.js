@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import './App.css'
-import { apply as applyThree, Canvas, useThree } from 'react-three-fiber'
-import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
+import { Canvas } from 'react-three-fiber'
+import { useSpring } from 'react-spring/three'
 import 'react-dat-gui/build/react-dat-gui.css'
 //import DatGui, { DatColor, DatNumber, DatBoolean } from 'react-dat-gui'
 import * as dat from 'dat.gui'
@@ -29,13 +29,14 @@ const DatGui = () => {
   thirdSceneFolder.add(GuiOptions.options, 'phaseShift2', 0.0, 2.0, 0.1)
   thirdSceneFolder.add(GuiOptions.options, 'phaseShift3', 0.0, 2.0, 0.1)
   thirdSceneFolder.add(GuiOptions.options, 'sphereScale', 0.1, 2.0, 0.1)
+  thirdSceneFolder.add(GuiOptions.options, 'lissajousKnotVisible')
   thirdSceneFolder.open()
 
   return null
 }
 
 const Main = () => {
-  const [{ top, mouse }, set] = useSpring(() => ({ top: 0, mouse: [0, 0] }))
+  const [{ top }, set] = useSpring(() => ({ top: 0 }))
   const onMouseMove = useCallback(({ clientX: x, clientY: y }) => {
     return set({
       mouse: [x - window.innerWidth / 2, y - window.innerHeight / 2],

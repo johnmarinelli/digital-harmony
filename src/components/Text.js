@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useCallback, useMemo } from 'react'
-import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
+import React, { useMemo } from 'react'
+import { animated as anim } from 'react-spring/three'
 import { useThree } from 'react-three-fiber'
 
 const Text = ({ children, position, opacity, color = 'white', fontSize = 410 }) => {

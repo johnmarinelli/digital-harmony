@@ -1,8 +1,5 @@
-import React, { useRef } from 'react'
 import * as THREE from 'three/src/Three'
 import TransitionShader from '../shaders/Transition'
-import clock from '../util/Clock'
-import { animated as anim } from 'react-spring/three'
 import { Pass } from '../postprocessing/Pass'
 
 const Transition = function(camera) {

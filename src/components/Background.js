@@ -1,5 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
-import * as THREE from 'three'
+import React, { useRef } from 'react'
 import { useRender, useThree } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import GuiOptions from '../components/Gui'

@@ -1,7 +1,5 @@
-import React, { Component, useRef, useEffect, useMemo, useState } from 'react'
-import * as THREE from 'three'
+import React, { useRef, useEffect } from 'react'
 import { apply as applyThree, useThree, useRender } from 'react-three-fiber'
-import Voronoi3D from './Voronoi3D'
 import FirstScene from './FirstScene'
 import SecondScene from './SecondScene'
 import ThirdScene from './ThirdScene'
@@ -11,7 +9,6 @@ import clock from '../util/Clock'
 import midi from '../util/WebMidi'
 import OrbitControls from '../util/OrbitControls'
 import GuiOptions from '../components/Gui'
-import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
 
 applyThree({ Transition })
 
@@ -52,16 +49,14 @@ class TransitionManager {
 }
 
 const Monolith = ({ top }) => {
-  const { gl: renderer, scene, camera, size } = useThree()
+  const { gl: renderer, camera, size } = useThree()
   const firstSceneRef = useRef()
   const secondSceneRef = useRef()
   const thirdSceneRef = useRef()
   const fourthSceneRef = useRef()
 
-  let controls = null
   let transitionManager = null
   let transition = null
-  const scrollMax = size.height * 4.5
 
   useEffect(() => {
     const scenes = [
@@ -74,7 +69,7 @@ const Monolith = ({ top }) => {
     transition.initializeScenes(...scenes.slice(0, 2))
     transitionManager = new TransitionManager(scenes, transition, true)
 
-    controls = new OrbitControls(camera, document.querySelector('.scroll-container'))
+    new OrbitControls(camera, document.querySelector('.scroll-container'))
   })
 
   useRender(() => {

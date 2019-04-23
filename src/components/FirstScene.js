@@ -1,7 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { useRender, useThree } from 'react-three-fiber'
-import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
+import { useRender } from 'react-three-fiber'
+import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
@@ -41,7 +41,6 @@ function Octahedron() {
 
 const DifferentialMotion = props => {
   let group = useRef()
-  let theta = 0
 
   const timeStart = clock.getElapsedTime()
   const timeScale = props.timeScale || 0.005

@@ -1,10 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { useRender, useThree } from 'react-three-fiber'
-import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
+import { useRender } from 'react-three-fiber'
+import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import Background from './Background'
-import { DEG } from '../util/Constants'
 import GuiOptions from './Gui'
 
 class LissajousKnot {
@@ -12,7 +11,6 @@ class LissajousKnot {
     this.pointRatio = pointRatio
     this.numPoints = numPoints
     this.points = new Array(numPoints)
-    this.getPoint = this.getPoint.bind(this)
     this.updatePoints = this.updatePoints.bind(this)
     this.update = this.update.bind(this)
 
@@ -20,15 +18,15 @@ class LissajousKnot {
   }
 
   updatePoints(dt) {
-    const { numPoints, getPoint, points, pointRatio } = this
+    const { numPoints, points, pointRatio } = this
     for (let i = 0; i < numPoints; ++i) {
-      const p = getPoint(i * pointRatio)
+      const p = LissajousKnot.getPoint(i * pointRatio)
       const v = new THREE.Vector3(...p)
       points[i] = v
     }
   }
 
-  getPoint(t) {
+  static getPoint(t) {
     const { nX, nY, nZ, phaseShift1, phaseShift2, phaseShift3 } = GuiOptions.options
 
     const x = Math.cos(nX * t + phaseShift1),
@@ -43,40 +41,80 @@ class LissajousKnot {
   }
 }
 
+class LissajousTrail {
+  constructor({ numParticles }) {
+    this.numParticles = numParticles
+    this.trailParticles = []
+
+    for (let i = 0; i < numParticles; ++i) {
+      this.trailParticles.push(null)
+    }
+  }
+}
+
 const DifferentialMotion = props => {
-  let lineRef = useRef(),
-    group = useRef()
-  const { viewport } = useThree()
-  const { width, height } = viewport()
+  //let lineRef = useRef(),
+  let knotGroup = useRef(),
+    movingRef = useRef(),
+    movingGroup = useRef()
 
   const timeStart = clock.getElapsedTime()
-  const timeScale = props.timeScale || 0.005
+  const numMovingObjects = 24
   const numPoints = 1000
+  const cycleTime = 50 // in seconds
 
-  const [geometry, knot] = useMemo(() => {
+  const [knot, movingObjects] = useMemo(() => {
     const knot = new LissajousKnot({ numPoints, pointRatio: 1 / 20.0 })
-    const geometry = new THREE.BufferGeometry().setFromPoints(knot.points)
+    const movingObjects = []
 
-    return [geometry, knot]
+    for (let i = 0; i < numMovingObjects; ++i) {
+      movingObjects.push(i)
+    }
+
+    return [knot, movingObjects]
   })
 
-  let diff = 0
-  let scale = null
+  let diff = 0,
+    i
   useRender(() => {
+    const now = clock.getElapsedTime()
+    diff = now - timeStart
     knot.update(diff)
 
-    const { current: { children } } = group
-    const { options: { sphereScale } } = GuiOptions
+    const { current: { children } } = knotGroup
 
-    for (let i = 0; i < children.length; ++i) {
-      const child = children[i]
-      child.position.x = knot.points[i].x
-      child.position.y = knot.points[i].y
-      child.position.z = knot.points[i].z
+    if (GuiOptions.options.lissajousKnotVisible) {
+      knotGroup.current.visible = true
+      for (i = 0; i < children.length; ++i) {
+        const child = children[i]
+        child.position.x = knot.points[i].x
+        child.position.y = knot.points[i].y
+        child.position.z = knot.points[i].z
 
-      child.scale.x = GuiOptions.options.sphereScale
-      child.scale.y = GuiOptions.options.sphereScale
-      child.scale.z = GuiOptions.options.sphereScale
+        child.scale.x = GuiOptions.options.sphereScale
+        child.scale.y = GuiOptions.options.sphereScale
+        child.scale.z = GuiOptions.options.sphereScale
+      }
+    } else {
+      knotGroup.current.visible = false
+    }
+
+    const { current: movingObjects } = movingGroup
+    const cyclePercentage = (diff / cycleTime) % 1.0
+    //const cyclePercentage = (Math.sin(1 / cycleTime * now) + 1.0) * 0.5
+    const basePointIndex = Math.floor(cyclePercentage * children.length)
+
+    for (i = movingObjects.children.length - 1; i >= 0; --i) {
+      /*
+      const pointIndex = (basePointIndex + i) % knot.points.length
+      const point = knot.points[pointIndex]
+      */
+      const point = LissajousKnot.getPoint(now + i)
+
+      const child = movingObjects.children[i]
+      child.position.set(point[0], point[1], point[2])
+      const scaleZ = point[2] * 2.0
+      child.scale.set(scaleZ, scaleZ, scaleZ)
     }
   })
 
@@ -87,11 +125,25 @@ const DifferentialMotion = props => {
     opacity: 0.5,
     wireframe: true,
   })
+
+  const movingGeometry = new THREE.CubeGeometry(0.1, 0.1, 0.1)
+  const movingMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color('blue'),
+    transparent: true,
+    opacity: 0.5,
+  })
   return (
-    <anim.group ref={group}>
-      {knot.points.map((point, i) => (
-        <anim.mesh position={[point.x, point.y, point.z]} key={i} material={material} geometry={sphereGeometry} />
-      ))}
+    <anim.group>
+      <anim.group ref={movingGroup}>
+        {movingObjects.map((position, index) => (
+          <anim.mesh position={[0, 0, 0]} key={index} material={movingMaterial} geometry={movingGeometry} />
+        ))}
+      </anim.group>
+      <anim.group ref={knotGroup}>
+        {knot.points.map((point, index) => (
+          <anim.mesh position={[point.x, point.y, point.z]} key={index} material={material} geometry={sphereGeometry} />
+        ))}
+      </anim.group>
     </anim.group>
   )
 }

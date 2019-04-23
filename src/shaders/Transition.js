@@ -1,5 +1,3 @@
-import * as THREE from 'three'
-
 const TransitionShader = mixTexture => ({
   uniforms: {
     tDiffuse1: {

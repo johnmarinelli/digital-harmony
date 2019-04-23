@@ -7,7 +7,9 @@ const NoteMapping = {
   noteOffVelocity: 0.0,
 }
 
+/* eslint-disable-next-line */
 const MIDI_NOTE_ON = 144
+/* eslint-disable-next-line */
 const MIDI_NOTE_OFF = 128
 
 const NUM_LAST_NOTES = 5
@@ -24,7 +26,7 @@ class WebMidiWrapper {
       this.noteArray[i] = Object.assign({}, NoteMapping)
     }
 
-    this.lastNotes = new Array()
+    this.lastNotes = []
     WebMidi.enable(err => {
       if (err) {
         console.log('WebMid could not be enabled: ', err)

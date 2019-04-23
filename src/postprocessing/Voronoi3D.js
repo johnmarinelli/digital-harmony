@@ -23,13 +23,11 @@ let Voronoi3DPass = function(clock) {
   this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null)
   this.quad.frustumCulled = false
   this.scene.add(this.quad)
-  this.factor = 0
 }
 
 Voronoi3DPass.prototype = Object.assign(Object.create(Pass.prototype), {
   constructor: Voronoi3DPass,
   render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
-    const factor = Math.max(0, this.factor)
     this.uniforms.time.value = this.elapsed
     this.uniforms.scale.value = GuiOptions.options.voronoi3DScale
     this.uniforms.color.value = new THREE.Color(new THREE.Color(parseInt(GuiOptions.options.feelsLike.slice(1, 7), 16)))
