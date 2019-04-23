@@ -1,6 +1,5 @@
 import React from 'react'
 import * as THREE from 'three'
-import { apply as applySpring, useSpring, animated as anim } from 'react-spring/three'
 import Text from './Text'
 
 class FourthScene extends React.Component {

@@ -1,7 +1,4 @@
-import React, { Component, useState } from 'react'
-import PropTypes from 'prop-types'
 import 'react-dat-gui/build/react-dat-gui.css'
-import DatGui, { DatBoolean, DatColor, DatNumber, DatString } from 'react-dat-gui'
 //import { GuiContext, GuiContextConsumer } from '../contexts/GuiContext'
 
 /*
@@ -85,6 +82,7 @@ class GuiImpl {
       phaseShift1: 0.7,
       phaseShift2: 1.0,
       phaseShift3: 0.0,
+      lissajousKnotVisible: false,
     }
 
     this.setOptions = this.setOptions.bind(this)
