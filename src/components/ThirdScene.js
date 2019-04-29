@@ -5,6 +5,7 @@ import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import Background from './Background'
 import GuiOptions from './Gui'
+import midi from '../util/WebMidi'
 
 class LissajousKnot {
   constructor({ numPoints, pointRatio }) {
@@ -98,7 +99,26 @@ const DifferentialMotion = props => {
   const numPoints = 1000
   const cycleTime = 50 // in seconds
 
+  let midiHandlersAdded = false
+  let scaleAnimationTime = 0.25 // one-way, in seconds
+
   const [knot, movingObjects, trail] = useMemo(() => {
+    /*
+      * for some reason, useMemo gets called twice.
+      * we only want to add listeners once
+      */
+    if (!midiHandlersAdded) {
+      midi.addListener(
+        'noteon',
+        (note, midiNumber) => {
+          if (midiNumber > 85) {
+          }
+        },
+        'ThirdSceneObjectScale'
+      )
+      midiHandlersAdded = true
+    }
+
     const knot = new LissajousKnot({ numPoints, pointRatio: 1 / 20.0 })
     const trail = new LissajousTrail({ numParticles: numMovingObjects })
     trail.attachKnot(knot)
@@ -144,13 +164,23 @@ const DifferentialMotion = props => {
     }
     trail.update(diff)
 
+    const lastNoteStartedAt = midi.lastNoteOnStartedAt
+    const scaleDiff = lastNoteStartedAt === 0.0 ? 0.0 : now - lastNoteStartedAt + 0.5
+
     const { current: movingObjects } = trailGroup
     for (let i = 0; i < trail.numParticles; ++i) {
       const point = trail.particles[i]
       const child = movingObjects.children[i]
       child.position.set(point[0], point[1], point[2])
-      const scaleZ = point[2] * 2.0
-      child.scale.set(scaleZ, scaleZ, scaleZ)
+
+      //let scale = point[2] * 2.0
+      let scale = 1.0
+      if (scaleDiff <= scaleAnimationTime * 2.0) {
+        const isPastHalfwayPoint = scaleDiff - scaleAnimationTime >= 0.0
+        const factor = isPastHalfwayPoint ? scaleAnimationTime - (scaleDiff - scaleAnimationTime) : scaleDiff
+        scale += factor * 5.0
+      }
+      child.scale.set(scale, scale, scale)
     }
   })
 

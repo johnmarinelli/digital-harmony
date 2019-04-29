@@ -17,8 +17,10 @@ class WebMidiWrapper {
   constructor() {
     this.keyboard = null
 
-    this.noteOnListeners = []
-    this.noteOffListeners = []
+    this.noteOnListeners = {}
+    this.noteOffListeners = {}
+
+    this.lastNoteOnStartedAt = 0.0
 
     this.noteArray = {}
 
@@ -57,8 +59,16 @@ class WebMidiWrapper {
       this.lastNotes.pop()
     }
     this.lastNotes.unshift(number)
+    this.lastNoteOnStartedAt = this.noteArray[number].startedAt
 
-    console.log(this.lastNotes)
+    const noteOnListenerNames = Object.keys(this.noteOnListeners)
+
+    noteOnListenerNames.forEach(
+      listenerName =>
+        listenerName === 'undefined'
+          ? console.error('Attempted to access undefined listener name.')
+          : this.noteOnListeners[listenerName](this.noteArray[number], number)
+    )
   }
 
   noteOff = event => {
@@ -71,11 +81,28 @@ class WebMidiWrapper {
 
     this.noteArray[number].startedAt = 0.0
     this.noteArray[number].noteOnVelocity = 0.0
+    const noteOffListenerNames = Object.keys(this.noteOffListeners)
+
+    noteOffListenerNames.forEach(
+      listenerName =>
+        listenerName === 'undefined'
+          ? console.error('Attempted to access undefined listener name.')
+          : this.noteOffListeners[listenerName](this.noteArray[number], number)
+    )
   }
 
-  // z. B. addListener('noteon', listener)
-  addListener(event, listener) {
-    this.keyboard.addListener(event, 'all', listener)
+  // z. B. addListener('noteon', listener, listenerName)
+  addListener(event, listener, listenerName) {
+    if (event === 'noteon') {
+      this.noteOnListeners[listenerName] = listener
+      return true
+    } else if (event === 'noteoff') {
+      this.noteOffListeners[listenerName] = listener
+      return true
+    } else {
+      this.keyboard.addListener(event, 'all', listener)
+      return true
+    }
   }
 }
 
