@@ -84,6 +84,9 @@ class GuiImpl {
       phaseShift3: 0.0,
       lissajousKnotVisible: false,
       lissajousTrailDiscrete: false,
+      zPositionFunctionX: 'cos',
+      zPositionFunctionY: 'sin',
+      fourthSceneTimeScale: 0.01,
     }
 
     this.setOptions = this.setOptions.bind(this)
