@@ -32,6 +32,11 @@ const DatGui = () => {
   thirdSceneFolder.add(GuiOptions.options, 'lissajousKnotVisible')
   thirdSceneFolder.add(GuiOptions.options, 'lissajousTrailDiscrete')
   thirdSceneFolder.open()
+  const fourthSceneFolder = gui.addFolder('Fourth Scene')
+  fourthSceneFolder.add(GuiOptions.options, 'zPositionFunctionX', { cos: 'cos', sin: 'sin' })
+  fourthSceneFolder.add(GuiOptions.options, 'zPositionFunctionY', { cos: 'cos', sin: 'sin' })
+  fourthSceneFolder.add(GuiOptions.options, 'fourthSceneTimeScale', 0.0, 0.5, 0.001)
+  fourthSceneFolder.open()
 
   return null
 }
