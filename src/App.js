@@ -36,6 +36,7 @@ const DatGui = () => {
   fourthSceneFolder.add(GuiOptions.options, 'zPositionFunctionX', { cos: 'cos', sin: 'sin' })
   fourthSceneFolder.add(GuiOptions.options, 'zPositionFunctionY', { cos: 'cos', sin: 'sin' })
   fourthSceneFolder.add(GuiOptions.options, 'fourthSceneTimeScale', 0.0, 0.5, 0.001)
+  fourthSceneFolder.add(GuiOptions.options, 'cyclePercentage', 0.0, 1.0, 0.001).name('Cycle Percentage (radians)')
   fourthSceneFolder.open()
 
   return null
