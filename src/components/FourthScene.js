@@ -22,8 +22,8 @@ const DifferentialMotion = props => {
         : new THREE.MeshBasicMaterial({
             color: new THREE.Color('white'),
             transparent: true,
-            opacity: 0.99,
-            //wireframe: true,
+            opacity: 1.0,
+            wireframe: true,
           })
       const coords = new Array(numPoints)
 
@@ -42,9 +42,8 @@ const DifferentialMotion = props => {
 
   useRender(() => {
     const { current: { children } } = group
-    let diff = 0.0
     let step = 0.0
-    let a, x, y
+    let a, x, y, pointIndexAsFraction
 
     const r = radius * 3
     const timeScale = GuiOptions.options.fourthSceneTimeScale
@@ -53,11 +52,13 @@ const DifferentialMotion = props => {
     const fnY = fns[GuiOptions.options.zPositionFunctionY]
 
     for (let i = 0; i < children.length; ++i) {
-      diff = clock.getElapsedTime() - timeStart
-      diff *= timeScale
-      step = diff - Math.floor(diff)
+      //step = clock.getElapsedTime() - timeStart
+      //step *= timeScale
+      pointIndexAsFraction = i / children.length
 
-      a = -90 + 360 * i / numPoints
+      step = GuiOptions.options.cyclePercentage
+      const polaritySwitch = step >= DEG
+      a = -90 + 360 * pointIndexAsFraction
 
       x = Math.cos(a * DEG) * radius + i * step * r
       x = -r / 2 + (x + r / 2) % r
@@ -65,7 +66,13 @@ const DifferentialMotion = props => {
 
       children[i].position.x = x
       children[i].position.y = y
-      children[i].position.z = fnX(x) * fnY(y)
+      //children[i].position.z = fnX(x) * fnY(y)
+
+      if (i === 30 || i == 20) {
+        //console.log(pointIndexAsFraction)
+      }
+      // why isn't this working?
+      children[i].material.color.setRGB(0.0, pointIndexAsFraction, 1.0)
     }
   })
 
