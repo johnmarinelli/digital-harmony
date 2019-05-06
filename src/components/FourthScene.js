@@ -5,6 +5,7 @@ import { useRender } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import { DEG } from '../util/Constants'
+import { rgbToHex } from '../util/Colors'
 import GuiOptions from './Gui'
 
 const DifferentialMotion = props => {
@@ -14,23 +15,35 @@ const DifferentialMotion = props => {
   const radius = props.radius || 2.5
   const numPoints = props.numPoints || 60
 
-  const [geometry, material, coords] = useMemo(
+  const [geometry, material, coords, materials] = useMemo(
     () => {
       const geometry = props.geometry ? props.geometry.clone() : new THREE.SphereGeometry(0.05, 10, 10)
-      const material = props.material
+      const materials = []
+      let baseMaterial = props.material
         ? props.material.clone()
         : new THREE.MeshBasicMaterial({
             color: new THREE.Color('white'),
             transparent: true,
             opacity: 1.0,
-            wireframe: true,
+            //wireframe: true,
           })
       const coords = new Array(numPoints)
-
       for (let i = 0; i < coords.length; ++i) {
+        const pointIndexAsFraction = i / coords.length
+        const pointIndexScaled = Math.floor(pointIndexAsFraction * 255.0)
+
+        const red = Math.min(64, pointIndexScaled)
+        const green = 28
+        const blue = Math.min(128, pointIndexScaled)
+        const hex = rgbToHex(red, green, blue)
+
         coords[i] = [i / 15.0, 0.0, 0.0]
+
+        const material = baseMaterial.clone()
+        material.color.set(hex)
+        materials.push(material)
       }
-      return [geometry, material, coords]
+      return [geometry, material, coords, materials]
     },
     [props]
   )
@@ -43,7 +56,7 @@ const DifferentialMotion = props => {
   useRender(() => {
     const { current: { children } } = group
     let step = 0.0
-    let a, x, y, pointIndexAsFraction
+    let a, x, y, pointIndexAsFraction, diff, now
 
     const r = radius * 3
     const timeScale = GuiOptions.options.fourthSceneTimeScale
@@ -52,12 +65,18 @@ const DifferentialMotion = props => {
     const fnY = fns[GuiOptions.options.zPositionFunctionY]
 
     for (let i = 0; i < children.length; ++i) {
-      //step = clock.getElapsedTime() - timeStart
-      //step *= timeScale
-      pointIndexAsFraction = i / children.length
+      now = clock.getElapsedTime()
+      if (GuiOptions.options.cyclePercentageOverride) {
+        step = GuiOptions.options.cyclePercentage
+      } else {
+        diff = now - timeStart
+        step = diff * timeScale
+        GuiOptions.options.cyclePercentage = step % 1.0
+      }
 
-      step = GuiOptions.options.cyclePercentage
+      pointIndexAsFraction = i / children.length
       const polaritySwitch = step >= DEG
+
       a = -90 + 360 * pointIndexAsFraction
 
       x = Math.cos(a * DEG) * radius + i * step * r
@@ -66,19 +85,19 @@ const DifferentialMotion = props => {
 
       children[i].position.x = x
       children[i].position.y = y
-      //children[i].position.z = fnX(x) * fnY(y)
+      children[i].position.z = fnX(x) * fnY(y)
 
-      if (i === 30 || i == 20) {
-        //console.log(pointIndexAsFraction)
-      }
-      // why isn't this working?
-      children[i].material.color.setRGB(0.0, pointIndexAsFraction, 1.0)
+      children[i].rotation.x = x
+      children[i].rotation.y = y
+      children[i].rotation.z = fnX(x) * fnY(y)
     }
   })
 
   return (
     <anim.group ref={group}>
-      {coords.map(([x, y, z], i) => <anim.mesh key={i} geometry={geometry} material={material} position={[x, y, z]} />)}
+      {coords.map(([x, y, z], i) => (
+        <anim.mesh key={i} geometry={geometry} material={materials[i]} position={[x, y, z]} />
+      ))}
     </anim.group>
   )
 }

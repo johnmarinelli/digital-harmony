@@ -88,6 +88,7 @@ class GuiImpl {
       zPositionFunctionY: 'sin',
       fourthSceneTimeScale: 0.01,
       cyclePercentage: 0.0,
+      cyclePercentageOverride: true,
     }
 
     this.setOptions = this.setOptions.bind(this)

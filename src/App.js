@@ -14,7 +14,7 @@ const DatGui = () => {
   const gui = new dat.GUI()
   const globalFolder = gui.addFolder('Global')
   globalFolder.addColor(GuiOptions.options, 'feelsLike')
-  globalFolder.add(GuiOptions.options, 'colorOverride')
+  globalFolder.add(GuiOptions.options, 'colorOverride').name('Override ^')
   globalFolder.add(GuiOptions.options, 'currentScene', 0, 4, 1)
   globalFolder.open()
   const firstSceneFolder = gui.addFolder('First Scene')
@@ -36,7 +36,11 @@ const DatGui = () => {
   fourthSceneFolder.add(GuiOptions.options, 'zPositionFunctionX', { cos: 'cos', sin: 'sin' })
   fourthSceneFolder.add(GuiOptions.options, 'zPositionFunctionY', { cos: 'cos', sin: 'sin' })
   fourthSceneFolder.add(GuiOptions.options, 'fourthSceneTimeScale', 0.0, 0.5, 0.001)
-  fourthSceneFolder.add(GuiOptions.options, 'cyclePercentage', 0.0, 1.0, 0.001).name('Cycle Percentage (radians)')
+  fourthSceneFolder
+    .add(GuiOptions.options, 'cyclePercentage', 0.0, 1.0, 0.001)
+    .name('Cycle Percentage (radians)')
+    .listen()
+  fourthSceneFolder.add(GuiOptions.options, 'cyclePercentageOverride').name('Override ^')
   fourthSceneFolder.open()
 
   return null
