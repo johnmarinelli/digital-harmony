@@ -60,10 +60,10 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      fourthSceneRef.current.sceneRef.current,
-      firstSceneRef.current.sceneRef.current,
       secondSceneRef.current.sceneRef.current,
+      firstSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
+      fourthSceneRef.current.sceneRef.current,
     ]
     transition = new Transition(camera)
     transition.initializeScenes(...scenes.slice(0, 2))
