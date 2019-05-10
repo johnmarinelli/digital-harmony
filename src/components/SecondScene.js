@@ -3,12 +3,17 @@ import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
+import { LissajousKnot } from '../util/Lissajous'
 import Background from './Background'
 
-const GlitchRepeat = ({ mesh }) => {
+const GlitchRepeat = ({ mesh, position, numRepeats, frameBreak, updateFn }) => {
   const groupRef = useRef()
-  const numRepeats = 25,
-    frameBreak = 10
+  numRepeats = numRepeats || 25
+  frameBreak = frameBreak || 10
+
+  if (!updateFn || typeof updateFn !== 'function') {
+    updateFn = now => [Math.sin(now), Math.cos(now), Math.sin(now)]
+  }
 
   let numFrames = 0
 
@@ -27,10 +32,7 @@ const GlitchRepeat = ({ mesh }) => {
 
   useRender(() => {
     const now = clock.getElapsedTime()
-
-    const x = Math.sin(now)
-    const y = Math.cos(now)
-    const z = Math.sin(now)
+    const [x, y, z] = updateFn(now)
     const children = groupRef.current.children
     const main = children[0]
 
@@ -64,8 +66,10 @@ const GlitchRepeat = ({ mesh }) => {
     numFrames++
   })
 
+  position = position || new THREE.Vector3(0.0, 0.0, 0.0)
+
   return (
-    <group position={new THREE.Vector3(-2.0, 2.0, 0.0)} ref={groupRef}>
+    <group position={position} ref={groupRef}>
       <anim.mesh name="mainMesh" geometry={mesh.geometry}>
         <anim.lineBasicMaterial name="material" color="pink" transparent={true} opacity={0.5} />
       </anim.mesh>
@@ -168,6 +172,8 @@ class SecondScene extends React.Component {
     geometry.scale(0.5, 0.5, 0.5)
     const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }))
 
+    const glitchRepeatUpdateFn = now => LissajousKnot.getPoint(now * 0.1, 3, 4, 7, 0.7, 1.0, 0.0)
+
     return (
       <scene ref={this.sceneRef} background={new THREE.Color(0xff00ff)}>
         <Background
@@ -177,7 +183,10 @@ class SecondScene extends React.Component {
           )}
         />
         <anim.group>
-          <GlitchRepeat mesh={mesh} />
+          <DifferentialMotion />
+          <GlitchRepeat mesh={mesh} updateFn={glitchRepeatUpdateFn} />
+          <GlitchRepeat position={new THREE.Vector3(-2.0, 0.0, 0.0)} mesh={mesh} />
+          <GlitchRepeat position={new THREE.Vector3(2.0, 0.0, 0.0)} mesh={mesh} />
         </anim.group>
       </scene>
     )
