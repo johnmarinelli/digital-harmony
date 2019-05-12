@@ -60,8 +60,8 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      secondSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
+      secondSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
     ]

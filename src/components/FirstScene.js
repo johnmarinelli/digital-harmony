@@ -39,6 +39,49 @@ function Octahedron() {
 }
 */
 
+class Phyllotaxis {
+  constructor({ numPoints, material, position, scale, timeStart, timeScale, radius }) {
+    this.material = material
+      ? material.clone()
+      : new THREE.MeshBasicMaterial({
+          color: new THREE.Color('white'),
+          transparent: true,
+          opacity: 0.5,
+          wireframe: true,
+        })
+
+    this.coords = new Array(numPoints)
+
+    for (let i = 0; i < numPoints; ++i) {
+      this.coords[i] = [i / 15.0, 0.0, 0.0]
+    }
+
+    this.timeStart = timeStart
+    this.timeScale = timeScale
+    this.radius = radius
+  }
+
+  update() {
+    let diff, step, a, x, y
+
+    let numPoints = this.coords.length
+    const { timeScale, timeStart, radius } = this
+
+    for (let i = 0; i < numPoints; ++i) {
+      diff = clock.getElapsedTime() - this.timeStart
+      diff *= timeScale
+      step = diff - Math.floor(diff)
+
+      a = 360.0 * step * i
+      x = Math.cos(a * DEG) * (i / numPoints) * radius
+      y = -Math.sin(a * DEG) * (i / numPoints) * radius
+
+      this.coords[i][0] = x
+      this.coords[i][1] = y
+    }
+  }
+}
+
 const DifferentialMotion = props => {
   let group = useRef()
 
@@ -47,8 +90,9 @@ const DifferentialMotion = props => {
   const radius = props.radius || 2
   const numPoints = 60
 
-  const [geometry, geometries, material, coords] = useMemo(
+  const [geometry, geometries, material, coords, phyllotaxes] = useMemo(
     () => {
+      const phyllotaxes = []
       const geometry = props.geometry ? props.geometry.clone() : new THREE.SphereBufferGeometry(0.05, 10, 10)
       const material = props.material
         ? props.material.clone()
@@ -66,16 +110,35 @@ const DifferentialMotion = props => {
         geometries[i] = props.geometryGenerator ? props.geometryGenerator(i, coords.length) : null
         //geometries[i].rotateX(90.0 * DEG)
       }
-      return [geometry, geometries, material, coords]
+
+      for (let j = 0; j < 3; ++j) {
+        phyllotaxes.push(
+          new Phyllotaxis({
+            numPoints: numPoints / 3,
+            material,
+            position: new THREE.Vector3(-2.5 + j, 0.0, 0.0, 0.0),
+            scale: 0.33,
+            timeStart,
+            timeScale,
+            radius,
+          })
+        )
+      }
+      return [geometry, geometries, material, coords, phyllotaxes]
     },
     [props]
   )
 
   useRender(() => {
+    // @TODO: update phyllotaxes and render
     const { current: { children } } = group
     let diff = 0.0
     let step = 0.0
     let a, x, y
+
+    for (let j = 0; j < phyllotaxes.length; ++j) {
+      phyllotaxes[j].update()
+    }
 
     for (let i = 0; i < children.length; ++i) {
       diff = clock.getElapsedTime() - timeStart
@@ -92,7 +155,7 @@ const DifferentialMotion = props => {
   })
 
   return (
-    <anim.group ref={group}>
+    <anim.group ref={group} scale={new THREE.Vector3(0.25, 0.25, 0.25)} position={new THREE.Vector3(-2.5, 0.0, 0.0)}>
       {coords.map(([x, y, z], i) => (
         <anim.mesh
           key={i}
