@@ -5,6 +5,7 @@ import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
+import midi from '../util/WebMidi'
 
 /*
 function Octahedron() {
@@ -37,7 +38,6 @@ function Octahedron() {
     </group>
   )
 }
-*/
 
 class Phyllotaxis {
   constructor({ numPoints, material, position, scale, timeStart, timeScale, radius }) {
@@ -81,18 +81,26 @@ class Phyllotaxis {
     }
   }
 }
+*/
 
-const DifferentialMotion = props => {
+const PhyllotaxisComponent = props => {
   let group = useRef()
 
   const timeStart = clock.getElapsedTime()
   const timeScale = props.timeScale || 0.005
   const radius = props.radius || 2
+  const position = props.position || new THREE.Vector3(0.0, 0.0, 0.0)
+  const scale = props.scale || new THREE.Vector3(0.25, 0.25, 0.25)
   const numPoints = 60
 
-  const [geometry, geometries, material, coords, phyllotaxes] = useMemo(
+  let midiHandlersAdded = false
+
+  const [geometry, material] = useMemo(
     () => {
-      const phyllotaxes = []
+      if (!midiHandlersAdded) {
+        midi.addListener('noteon', (note, midiNumber) => {}, 'FirstSceneObjectColor')
+        midiHandlersAdded = true
+      }
       const geometry = props.geometry ? props.geometry.clone() : new THREE.SphereBufferGeometry(0.05, 10, 10)
       const material = props.material
         ? props.material.clone()
@@ -102,48 +110,27 @@ const DifferentialMotion = props => {
             opacity: 0.5,
             wireframe: true,
           })
-      const coords = new Array(numPoints)
-      const geometries = new Array(numPoints)
 
-      for (let i = 0; i < coords.length; ++i) {
-        coords[i] = [i / 15.0, 0.0, 0.0]
-        geometries[i] = props.geometryGenerator ? props.geometryGenerator(i, coords.length) : null
-        //geometries[i].rotateX(90.0 * DEG)
-      }
-
-      for (let j = 0; j < 3; ++j) {
-        phyllotaxes.push(
-          new Phyllotaxis({
-            numPoints: numPoints / 3,
-            material,
-            position: new THREE.Vector3(-2.5 + j, 0.0, 0.0, 0.0),
-            scale: 0.33,
-            timeStart,
-            timeScale,
-            radius,
-          })
-        )
-      }
-      return [geometry, geometries, material, coords, phyllotaxes]
+      return [geometry, material]
     },
     [props]
   )
 
   useRender(() => {
-    // @TODO: update phyllotaxes and render
     const { current: { children } } = group
+    const colorAnimationTime = 1.0
     let diff = 0.0
     let step = 0.0
-    let a, x, y
-
-    for (let j = 0; j < phyllotaxes.length; ++j) {
-      phyllotaxes[j].update()
-    }
+    let now = 0.0
+    let a, x, y, lastNoteStartedAt, timeSinceLastNote
 
     for (let i = 0; i < children.length; ++i) {
-      diff = clock.getElapsedTime() - timeStart
+      now = clock.getElapsedTime()
+      diff = now - timeStart
       diff *= timeScale
       step = diff - Math.floor(diff)
+
+      step -= props.index * 0.015
 
       a = 360.0 * step * i
       x = Math.cos(a * DEG) * (i / children.length) * radius
@@ -151,31 +138,78 @@ const DifferentialMotion = props => {
 
       children[i].position.x = x
       children[i].position.y = y
+
+      lastNoteStartedAt = midi.lastNoteOnStartedAt
+      timeSinceLastNote = lastNoteStartedAt === 0.0 ? 0.0 : now - lastNoteStartedAt + 0.5
+
+      // this algorithm linearly interpolates `factor` from 0.0 -> 1.0 -> 0.0
+      // @TODO 16/05/2019 - abstract this algorithm into a function
+      // compare with same algorithm in ThirdScene.js#95
+      if (timeSinceLastNote <= colorAnimationTime * 2.0) {
+        const isPastHalfwayPoint = timeSinceLastNote - colorAnimationTime >= 0.0
+        const factor = isPastHalfwayPoint
+          ? colorAnimationTime - (timeSinceLastNote - colorAnimationTime)
+          : timeSinceLastNote
+        children[i].material.color.r = factor
+      }
     }
   })
 
   return (
-    <anim.group ref={group} scale={new THREE.Vector3(0.25, 0.25, 0.25)} position={new THREE.Vector3(-2.5, 0.0, 0.0)}>
-      {coords.map(([x, y, z], i) => (
-        <anim.mesh
-          key={i}
-          geometry={props.geometryGenerator ? geometries[i] : geometry}
-          material={material}
-          position={[x, y, z]}
-        />
-      ))}
+    <anim.group ref={group} scale={scale} position={position}>
+      {new Array(numPoints)
+        .fill(null)
+        .map((_, i) => <anim.mesh key={i} geometry={geometry} material={material} position={[0.0, 0.0, 0.0]} />)}
     </anim.group>
   )
+}
+
+const DifferentialMotion = props => {
+  let group = useRef()
+  const numPhyllotaxes = 4
+  // @TODO: make a grid 13/05/2019
+  const rows = 4
+  const cols = 3
+  const numPointsPerPhyllo = 20
+
+  const phyllotaxes = []
+  let scale, material, index, x, y
+
+  let color = new THREE.Color(0x880000)
+
+  for (let j = 0; j < rows; ++j) {
+    for (let i = 0; i < cols; ++i) {
+      index = j * rows + i
+      scale = (i + 1) * 0.2
+      color.r += index / (numPhyllotaxes + cols * rows)
+      material = new THREE.MeshBasicMaterial({
+        color: color.clone(),
+        transparent: true,
+        opacity: 0.5,
+        wireframe: true,
+      })
+      // old formula for position: -2.5 + i * 2.0, -3.0 + j * 2.0, 0.0
+      x = Math.cos(index) * 3.0
+      y = Math.sin(index) * 3.0
+      phyllotaxes.push(
+        <PhyllotaxisComponent
+          key={index}
+          index={index}
+          scale={new THREE.Vector3(scale, scale, scale)}
+          position={new THREE.Vector3(x, y, 0.0)}
+          material={material}
+        />
+      )
+    }
+  }
+
+  return <anim.group ref={group}>{phyllotaxes.map(phyllo => phyllo)}</anim.group>
 }
 
 class FirstScene extends React.Component {
   constructor() {
     super()
     this.sceneRef = React.createRef()
-    this.differentialMotionProps = {
-      timeScale: 0.005,
-      radius: 3,
-    }
   }
 
   render() {
@@ -190,7 +224,7 @@ class FirstScene extends React.Component {
             ['#27282F', '#247BA0', '#70C1B3', '#f8f3f1']
           )}
         />
-        <DifferentialMotion {...this.differentialMotionProps} />
+        <DifferentialMotion timeScale={0.005} />
       </scene>
     )
   }

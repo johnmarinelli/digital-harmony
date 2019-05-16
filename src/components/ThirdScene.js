@@ -91,7 +91,6 @@ const DifferentialMotion = props => {
       const child = movingObjects.children[i]
       child.position.set(point[0], point[1], point[2])
 
-      //let scale = point[2] * 2.0
       let scale = 1.0
       if (scaleDiff <= scaleAnimationTime * 2.0) {
         const isPastHalfwayPoint = scaleDiff - scaleAnimationTime >= 0.0
