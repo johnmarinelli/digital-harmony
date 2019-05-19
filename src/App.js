@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react'
+import * as THREE from 'three'
 import './App.css'
 import { Canvas } from 'react-three-fiber'
 import { useSpring } from 'react-spring/three'
@@ -14,7 +15,9 @@ const DatGui = () => {
   const gui = new dat.GUI()
   const globalFolder = gui.addFolder('Global')
   globalFolder.addColor(GuiOptions.options, 'feelsLike')
-  globalFolder.add(GuiOptions.options, 'colorOverride').name('Override ^')
+  globalFolder.addColor(GuiOptions.options, 'color2').name('Color 2')
+  globalFolder.addColor(GuiOptions.options, 'color3').name('Color 3')
+  globalFolder.add(GuiOptions.options, 'colorOverride').name('Override colors ^')
   globalFolder.add(GuiOptions.options, 'currentScene', 0, 4, 1)
   globalFolder.open()
   const firstSceneFolder = gui.addFolder('First Scene')
@@ -43,6 +46,10 @@ const DatGui = () => {
   fourthSceneFolder.add(GuiOptions.options, 'cyclePercentageOverride').name('Override ^')
   fourthSceneFolder.open()
 
+  const fifthSceneFolder = gui.addFolder('Fifth Scene')
+  fifthSceneFolder.add(GuiOptions.options, 'mixPercentage', 0.0, 1.0, 0.05)
+  fifthSceneFolder.open()
+
   return null
 }
 
@@ -60,7 +67,10 @@ const Main = () => {
   return (
     <>
       <DatGui />
-      <Canvas className="canvas">
+      <Canvas
+        className="canvas"
+        onCreated={({ gl }) => ((gl.shadowMap.enabled = true), (gl.shadowMap.type = THREE.PCFSoftShadowMap))}
+      >
         <Monolith top={top} />
       </Canvas>
       <div className="scroll-container" onScroll={onScroll} onMouseMove={onMouseMove}>
