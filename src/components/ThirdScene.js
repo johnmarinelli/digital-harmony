@@ -7,6 +7,7 @@ import Background from './Background'
 import GuiOptions from './Gui'
 import midi from '../util/WebMidi'
 import { LissajousKnot, LissajousTrail } from '../util/Lissajous'
+import * as AnimationHelper from '../util/AnimationHelper'
 
 const DifferentialMotion = props => {
   let knotGroup = useRef(),
@@ -54,8 +55,6 @@ const DifferentialMotion = props => {
   let diff = 0,
     i
   useRender(() => {
-    const now = clock.getElapsedTime()
-    diff = now - timeStart
     knot.update(diff)
 
     const { current: { children } } = knotGroup
@@ -83,7 +82,7 @@ const DifferentialMotion = props => {
     trail.update(diff)
 
     const lastNoteStartedAt = midi.lastNoteOnStartedAt
-    const scaleDiff = lastNoteStartedAt === 0.0 ? 0.0 : now - lastNoteStartedAt + 0.5
+    let now = clock.getElapsedTime()
 
     const { current: movingObjects } = trailGroup
     for (let i = 0; i < trail.numParticles; ++i) {
@@ -91,14 +90,12 @@ const DifferentialMotion = props => {
       const child = movingObjects.children[i]
       child.position.set(point[0], point[1], point[2])
 
-      let scale = 1.0
-      if (scaleDiff <= scaleAnimationTime * 2.0) {
-        const isPastHalfwayPoint = scaleDiff - scaleAnimationTime >= 0.0
-        const factor = isPastHalfwayPoint ? scaleAnimationTime - (scaleDiff - scaleAnimationTime) : scaleDiff
-        scale += factor * 5.0
-      }
+      now = clock.getElapsedTime()
+      const factor = AnimationHelper.fadeInThenOut(now, midi.lastNoteOnStartedAt, scaleAnimationTime)
+      const scale = 1.0 + factor * 5.0
       child.scale.set(scale, scale, scale)
     }
+    diff = now - timeStart
   })
 
   const sphereGeometry = new THREE.SphereBufferGeometry(0.05, 10, 10)

@@ -6,6 +6,7 @@ import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
 import midi from '../util/WebMidi'
+import * as AnimationHelper from '../util/AnimationHelper'
 
 /*
 function Octahedron() {
@@ -119,12 +120,13 @@ const PhyllotaxisComponent = props => {
   useRender(() => {
     const { current: { children } } = group
     const colorAnimationTime = 1.0
+    const numChildren = children.length
     let diff = 0.0
     let step = 0.0
     let now = 0.0
-    let a, x, y, lastNoteStartedAt, timeSinceLastNote
+    let a, x, y, lastNoteStartedAt, timeSinceLastNote, factorOffset
 
-    for (let i = 0; i < children.length; ++i) {
+    for (let i = 0; i < numChildren; ++i) {
       now = clock.getElapsedTime()
       diff = now - timeStart
       diff *= timeScale
@@ -133,25 +135,16 @@ const PhyllotaxisComponent = props => {
       step -= props.index * 0.015
 
       a = 360.0 * step * i
-      x = Math.cos(a * DEG) * (i / children.length) * radius
-      y = -Math.sin(a * DEG) * (i / children.length) * radius
+      x = Math.cos(a * DEG) * (i / numChildren) * radius
+      y = -Math.sin(a * DEG) * (i / numChildren) * radius
 
       children[i].position.x = x
       children[i].position.y = y
 
-      lastNoteStartedAt = midi.lastNoteOnStartedAt
-      timeSinceLastNote = lastNoteStartedAt === 0.0 ? 0.0 : now - lastNoteStartedAt + 0.5
+      factorOffset = i * 0.0001
 
-      // this algorithm linearly interpolates `factor` from 0.0 -> 1.0 -> 0.0
-      // @TODO 16/05/2019 - abstract this algorithm into a function
-      // compare with same algorithm in ThirdScene.js#95
-      if (timeSinceLastNote <= colorAnimationTime * 2.0) {
-        const isPastHalfwayPoint = timeSinceLastNote - colorAnimationTime >= 0.0
-        const factor = isPastHalfwayPoint
-          ? colorAnimationTime - (timeSinceLastNote - colorAnimationTime)
-          : timeSinceLastNote
-        children[i].material.color.r = factor
-      }
+      const factor = AnimationHelper.fadeInThenOut(now - factorOffset, midi.lastNoteOnStartedAt, colorAnimationTime)
+      //children[i].material.color.b = factor
     }
   })
 
@@ -167,43 +160,46 @@ const PhyllotaxisComponent = props => {
 const DifferentialMotion = props => {
   let group = useRef()
   const numPhyllotaxes = 4
-  // @TODO: make a grid 13/05/2019
   const rows = 4
   const cols = 3
+  const dimension = rows * cols
   const numPointsPerPhyllo = 20
 
   const phyllotaxes = []
-  let scale, material, index, x, y
-
-  let color = new THREE.Color(0x880000)
+  let scale, material, index, x, y, z, pct, color
 
   for (let j = 0; j < rows; ++j) {
     for (let i = 0; i < cols; ++i) {
-      index = j * rows + i
+      color = new THREE.Color(0x0000ff)
+      index = j * cols + i
+      pct = index / dimension
       scale = (i + 1) * 0.2
-      color.r += index / (numPhyllotaxes + cols * rows)
+
+      color.b -= pct
+      color.r += pct
       material = new THREE.MeshBasicMaterial({
-        color: color.clone(),
+        color,
         transparent: true,
         opacity: 0.5,
         wireframe: true,
       })
       // old formula for position: -2.5 + i * 2.0, -3.0 + j * 2.0, 0.0
-      x = Math.cos(index) * 3.0
-      y = Math.sin(index) * 3.0
+      x = -2.5 + i * 2.0
+      y = 3.0 - j * 2.0
+      z = (j % 2) * -1
       phyllotaxes.push(
         <PhyllotaxisComponent
           key={index}
           index={index}
           scale={new THREE.Vector3(scale, scale, scale)}
-          position={new THREE.Vector3(x, y, 0.0)}
+          position={new THREE.Vector3(x, y, z)}
           material={material}
         />
       )
     }
   }
 
-  return <anim.group ref={group}>{phyllotaxes.map(phyllo => phyllo)}</anim.group>
+  return <anim.group ref={group}>{phyllotaxes}</anim.group>
 }
 
 class FirstScene extends React.Component {

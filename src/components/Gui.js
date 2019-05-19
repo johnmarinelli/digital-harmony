@@ -71,8 +71,9 @@ class GuiImpl {
     this.instance = this
 
     this.options = {
-      //voronoi3DScale: 10.0,
       feelsLike: '#2FA1D6',
+      color2: '#50d62e',
+      color3: '#f20048',
       colorOverride: false,
       currentScene: 0,
       sphereScale: 0.5,
@@ -83,12 +84,13 @@ class GuiImpl {
       phaseShift2: 1.0,
       phaseShift3: 0.0,
       lissajousKnotVisible: false,
-      lissajousTrailDiscrete: false,
+      lissajousTrailDiscrete: true,
       zPositionFunctionX: 'cos',
       zPositionFunctionY: 'sin',
       fourthSceneTimeScale: 0.01,
       cyclePercentage: 0.0,
       cyclePercentageOverride: true,
+      mixPercentage: 0.5,
     }
 
     this.setOptions = this.setOptions.bind(this)
