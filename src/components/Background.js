@@ -35,6 +35,7 @@ export const ShaderBackground = ({ top, scrollMax, color, fragmentShader, custom
   const fs = fragmentShader || FragmentShader
 
   useRender(() => {
+    return
     mesh.current.material.uniforms.time.value = clock.getElapsedTime()
     const { options: { colorOverride, feelsLike, color2, color3 } } = GuiOptions
     if (colorOverride) {
@@ -51,16 +52,22 @@ export const ShaderBackground = ({ top, scrollMax, color, fragmentShader, custom
     }
   })
 
+  const material = false ? (
+    <anim.shaderMaterial
+      name="material"
+      ref={shaderRef}
+      vertexShader={VertexShader}
+      fragmentShader={fs}
+      uniforms={uniforms}
+    />
+  ) : (
+    <anim.meshPhongMaterial name="material" color={0xffff00} side={THREE.DoubleSide} />
+  )
+
   return (
     <mesh ref={mesh} scale={[width, height, 1.0]}>
-      <planeGeometry name="geometry" args={[1, 1]} receiveShadow={receiveShadow} side={THREE.DoubleSide} />
-      <anim.shaderMaterial
-        name="material"
-        ref={shaderRef}
-        vertexShader={VertexShader}
-        fragmentShader={fs}
-        uniforms={uniforms}
-      />
+      <planeGeometry name="geometry" args={[1, 1]} receiveShadow={receiveShadow} />
+      {material}
     </mesh>
   )
 }

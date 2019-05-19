@@ -44,11 +44,19 @@ const DifferentialMotion = props => {
 
   useRender(() => {
     const { current: { children } } = group
+    const numChildren = children.length
+
+    // need to figure out how to update shadows on move
+    for (let i = 0; i < numChildren; ++i) {
+      if ('Mesh' === children[i].constructor.name) {
+      }
+    }
   })
 
   return (
     <group ref={group}>
-      <spotLight position={new THREE.Vector3(0.0, 0.0, 0.5)} intensity={5.2} color="blue" />
+      <spotLight position={new THREE.Vector3(0.0, 0.0, 1.5)} intensity={1.2} color="blue" />
+      <ambientLight position={new THREE.Vector3(0.0, 0.0, 10.5)} intensity={0.2} color="white" />
       {staticObjects}
     </group>
   )
