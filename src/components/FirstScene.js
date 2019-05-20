@@ -92,7 +92,7 @@ const PhyllotaxisComponent = props => {
   const radius = props.radius || 2
   const position = props.position || new THREE.Vector3(0.0, 0.0, 0.0)
   const scale = props.scale || new THREE.Vector3(0.25, 0.25, 0.25)
-  const numPoints = 60
+  const numPoints = props.numPointsPerPhyllo || 60
 
   let midiHandlersAdded = false
 
@@ -124,7 +124,7 @@ const PhyllotaxisComponent = props => {
     let diff = 0.0
     let step = 0.0
     let now = 0.0
-    let a, x, y, lastNoteStartedAt, timeSinceLastNote, factorOffset
+    let a, x, y, factorOffset
 
     for (let i = 0; i < numChildren; ++i) {
       now = clock.getElapsedTime()
@@ -159,11 +159,9 @@ const PhyllotaxisComponent = props => {
 
 const DifferentialMotion = props => {
   let group = useRef()
-  const numPhyllotaxes = 4
   const rows = 4
   const cols = 3
   const dimension = rows * cols
-  const numPointsPerPhyllo = 20
 
   const phyllotaxes = []
   let scale, material, index, x, y, z, pct, color
