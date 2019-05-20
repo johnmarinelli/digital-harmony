@@ -1,5 +1,3 @@
-import { Uniforms as ParentUniforms } from './Background'
-
 const Uniforms = () => ({
   mixFactor: { value: 0.0 },
 })

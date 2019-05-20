@@ -4,9 +4,6 @@ import { ShaderBackground } from './Background'
 import { useRender } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
-import { DEG } from '../util/Constants'
-import { rgbToHex } from '../util/Colors'
-import GuiOptions from './Gui'
 import { Uniforms, FragmentShader } from '../shaders/FifthScene'
 
 const DifferentialMotion = props => {
@@ -18,11 +15,11 @@ const DifferentialMotion = props => {
     () => {
       const data = [
         {
-          geometryFn: THREE.SphereBufferGeometry,
-          geometryFnArgs: [0.1],
-          materialFn: THREE.MeshPhongMaterial,
+          geometryFn: THREE.BoxBufferGeometry,
+          geometryFnArgs: [0.5],
+          materialFn: THREE.MeshLambertMaterial,
           materialFnArgs: { color: 'white' },
-          position: new THREE.Vector3(0.0, 0.0, 0.1),
+          position: new THREE.Vector3(0.0, 0.0, 1.0),
         },
       ]
       const staticObjects = data.map((obj, i) => {
@@ -33,7 +30,7 @@ const DifferentialMotion = props => {
             geometry={new obj.geometryFn(...geometryFnArgs)}
             material={new obj.materialFn(materialFnArgs)}
             position={position}
-            castShadow={true}
+            castShadow
           />
         )
       })
@@ -46,17 +43,21 @@ const DifferentialMotion = props => {
     const { current: { children } } = group
     const numChildren = children.length
 
+    const now = clock.getElapsedTime()
+
     // need to figure out how to update shadows on move
     for (let i = 0; i < numChildren; ++i) {
       if ('Mesh' === children[i].constructor.name) {
+        children[i].position.x = Math.cos(now)
+        children[i].position.y = Math.sin(now)
       }
     }
   })
+  const d = 200
 
   return (
     <group ref={group}>
-      <spotLight position={new THREE.Vector3(0.0, 0.0, 1.5)} intensity={1.2} color="blue" />
-      <ambientLight position={new THREE.Vector3(0.0, 0.0, 10.5)} intensity={0.2} color="white" />
+      <spotLight color={0xffffff} intensity={0.7} position={[30, 30, 50]} angle={0.2} penumbra={1} castShadow />
       {staticObjects}
     </group>
   )

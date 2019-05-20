@@ -69,7 +69,12 @@ const Main = () => {
       <DatGui />
       <Canvas
         className="canvas"
-        onCreated={({ gl }) => ((gl.shadowMap.enabled = true), (gl.shadowMap.type = THREE.PCFSoftShadowMap))}
+        onCreated={({ gl }) => {
+          gl.shadowMap.enabled = true
+          gl.shadowMap.type = THREE.PCFSoftShadowMap
+          gl.shadowMapSoft = true
+          return true
+        }}
       >
         <Monolith top={top} />
       </Canvas>

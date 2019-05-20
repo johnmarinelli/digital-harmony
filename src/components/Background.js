@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useRef } from 'react'
 import * as THREE from 'three'
 import { useRender, useThree } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
@@ -34,25 +34,27 @@ export const ShaderBackground = ({ top, scrollMax, color, fragmentShader, custom
   let uniforms = Object.assign({}, customUniforms, Uniforms([window.innerWidth, window.innerHeight], 0x000000))
   const fs = fragmentShader || FragmentShader
 
-  useRender(() => {
-    return
-    mesh.current.material.uniforms.time.value = clock.getElapsedTime()
-    const { options: { colorOverride, feelsLike, color2, color3 } } = GuiOptions
-    if (colorOverride) {
-      const interpolatedColor = top.interpolate([0, scrollMax * 0.5, scrollMax * 1.1], [feelsLike, color2, color3])
-      mesh.current.material.uniforms.color.value = new THREE.Color(interpolatedColor.getValue())
-    } else {
-      mesh.current.material.uniforms.color.value = new THREE.Color(color.getValue())
-    }
+  const useShaderMaterial = false
 
-    // special case for fifth scene
-    // need to figure out way to do this better
-    if (mesh.current.material.uniforms.mixFactor) {
-      mesh.current.material.uniforms.mixFactor.value = GuiOptions.options.mixPercentage
+  useRender(() => {
+    if (useShaderMaterial) {
+      mesh.current.material.uniforms.time.value = clock.getElapsedTime()
+      const { options: { colorOverride, feelsLike, color2, color3 } } = GuiOptions
+      if (colorOverride) {
+        const interpolatedColor = top.interpolate([0, scrollMax * 0.5, scrollMax * 1.1], [feelsLike, color2, color3])
+        mesh.current.material.uniforms.color.value = new THREE.Color(interpolatedColor.getValue())
+      } else {
+        mesh.current.material.uniforms.color.value = new THREE.Color(color.getValue())
+      }
+
+      // special case for fifth scene
+      // need to figure out way to do this better
+      if (mesh.current.material.uniforms.mixFactor) {
+        mesh.current.material.uniforms.mixFactor.value = GuiOptions.options.mixPercentage
+      }
     }
   })
-
-  const material = false ? (
+  const material = useShaderMaterial ? (
     <anim.shaderMaterial
       name="material"
       ref={shaderRef}
@@ -61,12 +63,12 @@ export const ShaderBackground = ({ top, scrollMax, color, fragmentShader, custom
       uniforms={uniforms}
     />
   ) : (
-    <anim.meshPhongMaterial name="material" color={0xffff00} side={THREE.DoubleSide} />
+    <anim.meshPhongMaterial name="material" color={0xffff00} />
   )
 
   return (
-    <mesh ref={mesh} scale={[width, height, 1.0]}>
-      <planeGeometry name="geometry" args={[1, 1]} receiveShadow={receiveShadow} />
+    <mesh ref={mesh} scale={[width, height, 1.0]} receiveShadow>
+      <planeBufferGeometry name="geometry" args={[1, 1]} />
       {material}
     </mesh>
   )

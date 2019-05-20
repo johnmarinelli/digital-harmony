@@ -75,7 +75,6 @@ const DifferentialMotion = props => {
       }
 
       pointIndexAsFraction = i / children.length
-      const polaritySwitch = step >= DEG
 
       a = -90 + 360 * pointIndexAsFraction
 
