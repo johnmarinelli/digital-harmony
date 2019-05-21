@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { animated as anim } from 'react-spring/three'
 import { useThree } from 'react-three-fiber'
-
+// from https://codesandbox.io/embed/y3j31r13zz
 const Text = ({ children, position, opacity, color = 'white', fontSize = 410 }) => {
   const { viewport } = useThree()
   const { width: viewportWidth, height: viewportHeight } = viewport()
