@@ -5,15 +5,37 @@ import { useRender } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import { Uniforms, FragmentShader } from '../shaders/FifthScene'
+import { interpolate } from 'react-spring/three'
+import Text from './Text'
 
-const Particles = () => {
+const Title = ({ top }) => (
+  <>
+    <Text
+      fontSize={200}
+      opacity={top.interpolate([0, 200], [1, 0])}
+      position={top.interpolate(top => [0, -1 + top / 200, 0])}
+    >
+      bwv 775
+    </Text>
+    <Text
+      fontSize={100}
+      opacity={top.interpolate([0, 200], [1, 0])}
+      position={top.interpolate(top => [3, -2.3 + top / 200, 0])}
+    >
+      d mol.
+    </Text>
+  </>
+)
+
+const Particles = ({ top, scrollMax }) => {
   const group = useRef()
 
   const numParticles = 5
   const particleGeometries = ['ico', 'dod', 'cyl']
 
-  const [particles] = useMemo(() => {
-    const particles = []
+  const [particles, originalYPositions] = useMemo(() => {
+    const particles = [],
+      originalYPositions = []
     const getGeometry = (str, props) => {
       if (str === 'ico') return <icosahedronBufferGeometry name="geometry" {...props} />
       if (str === 'dod') return <dodecahedronBufferGeometry name="geometry" {...props} />
@@ -60,13 +82,15 @@ const Particles = () => {
           position={position}
           scale={[xScale, yScale, zScale]}
           material={new THREE.MeshLambertMaterial({ color: 'white' })}
+          castShadow
         >
           {geometry}
         </mesh>
       )
+      originalYPositions.push(y)
     }
 
-    return [particles]
+    return [particles, originalYPositions]
   })
 
   useRender(() => {
@@ -76,10 +100,12 @@ const Particles = () => {
     for (let i = 0; i < numChildren; ++i) {
       const child = children[i]
       child.position.x -= 0.01
-
       if (child.position.x < -3.0) {
         child.position.x = 3.0
       }
+
+      const y = top.interpolate([0, 500], [10.0, originalYPositions[i]])
+      child.position.y = y.getValue()
     }
   })
 
@@ -137,10 +163,11 @@ const DifferentialMotion = props => {
 
   return (
     <group ref={group}>
+      <Title top={props.top} />
+      <Particles top={props.top} scrollMax={props.scrollMax} />
       <ambientLight color={0xfff} intensity={0.8} />
       <spotLight color={0xffffff} intensity={0.7} position={[30, 30, 50]} angle={0.2} penumbra={1} castShadow />
       {staticObjects}
-      <Particles />
     </group>
   )
 }
@@ -165,7 +192,7 @@ class FifthScene extends React.Component {
           customUniforms={Uniforms()}
           receiveShadow={true}
         />
-        <DifferentialMotion />
+        <DifferentialMotion top={top} scrollMax={scrollMax} />
       </scene>
     )
   }
