@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "cannon": "^0.6.2",
     "dat.gui": "^0.7.5",
     "react": "^16.8.4",
     "react-dat-gui": "^2.2.0",
