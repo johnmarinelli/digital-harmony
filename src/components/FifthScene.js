@@ -1,12 +1,66 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useRef, useContext, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import { ShaderBackground } from './Background'
-import { useRender } from 'react-three-fiber'
+import { useRender, useThree } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import { Uniforms, FragmentShader } from '../shaders/FifthScene'
 import { interpolate } from 'react-spring/three'
 import Text from './Text'
+import midi from '../util/WebMidi'
+import GlitchRepeater from './GlitchRepeater'
+import * as AnimationHelper from '../util/AnimationHelper'
+import * as CANNON from 'cannon'
+
+// Cannon-world context provider
+const context = React.createContext()
+function Provider({ children }) {
+  // physics
+  const [world] = useState(() => new CANNON.World())
+
+  useEffect(
+    () => {
+      world.broadphase = new CANNON.NaiveBroadphase()
+      world.solver.iterations = 10
+      world.gravity.set(0, 0, -25)
+    },
+    [world]
+  )
+
+  // run world step every frame
+  useRender(() => world.step(1 / 60))
+
+  // distribute world via context
+  return <context.Provider value={world} children={children} />
+}
+
+// hook to maintain world physics body
+function useCannon({ ...props }, fn, deps = []) {
+  const ref = useRef()
+
+  const world = useContext(context)
+
+  // physics body
+  const [body] = useState(() => new CANNON.Body(props))
+
+  useEffect(() => {
+    fn(body)
+
+    world.addBody(body)
+
+    // remove body on unmount
+    return () => world.removeBody(body)
+  })
+
+  useRender(() => {
+    if (ref.current) {
+      ref.current.position.copy(body.position)
+      ref.current.quaternion.copy(body.quaternion)
+    }
+  })
+
+  return ref
+}
 
 const Title = ({ top }) => (
   <>
@@ -36,10 +90,16 @@ const Particles = ({ top, scrollMax }) => {
   const [particles, originalYPositions] = useMemo(() => {
     const particles = [],
       originalYPositions = []
-    const getGeometry = (str, props) => {
-      if (str === 'ico') return <icosahedronBufferGeometry name="geometry" {...props} />
-      if (str === 'dod') return <dodecahedronBufferGeometry name="geometry" {...props} />
-      if (str === 'cyl') return <cylinderBufferGeometry name="geometry" {...props} />
+    const getGeometry = (str, props, returnType = 'component') => {
+      if (returnType === 'component') {
+        if (str === 'ico') return <icosahedronBufferGeometry name="geometry" {...props} />
+        if (str === 'dod') return <dodecahedronBufferGeometry name="geometry" {...props} />
+        if (str === 'cyl') return <cylinderBufferGeometry name="geometry" {...props} />
+      } else if (returnType === 'three') {
+        if (str === 'ico') return new THREE.IcosahedronBufferGeometry(props.radius)
+        if (str === 'dod') return new THREE.DodecahedronBufferGeometry(props.radius)
+        if (str === 'cyl') return new THREE.CylinderBufferGeometry(props.radius)
+      }
     }
     let particleGeometriesIndex = 0
     let particleGeometryFn = null
@@ -48,12 +108,14 @@ const Particles = ({ top, scrollMax }) => {
       z = 1.0
 
     let radius = 0.3
-    let position = null
     let geometry = null
+    let material = null
 
     let xScale = 0.0,
       yScale = 0.0,
       zScale = 0.0
+
+    let mesh = null
 
     for (let i = 0; i < numParticles; ++i) {
       particleGeometriesIndex = Math.floor(Math.random() * 100.0) % particleGeometries.length
@@ -68,18 +130,27 @@ const Particles = ({ top, scrollMax }) => {
       zScale = 0.2 + (Math.random() - 0.5) * 0.01
 
       //particle = new particleGeometryFn()
-      position = new THREE.Vector3(x, y, z)
 
       const props = {
         radius,
       }
 
-      geometry = getGeometry(geometryString, props)
+      /*
+      geometry = getGeometry(geometryString, props, 'three')
+      geometry.scale(xScale, yScale, zScale)
+      geometry.position = new THREE.Vector3(x, y, z)
+      material = new THREE.MeshLambertMaterial({ color: 'white' })
+
+      mesh = new THREE.Mesh(geometry, material)
+      particles.push(mesh)
+      */
+      geometry = getGeometry(geometryString, props, 'component')
+      material = new THREE.MeshLambertMaterial({ color: 'white' })
 
       particles.push(
         <mesh
           key={i}
-          position={position}
+          position={[x, y, z]}
           scale={[xScale, yScale, zScale]}
           material={new THREE.MeshLambertMaterial({ color: 'white' })}
           castShadow
@@ -112,12 +183,41 @@ const Particles = ({ top, scrollMax }) => {
   return <group ref={group}>{particles}</group>
 }
 
+const Subject = props => {
+  let midiHandlersAdded = false
+  let scaleAnimationTime = 0.5 // one-way, in seconds
+  const subject = useRef()
+
+  const [geometry, material] = useMemo(() => {
+    const geometry = new THREE.DodecahedronBufferGeometry()
+    const material = new THREE.MeshLambertMaterial({ color: 'gray' })
+    return [geometry, material]
+  })
+
+  useRender(() => {
+    const { current: mesh } = subject
+    const oldY = mesh.position.y
+    const { lastNoteOnStartedAt } = midi
+    const now = clock.getElapsedTime()
+
+    const factor = AnimationHelper.fadeInThenOutNonPositive(now, midi.lastNoteOnStartedAt, scaleAnimationTime)
+    const newY = factor
+    mesh.position.y = newY
+  })
+
+  return <mesh ref={subject} geometry={geometry} material={material} name="subject" />
+}
+
 const DifferentialMotion = props => {
   let group = useRef()
 
+  const { gl } = useThree()
+  gl.shadowMap.enabled = true
+  gl.shadowMap.type = THREE.PCFSoftShadowMap
+
   const timeStart = clock.getElapsedTime()
 
-  const [staticObjects] = useMemo(
+  const [backgroundObjects] = useMemo(
     () => {
       const data = [
         {
@@ -128,7 +228,7 @@ const DifferentialMotion = props => {
           position: new THREE.Vector3(0.0, 0.0, 1.0),
         },
       ]
-      const staticObjects = data.map((obj, i) => {
+      const backgroundObjects = data.map((obj, i) => {
         const { geometryFnArgs, materialFnArgs, position } = obj
         return (
           <mesh
@@ -140,7 +240,11 @@ const DifferentialMotion = props => {
           />
         )
       })
-      return [staticObjects]
+      return [
+        [
+          /* TODO: see if i want to use this. */
+        ],
+      ]
     },
     [props]
   )
@@ -153,9 +257,9 @@ const DifferentialMotion = props => {
 
     // need to figure out how to update shadows on move
     for (let i = 0; i < numChildren; ++i) {
-      if ('Mesh' === children[i].constructor.name) {
-        children[i].position.x = Math.cos(now)
-        children[i].position.y = Math.sin(now)
+      if ('subject' === children[i].name) {
+        //children[i].position.x = Math.cos(now)
+        //children[i].position.y = Math.sin(now)
       }
     }
   })
@@ -167,7 +271,8 @@ const DifferentialMotion = props => {
       <Particles top={props.top} scrollMax={props.scrollMax} />
       <ambientLight color={0xfff} intensity={0.8} />
       <spotLight color={0xffffff} intensity={0.7} position={[30, 30, 50]} angle={0.2} penumbra={1} castShadow />
-      {staticObjects}
+      <Subject />
+      {backgroundObjects}
     </group>
   )
 }

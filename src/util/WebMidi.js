@@ -28,6 +28,9 @@ class WebMidiWrapper {
       this.noteArray[i] = Object.assign({}, NoteMapping)
     }
 
+    // stores last `NUM_LAST_NOTES` notes played
+    // should not write anything to this directly, because
+    // it's a circular queue but looks like an array.
     this.lastNotes = []
     WebMidi.enable(err => {
       if (err) {

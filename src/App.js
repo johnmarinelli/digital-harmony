@@ -67,15 +67,8 @@ const Main = () => {
   return (
     <>
       <DatGui />
-      <Canvas
-        className="canvas"
-        onCreated={({ gl }) => {
-          gl.shadowMap.enabled = true
-          gl.shadowMap.type = THREE.PCFSoftShadowMap
-          gl.shadowMapSoft = true
-          return true
-        }}
-      >
+      <Canvas className="canvas">
+        >
         <Monolith top={top} />
       </Canvas>
       <div className="scroll-container" onScroll={onScroll} onMouseMove={onMouseMove}>
