@@ -8,7 +8,7 @@ import { VertexShader, FragmentShader, Uniforms } from '../shaders/Background'
 
 const Background = ({ color, receiveShadow = false, depthTest = false }) => {
   const { gl, viewport } = useThree()
-  const { width, height } = viewport()
+  const { width, height } = viewport
 
   if (receiveShadow) {
     gl.shadowMap.enabled = true
@@ -20,12 +20,12 @@ const Background = ({ color, receiveShadow = false, depthTest = false }) => {
     const { options: { colorOverride, feelsLike } } = GuiOptions
     const { current: { material } } = meshRef
 
-    material.color.set(colorOverride ? feelsLike : color.getValue())
+    material.color.set(colorOverride ? feelsLike : color)
   })
   return (
     <mesh scale={[width, height, 1]} ref={meshRef}>
-      <planeGeometry name="geometry" args={[1, 1]} />
-      <anim.meshBasicMaterial name="material" depthTest={depthTest} receiveShadow={receiveShadow} />
+      <planeGeometry attach="geometry" args={[1, 1]} />
+      <anim.meshBasicMaterial color={color} attach="material" depthTest={depthTest} receiveShadow={receiveShadow} />
     </mesh>
   )
 }
@@ -43,7 +43,7 @@ const Background = ({ color, receiveShadow = false, depthTest = false }) => {
  */
 export const ShaderBackground = ({ top, scrollMax, color, fragmentShader, customUniforms, receiveShadow = false }) => {
   const { viewport } = useThree()
-  const { width, height } = viewport()
+  const { width, height } = viewport
   let shaderRef = useRef()
   let mesh = useRef()
   let uniforms = Object.assign({}, customUniforms, Uniforms([window.innerWidth, window.innerHeight], 0x000000))
