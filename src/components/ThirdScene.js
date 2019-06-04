@@ -19,7 +19,7 @@ const DifferentialMotion = props => {
   const cycleTime = 50 // in seconds
 
   let midiHandlersAdded = false
-  let scaleAnimationTime = 0.25 // one-way, in seconds
+  let scaleAnimationTime = 0.5 // one-way, in seconds
 
   const [knot, movingObjects, trail] = useMemo(() => {
     /*
@@ -91,7 +91,7 @@ const DifferentialMotion = props => {
       child.position.set(point[0], point[1], point[2])
 
       now = clock.getElapsedTime()
-      const factor = AnimationHelper.fadeInThenOut(now, midi.lastNoteOnStartedAt, scaleAnimationTime)
+      const factor = AnimationHelper.fadeInThenOut(now, lastNoteStartedAt, scaleAnimationTime)
       const scale = 1.0 + factor * 5.0
       child.scale.set(scale, scale, scale)
     }
