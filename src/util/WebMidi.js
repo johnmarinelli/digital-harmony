@@ -1,4 +1,6 @@
 import WebMidi from 'webmidi'
+import clock from '../util/Clock'
+
 const NoteMapping = {
   on: false,
   startedAt: 0.0,
@@ -51,6 +53,11 @@ class WebMidiWrapper {
   noteOn = event => {
     const { note: { number } } = event
 
+    // edge case for VMPK
+    if (event.timestamp === 0) {
+      event.timestamp = clock.getElapsedTime() * 1000
+    }
+
     this.noteArray[number].on = true
     this.noteArray[number].startedAt = event.timestamp / 1000.0
     this.noteArray[number].noteOnVelocity = event.velocity
@@ -63,7 +70,6 @@ class WebMidiWrapper {
     }
     this.lastNotes.unshift(number)
     this.lastNoteOnStartedAt = this.noteArray[number].startedAt
-
     const noteOnListenerNames = Object.keys(this.noteOnListeners)
 
     noteOnListenerNames.forEach(

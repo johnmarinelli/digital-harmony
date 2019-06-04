@@ -48,6 +48,7 @@ const DatGui = () => {
 
   const fifthSceneFolder = gui.addFolder('Fifth Scene')
   fifthSceneFolder.add(GuiOptions.options, 'mixPercentage', 0.0, 1.0, 0.05)
+  fifthSceneFolder.addColor(GuiOptions.options, 'subjectColor')
   fifthSceneFolder.open()
 
   return null

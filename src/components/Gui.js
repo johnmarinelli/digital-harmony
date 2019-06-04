@@ -91,6 +91,7 @@ class GuiImpl {
       cyclePercentage: 0.0,
       cyclePercentageOverride: true,
       mixPercentage: 0.5,
+      subjectColor: '#a5a5a5',
     }
 
     this.setOptions = this.setOptions.bind(this)
