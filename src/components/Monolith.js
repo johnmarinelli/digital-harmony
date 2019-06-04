@@ -80,7 +80,7 @@ const Monolith = ({ top }) => {
     transition.initializeScenes(...scenes.slice(0, 2))
     transitionManager = new TransitionManager(scenes, transition, true)
 
-    new OrbitControls(camera, document.querySelector('.scroll-container'))
+    // new OrbitControls(camera, document.querySelector('.scroll-container'))
   })
 
   useRender(() => {

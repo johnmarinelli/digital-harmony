@@ -69,7 +69,6 @@ const Main = () => {
     <>
       <DatGui />
       <Canvas className="canvas">
-        >
         <Monolith top={top} />
       </Canvas>
       <div className="scroll-container" onScroll={onScroll} onMouseMove={onMouseMove}>

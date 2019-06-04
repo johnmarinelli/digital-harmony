@@ -50,7 +50,7 @@ Voronoi3DPass.prototype = Object.assign(Object.create(Pass.prototype), {
  */
 const Voronoi3D = ({ clock, segments, colorPalette, top, voronoiScale, datGuiOverride = false }) => {
   const { viewport } = useThree()
-  const { width, height } = viewport()
+  const { width, height } = viewport
   let shaderRef = useRef()
   let mesh = useRef()
   let color = colorPalette[0]
