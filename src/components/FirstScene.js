@@ -99,7 +99,7 @@ const PhyllotaxisComponent = props => {
   const [geometry, material] = useMemo(
     () => {
       if (!midiHandlersAdded) {
-        midi.addListener('noteon', (note, midiNumber) => {}, 'FirstSceneObjectColor')
+        midi.addListener('noteon', note => {}, 'FirstSceneObjectColor')
         midiHandlersAdded = true
       }
       const geometry = props.geometry ? props.geometry.clone() : new THREE.SphereBufferGeometry(0.05, 10, 10)
@@ -142,9 +142,6 @@ const PhyllotaxisComponent = props => {
       children[i].position.y = y
 
       factorOffset = i * 0.0001
-
-      const factor = AnimationHelper.fadeInThenOut(now - factorOffset, midi.lastNoteOnStartedAt, colorAnimationTime)
-      //children[i].material.color.b = factor
     }
   })
 

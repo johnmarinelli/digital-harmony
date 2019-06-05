@@ -9,6 +9,7 @@ import * as dat from 'dat.gui'
 import GuiOptions from './components/Gui'
 
 import Monolith from './components/Monolith'
+import { states as OctahedronStates } from './components/lib/Octahedron'
 import clock from './util/Clock'
 
 const DatGui = () => {
@@ -48,7 +49,8 @@ const DatGui = () => {
 
   const fifthSceneFolder = gui.addFolder('Fifth Scene')
   fifthSceneFolder.add(GuiOptions.options, 'mixPercentage', 0.0, 1.0, 0.05)
-  fifthSceneFolder.addColor(GuiOptions.options, 'subjectColor')
+  fifthSceneFolder.add(GuiOptions.options, 'subjectState', -1, OctahedronStates.length - 2, 1)
+  fifthSceneFolder.add(GuiOptions.options, 'subjectStateOverride')
   fifthSceneFolder.open()
 
   return null
