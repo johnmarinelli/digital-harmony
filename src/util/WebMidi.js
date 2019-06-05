@@ -40,6 +40,7 @@ class WebMidiWrapper {
         return
       }
 
+      console.log(WebMidi.inputs)
       if (WebMidi.inputs.length === 0) {
         return
       }
@@ -58,6 +59,7 @@ class WebMidiWrapper {
       event.timestamp = clock.getElapsedTime() * 1000
     }
 
+    this.noteArray[number].number = number
     this.noteArray[number].on = true
     this.noteArray[number].startedAt = event.timestamp / 1000.0
     this.noteArray[number].noteOnVelocity = event.velocity
@@ -66,9 +68,9 @@ class WebMidiWrapper {
     this.noteArray[number].noteOffVelocity = 0.0
 
     if (this.lastNotes.length >= NUM_LAST_NOTES) {
-      this.lastNotes.pop()
+      this.lastNotes.shift()
     }
-    this.lastNotes.unshift(number)
+    this.lastNotes.push(number)
     this.lastNoteOnStartedAt = this.noteArray[number].startedAt
     const noteOnListenerNames = Object.keys(this.noteOnListeners)
 
@@ -76,7 +78,7 @@ class WebMidiWrapper {
       listenerName =>
         listenerName === 'undefined'
           ? console.error('Attempted to access undefined listener name.')
-          : this.noteOnListeners[listenerName](this.noteArray[number], number)
+          : this.noteOnListeners[listenerName](this.noteArray[number])
     )
   }
 
@@ -84,6 +86,7 @@ class WebMidiWrapper {
     //console.log(event)
     const { note: { number } } = event
 
+    this.noteArray[number].number = number
     this.noteArray[number].on = false
     this.noteArray[number].endedAt = event.timestamp / 1000.0
     this.noteArray[number].noteOffVelocity = event.velocity
