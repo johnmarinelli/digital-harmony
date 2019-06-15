@@ -40,7 +40,6 @@ class WebMidiWrapper {
         return
       }
 
-      console.log(WebMidi.inputs)
       if (WebMidi.inputs.length === 0) {
         return
       }
