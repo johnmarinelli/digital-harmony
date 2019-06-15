@@ -100,7 +100,7 @@ const Boxes = () => {
   )
 }
 
-class SixthScene extends React.Component {
+class SeventhScene extends React.Component {
   constructor() {
     super()
     this.sceneRef = React.createRef()
@@ -119,4 +119,4 @@ class SixthScene extends React.Component {
   }
 }
 
-export default SixthScene
+export default SeventhScene

@@ -6,6 +6,7 @@ import ThirdScene from './ThirdScene'
 import FourthScene from './FourthScene'
 import FifthScene from './FifthScene'
 import SixthScene from './SixthScene'
+import SeventhScene from './SeventhScene'
 import Transition from '../transition/Transition'
 import clock from '../util/Clock'
 import midi from '../util/WebMidi'
@@ -63,18 +64,20 @@ const Monolith = ({ top }) => {
   const fourthSceneRef = useRef()
   const fifthSceneRef = useRef()
   const sixthSceneRef = useRef()
+  const seventhSceneRef = useRef()
 
   let transitionManager = null
   let transition = null
 
   useEffect(() => {
     const scenes = [
+      seventhSceneRef.current.sceneRef.current,
+      sixthSceneRef.current.sceneRef.current,
       fifthSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       secondSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
-      sixthSceneRef.current.sceneRef.current,
     ]
     transition = new Transition(camera)
     transition.initializeScenes(...scenes.slice(0, 2))
@@ -97,6 +100,7 @@ const Monolith = ({ top }) => {
       <FourthScene top={top} size={size} ref={fourthSceneRef} />
       <FifthScene top={top} size={size} ref={fifthSceneRef} />
       <SixthScene top={top} size={size} ref={sixthSceneRef} />
+      <SeventhScene top={top} size={size} ref={seventhSceneRef} />
     </>
   )
 }

@@ -6,7 +6,6 @@ import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
 import midi from '../util/WebMidi'
-import * as AnimationHelper from '../util/AnimationHelper'
 
 /*
 function Octahedron() {
@@ -119,12 +118,11 @@ const PhyllotaxisComponent = props => {
 
   useRender(() => {
     const { current: { children } } = group
-    const colorAnimationTime = 1.0
     const numChildren = children.length
     let diff = 0.0
     let step = 0.0
     let now = 0.0
-    let a, x, y, factorOffset
+    let a, x, y
 
     for (let i = 0; i < numChildren; ++i) {
       now = clock.getElapsedTime()
@@ -140,8 +138,6 @@ const PhyllotaxisComponent = props => {
 
       children[i].position.x = x
       children[i].position.y = y
-
-      factorOffset = i * 0.0001
     }
   })
 

@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react'
-import * as THREE from 'three'
 import './App.css'
 import { Canvas } from 'react-three-fiber'
 import { useSpring } from 'react-spring/three'
