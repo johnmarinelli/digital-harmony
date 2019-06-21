@@ -2,6 +2,10 @@ import React, { useRef, useContext, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
 import * as CANNON from 'cannon'
+import VideoShader from '../shaders/VideoShader'
+import PixelatedShader from '../shaders/PixelatedShader'
+import MeshifyShader from '../shaders/MeshifyShader'
+import clock from '../util/Clock'
 
 // Cannon-world context provider
 const context = React.createContext()
@@ -67,8 +71,8 @@ function Plane({ position = [0, 0, 0] }) {
   })
   return (
     <mesh ref={ref} receiveShadow>
-      <planeBufferGeometry name="geometry" args={[10, 10]} />
-      <meshPhongMaterial name="material" color="#272727" />
+      <planeBufferGeometry attach="geometry" args={[1, 1]} />
+      <meshPhongMaterial attach="material" color="#272727" />
     </mesh>
   )
 }
@@ -81,8 +85,8 @@ function Box({ position }) {
 
   return (
     <mesh ref={ref} castShadow receiveShadow>
-      <boxGeometry name="geometry" args={[0.5, 0.5, 0.5]} />
-      <meshStandardMaterial name="material" />
+      <boxGeometry attach="geometry" args={[0.5, 0.5, 0.5]} />
+      <meshStandardMaterial attach="material" />
     </mesh>
   )
 }
@@ -100,6 +104,26 @@ const Boxes = () => {
   )
 }
 
+const Video = () => {
+  const video = document.getElementById('eisbach_surfing')
+  video.play()
+  const texture = new THREE.VideoTexture(video)
+  //const parameters = { color: 0xff0000, map: texture }
+
+  //const videoTexture = <videoTexture attach="map" args={[video]} />
+  //const material = <meshBasicMaterial attach="material">{videoTexture}</meshBasicMaterial>
+  //const parameters = VideoShader({ texture, resolution: [window.innerWidth, window.innerHeight] })
+  const parameters = MeshifyShader({ texture, resolution: [window.innerWidth, window.innerHeight] })
+  const material = new THREE.ShaderMaterial(parameters)
+  const geometry = <planeBufferGeometry attach="geometry" args={[13, 10]} />
+
+  useRender(() => {
+    material.uniforms.time.value = clock.getElapsedTime()
+  })
+
+  return <mesh material={material}>{geometry}</mesh>
+}
+
 class SeventhScene extends React.Component {
   constructor() {
     super()
@@ -110,10 +134,8 @@ class SeventhScene extends React.Component {
     return (
       <scene ref={this.sceneRef} background={new THREE.Color(0x000000)}>
         <Lights />
-        <Provider>
-          <Plane />
-          <Boxes />
-        </Provider>
+        <Video />
+        <Provider />
       </scene>
     )
   }
