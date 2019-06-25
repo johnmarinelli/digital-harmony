@@ -1,37 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import * as THREE from 'three/src/Three'
 import { extend, useRender } from 'react-three-fiber'
-import { useSprings, useSpring, animated } from 'react-spring/three'
+import { useSpring, animated } from 'react-spring/three'
 import * as meshline from 'three.meshline'
 import midi from '../../util/WebMidi'
 import GuiOptions from '../Gui'
 import states from '../states/FifthScene'
-
-const colors = ['#A2CCB6', '#FCEEB5', '#EE786E', '#e0feff']
-
-const random = () => {
-  const rand = Math.random()
-  return {
-    color: colors[Math.round(Math.random() * (colors.length - 1))],
-    scale: [0.5, 0.5, 0.5],
-    rotation: [0, 0, THREE.Math.degToRad(Math.round(Math.random()) * 45)],
-  }
-}
-
-const AnimatedTetrahedrons = ({ number = 1 }) => {
-  const [springs, set] = useSprings(number, i => ({
-    from: random(),
-    ...random(),
-    config: { mass: 20, tension: 500, friction: 200 },
-  }))
-  useEffect(() => void setInterval(() => set(i => ({ ...random(), delay: i * 50 })), 1000), [])
-  return springs.map(({ color, scale, position }, index) => (
-    <animated.mesh key={index} scale={scale}>
-      <tetrahedronGeometry attach="geometry" />
-      <meshPhongMaterial attach="material" color={color} />
-    </animated.mesh>
-  ))
-}
+import AnimatedTetrahedrons from './AnimatedTetrahedrons'
+import AnimatedRing from './AnimatedRing'
 
 extend(meshline)
 const Octahedron = ({ position = [0, 0, 0] }) => {
@@ -42,24 +18,22 @@ const Octahedron = ({ position = [0, 0, 0] }) => {
   if (frame < states.length - 1) {
     nextStateIndex = frame + 1
   }
+
   const nextState = Object.assign(
-    { config: states[frame + 1].config },
-    states[nextStateIndex].octahedron,
-    states[nextStateIndex].lines,
-    states[nextStateIndex].tetrahedrons,
+    { octahedron: states[nextStateIndex].octahedron },
+    { lines: states[nextStateIndex].lines },
+    { tetrahedrons: states[nextStateIndex].tetrahedrons },
     {
       config: states[nextStateIndex].config,
     }
   )
-  const {
-    octahedronPosition,
-    color,
-    linePosition,
-    tetrahedronsOpacity,
-    tetrahedronsRotation,
-    tetrahedronsScale,
-    ...props
-  } = useSpring(nextState)
+  const nextOctahedronState = Object.assign({}, states[nextStateIndex].octahedron)
+  const nextLinesState = Object.assign({}, states[nextStateIndex].lines)
+  const nextTetrahedronsState = Object.assign({}, states[nextStateIndex].tetrahedrons)
+  //const { octahedron, lines, tetrahedrons, config } = useSpring(nextState)
+  const { ...octahedronProps } = useSpring(nextOctahedronState)
+  const { ...linesProps } = useSpring(nextLinesState)
+  const { ...tetrahedronsProps } = useSpring(nextTetrahedronsState)
 
   midi.addListener(
     'noteon',
@@ -86,17 +60,11 @@ const Octahedron = ({ position = [0, 0, 0] }) => {
     }
   })
 
-  let tetrahedrons = []
+  let meshes = []
   for (let i = 0; i < 3; ++i) {
     for (let j = 0; j < 3; ++j) {
-      tetrahedrons.push(
-        <animated.mesh
-          key={i * 3 + j}
-          position={[j, i, 0]}
-          scale={tetrahedronsScale}
-          rotation={tetrahedronsRotation}
-          material-opacity={tetrahedronsOpacity}
-        >
+      meshes.push(
+        <animated.mesh key={i * 3 + j} {...tetrahedronsProps} position={[j, i, 0]}>
           <tetrahedronGeometry attach="geometry" />
           <meshStandardMaterial attach="material" color="red" transparent />
         </animated.mesh>
@@ -106,16 +74,31 @@ const Octahedron = ({ position = [0, 0, 0] }) => {
 
   return (
     <animated.group position={position}>
-      <animated.line position={linePosition}>
+      <animated.line {...linesProps}>
         <geometry attach="geometry" vertices={lineVertices.map(v => new THREE.Vector3(...v))} />
-        <animated.lineBasicMaterial attach="material" color={color} />
+        <animated.lineBasicMaterial attach="material" />
       </animated.line>
-      <animated.mesh {...props} position={octahedronPosition}>
+      <animated.mesh {...octahedronProps}>
         <octahedronGeometry attach="geometry" />
         <meshStandardMaterial attach="material" color="grey" transparent />
       </animated.mesh>
       <animated.group position={[-1, -1, 0]}>
-        <AnimatedTetrahedrons />
+        <AnimatedTetrahedrons scale={[0.5, 0.5, 0.5]} />
+      </animated.group>
+      <animated.group>
+        <AnimatedRing scale={[1, 1, 1]} />
+        <AnimatedRing
+          position={[0, 0, 0.5]}
+          rotation={[0, 0, THREE.Math.degToRad(Math.round(Math.random()) * 360)]}
+          scale={[1.5, 1.5, 1.5]}
+          ringColors={['#cbcbcb', '#ffffff', '#fbfbfb', '#a0a0a0', '#727171']}
+        />
+        <AnimatedRing
+          position={[0, 0, 1]}
+          rotation={[0, 0, THREE.Math.degToRad(Math.round(Math.random()) * 360)]}
+          scale={[2, 2, 2]}
+          ringColors={['#a3a3a3', '#f2f2f2', '#c9c9c9', '#808080', '#5c5b5b']}
+        />
       </animated.group>
     </animated.group>
   )

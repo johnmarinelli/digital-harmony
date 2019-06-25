@@ -6,16 +6,16 @@ const states = [
       'material-opacity': 0.25,
       scale: [1, 1, 1],
       rotation: [0, 0, 0],
-      octahedronPosition: [0, 0, 0],
+      position: [0, 0, 0],
     },
     lines: {
-      color: 'white',
-      linePosition: [0, 0, 0],
+      'material-color': 'white',
+      position: [0, 0, 0],
     },
     tetrahedrons: {
-      tetrahedronsOpacity: 0.0,
-      tetrahedronsScale: [0.2, 0.2, 0.2],
-      tetrahedronsRotation: [THREE.Math.degToRad(45), THREE.Math.degToRad(45), THREE.Math.degToRad(45)],
+      'material-opacity': 0.0,
+      scale: [0.2, 0.2, 0.2],
+      rotation: [THREE.Math.degToRad(45), THREE.Math.degToRad(45), THREE.Math.degToRad(45)],
     },
     config: { mass: 10, tension: 1000, friction: 300, precision: 0.00001 },
   },
@@ -28,7 +28,7 @@ const states = [
       rotation: [THREE.Math.degToRad(30), 0, THREE.Math.degToRad(20)],
     },
     lines: {
-      linePosition: [0, 0, 0.2],
+      position: [0, 0, 0.2],
     },
   },
 
@@ -38,7 +38,7 @@ const states = [
       scale: [1.3, 1.3, 1.4],
     },
     lines: {
-      linePosition: [0, 0, 0.25],
+      position: [0, 0, 0.25],
     },
   },
 
@@ -50,8 +50,8 @@ const states = [
       rotation: [THREE.Math.degToRad(30), 0, THREE.Math.degToRad(30)],
     },
     lines: {
-      color: 'blue',
-      linePosition: [0, 0, 0.2],
+      'material-color': 'blue',
+      position: [0, 0, 0.2],
     },
   },
   {
@@ -62,8 +62,8 @@ const states = [
       rotation: [THREE.Math.degToRad(180), 0, THREE.Math.degToRad(45)],
     },
     lines: {
-      color: 'hotpink',
-      linePosition: [0, 0, 2],
+      'material-color': 'hotpink',
+      position: [0, 0, 2],
     },
   },
   {
@@ -74,8 +74,8 @@ const states = [
       rotation: [THREE.Math.degToRad(360), 0, THREE.Math.degToRad(90)],
     },
     lines: {
-      color: 'green',
-      linePosition: [0, 0, 1],
+      'material-color': 'green',
+      position: [0, 0, 1],
     },
   },
   {
@@ -84,15 +84,31 @@ const states = [
       'material-opacity': 0.0,
       scale: [0.5, 0.5, 0.5],
       rotation: [THREE.Math.degToRad(0), 0, THREE.Math.degToRad(90)],
-      octahedronPosition: [999, 0, 0],
+      position: [9, 0, 0],
     },
     lines: {
-      color: 'purple',
-      linePosition: [0, 0, 1.5],
+      'material-color': 'purple',
+      position: [0, 0, 1.5],
       scale: [0.75, 0.75, 0.75],
     },
     tetrahedrons: {
-      tetrahedronsOpacity: 1.0,
+      'material-opacity': 1.0,
+    },
+  },
+  {
+    trigger: [74, 75],
+    octahedron: {
+      'material-opacity': 1.0,
+      scale: [1.0, 1.0, 1.0],
+      rotation: [0, 0, THREE.Math.degToRad(90)],
+      position: [0, 0, 0],
+    },
+    lines: {
+      'material-color': 'green',
+      position: [0, 0, 1],
+    },
+    tetrahedrons: {
+      'material-opacity': 1.0,
     },
   },
 ]
