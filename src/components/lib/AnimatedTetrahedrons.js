@@ -11,7 +11,7 @@ const random = () => {
   }
 }
 
-const AnimatedTetrahedrons = ({ numRows = 3, numCols = 3, scale = [1, 1, 1] }) => {
+const AnimatedTetrahedrons = ({ numRows = 3, numCols = 3, scale = [1, 1, 1], position = [0, 0, 0] }) => {
   const [springs, set] = useSprings(numRows * numCols, i => ({
     from: random(),
     ...random(),
@@ -35,7 +35,11 @@ const AnimatedTetrahedrons = ({ numRows = 3, numCols = 3, scale = [1, 1, 1] }) =
       tetrahedrons[index] = element
     }
   }
-  return <animated.group scale={scale}>{tetrahedrons}</animated.group>
+  return (
+    <animated.group position={position} scale={scale}>
+      {tetrahedrons}
+    </animated.group>
+  )
 }
 
 export default AnimatedTetrahedrons
