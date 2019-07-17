@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react'
 import * as THREE from 'three/src/Three'
 import { useSpring, animated } from 'react-spring/three'
 import { useRender } from 'react-three-fiber'
+import { SquareOutlineStates } from '../states/scenes/Fifth/'
 import GuiOptions from '../Gui'
 
-const AnimatedSquareOutline = ({ states, vertices = [[-1, 0, 0], [0, 1, 0], [1, 0, 0], [0, -1, 0], [-1, 0, 0]] }) => {
+const AnimatedSquareOutline = ({
+  states = SquareOutlineStates,
+  vertices = [[-1, 0, 0], [0, 1, 0], [1, 0, 0], [0, -1, 0], [-1, 0, 0]],
+}) => {
   const [frame, setFrame] = useState(-1)
   let nextStateIndex = frame
   if (frame < states.length - 1) {

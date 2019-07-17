@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import * as THREE from 'three/src/Three'
-import { extend, useRender } from 'react-three-fiber'
+import { useRender } from 'react-three-fiber'
 import { useSpring, animated } from 'react-spring/three'
-import * as meshline from 'three.meshline'
 import midi from '../../util/WebMidi'
 import GuiOptions from '../Gui'
-import states from '../states/FifthScene'
-import { OctahedronStates } from '../states/FifthScene'
+import { OctahedronStates, Triggers } from '../states/scenes/Fifth'
 
-extend(meshline)
-const Octahedron = ({ position = [0, 0, 0] }) => {
+const Octahedron = ({ position = [0, 0, 0], states = OctahedronStates }) => {
   const lineVertices = [[-1, 0, 0], [0, 1, 0], [1, 0, 0], [0, -1, 0], [-1, 0, 0]]
   const [frame, setFrame] = useState(-1)
 
@@ -18,17 +15,14 @@ const Octahedron = ({ position = [0, 0, 0] }) => {
     nextStateIndex = frame + 1
   }
 
-  const nextOctahedronState = Object.assign({}, OctahedronStates[nextStateIndex])
-  const nextTetrahedronsState = Object.assign({}, states[nextStateIndex].tetrahedrons)
+  const nextOctahedronState = Object.assign({}, states[nextStateIndex])
   const { ...octahedronProps } = useSpring(nextOctahedronState)
-  const { ...tetrahedronsProps } = useSpring(nextTetrahedronsState)
 
   midi.addListener(
     'noteon',
     note => {
-      console.log(note)
       const numLastNotes = midi.lastNotes.length
-      const trigger = states[frame + 1].trigger
+      const trigger = Triggers[frame + 1]
       if (trigger) {
         const lastNotesMatch =
           JSON.stringify(midi.lastNotes.slice(numLastNotes - trigger.length)) === JSON.stringify(trigger)
@@ -48,25 +42,33 @@ const Octahedron = ({ position = [0, 0, 0] }) => {
     }
   })
 
-  let meshes = []
-  for (let i = 0; i < 3; ++i) {
-    for (let j = 0; j < 3; ++j) {
-      meshes.push(
-        <animated.mesh key={i * 3 + j} {...tetrahedronsProps} position={[j, i, 0]}>
-          <tetrahedronGeometry attach="geometry" />
-          <meshStandardMaterial attach="material" color="red" transparent />
-        </animated.mesh>
-      )
-    }
-  }
+  const {
+    options: {
+      subjectStateOverride,
+      octahedronOpacity,
+      octahedronColor,
+      octahedronScale: scale,
+      octahedronRotation: rotation,
+    },
+  } = GuiOptions
+
+  const newProps = subjectStateOverride
+    ? Object.assign({}, octahedronProps, {
+        'material-opacity': octahedronOpacity,
+        'material-color': octahedronColor,
+        scale,
+        rotation,
+      })
+    : octahedronProps
+
+  console.log(newProps)
 
   return (
-    <animated.mesh {...octahedronProps}>
+    <animated.mesh {...newProps}>
       <octahedronGeometry attach="geometry" />
       <meshStandardMaterial attach="material" color="grey" transparent />
     </animated.mesh>
   )
 }
 
-export { states }
 export default Octahedron

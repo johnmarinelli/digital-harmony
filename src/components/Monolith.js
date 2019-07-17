@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react'
-import { apply as applyThree, useThree, useRender } from 'react-three-fiber'
+import { extend as applyThree, useThree, useRender } from 'react-three-fiber'
 import FirstScene from './FirstScene'
 import SecondScene from './SecondScene'
 import ThirdScene from './ThirdScene'
