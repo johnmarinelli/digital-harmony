@@ -19,7 +19,7 @@ const DifferentialMotion = props => {
   const cycleTime = 50 // in seconds
 
   let midiHandlersAdded = false
-  let scaleAnimationTime = 0.5 // one-way, in seconds
+  const scaleAnimationTime = 0.5 // one-way, in seconds
 
   const [knot, movingObjects, trail] = useMemo(() => {
     /*

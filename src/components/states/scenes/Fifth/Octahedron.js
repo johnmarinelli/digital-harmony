@@ -10,12 +10,13 @@ const OctahedronStates = [
   */
   {
     'material-opacity': 1.0,
-    'material-color': 0xc9c9c9,
+    'material-color': 'white',
     scale: [1, 1, 1],
     rotation: [0, 0, 0],
   },
   {
-    'material-opacity': 0.5,
+    'material-opacity': 1.0,
+    'material-color': 'blue',
     scale: [1.5, 1.5, 1.5],
     rotation: [THREE.Math.degToRad(22.5), 0, THREE.Math.degToRad(22.5)],
   },

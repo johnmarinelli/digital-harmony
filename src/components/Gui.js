@@ -1,4 +1,5 @@
 import 'react-dat-gui/build/react-dat-gui.css'
+import * as THREE from 'three/src/Three'
 //import { GuiContext, GuiContextConsumer } from '../contexts/GuiContext'
 
 /*
@@ -94,8 +95,8 @@ class GuiImpl {
       subjectState: -1,
       octahedronOpacity: 1.0,
       octahedronColor: '#c9c9c9',
-      octahedronScale: [1, 1, 1],
-      octahedronRotation: [0, 0, 0],
+      octahedronScale: { x: 1, y: 1, z: 1, all: 1 },
+      octahedronRotation: { x: 1, y: 1, z: 1 },
       subjectStateOverride: false,
     }
 
@@ -104,6 +105,22 @@ class GuiImpl {
 
   setOptions(options) {
     this.options = Object.assign({}, this.options, options)
+  }
+
+  // make dat.gui react to react-spring value changes
+  syncFifthSceneOptions(props) {
+    this.options.octahedronOpacity = props['material-opacity'].getValue()
+    //this.options.octahedronColor = Number(props['material-color'].getValue()).toString(16)
+
+    const rotation = props.rotation.getValue()
+    this.options.octahedronRotation.x = THREE.Math.radToDeg(rotation[0])
+    this.options.octahedronRotation.y = THREE.Math.radToDeg(rotation[1])
+    this.options.octahedronRotation.z = THREE.Math.radToDeg(rotation[2])
+
+    const scale = props.scale.getValue()
+    this.options.octahedronScale.x = scale[0]
+    this.options.octahedronScale.y = scale[1]
+    this.options.octahedronScale.z = scale[2]
   }
 }
 
