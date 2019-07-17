@@ -106,13 +106,9 @@ const Boxes = () => {
 
 const Video = () => {
   const video = document.getElementById('eisbach_surfing')
+  video.loop = true
   video.play()
   const texture = new THREE.VideoTexture(video)
-  //const parameters = { color: 0xff0000, map: texture }
-
-  //const videoTexture = <videoTexture attach="map" args={[video]} />
-  //const material = <meshBasicMaterial attach="material">{videoTexture}</meshBasicMaterial>
-  //const parameters = VideoShader({ texture, resolution: [window.innerWidth, window.innerHeight] })
   const parameters = MeshifyShader({ texture, resolution: [window.innerWidth, window.innerHeight] })
   const material = new THREE.ShaderMaterial(parameters)
   const geometry = <planeBufferGeometry attach="geometry" args={[13, 10]} />

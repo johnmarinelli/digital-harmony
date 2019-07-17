@@ -92,6 +92,10 @@ class GuiImpl {
       cyclePercentageOverride: true,
       mixPercentage: 0.5,
       subjectState: -1,
+      octahedronOpacity: 1.0,
+      octahedronColor: '#c9c9c9',
+      octahedronScale: [1, 1, 1],
+      octahedronRotation: [0, 0, 0],
       subjectStateOverride: false,
     }
 

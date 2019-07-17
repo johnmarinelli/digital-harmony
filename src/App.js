@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import './App.css'
-import { Canvas } from 'react-three-fiber'
+import { extend, Canvas } from 'react-three-fiber'
 import { useSpring } from 'react-spring/three'
 import 'react-dat-gui/build/react-dat-gui.css'
 //import DatGui, { DatColor, DatNumber, DatBoolean } from 'react-dat-gui'
@@ -8,8 +8,15 @@ import * as dat from 'dat.gui'
 import GuiOptions from './components/Gui'
 
 import Monolith from './components/Monolith'
-import { states as OctahedronStates } from './components/lib/Octahedron'
+import { Triggers } from './components/states/scenes/Fifth/index'
 import clock from './util/Clock'
+import * as meshline from 'three.meshline'
+
+const initialize = () => {
+  extend(meshline)
+}
+
+initialize()
 
 const DatGui = () => {
   const gui = new dat.GUI()
@@ -18,7 +25,7 @@ const DatGui = () => {
   globalFolder.addColor(GuiOptions.options, 'color2').name('Color 2')
   globalFolder.addColor(GuiOptions.options, 'color3').name('Color 3')
   globalFolder.add(GuiOptions.options, 'colorOverride').name('Override colors ^')
-  globalFolder.add(GuiOptions.options, 'currentScene', 0, 4, 1)
+  globalFolder.add(GuiOptions.options, 'currentScene', 0, 6, 1)
   globalFolder.open()
   const firstSceneFolder = gui.addFolder('First Scene')
   firstSceneFolder.open()
@@ -48,7 +55,7 @@ const DatGui = () => {
 
   const fifthSceneFolder = gui.addFolder('Fifth Scene')
   fifthSceneFolder.add(GuiOptions.options, 'mixPercentage', 0.0, 1.0, 0.05)
-  fifthSceneFolder.add(GuiOptions.options, 'subjectState', -1, OctahedronStates.length - 2, 1)
+  fifthSceneFolder.add(GuiOptions.options, 'subjectState', -1, Triggers.length - 2, 1)
   fifthSceneFolder.add(GuiOptions.options, 'subjectStateOverride')
   fifthSceneFolder.open()
 

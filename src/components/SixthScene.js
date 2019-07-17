@@ -67,8 +67,8 @@ function Plane({ position = [0, 0, 0] }) {
   })
   return (
     <mesh ref={ref} receiveShadow>
-      <planeBufferGeometry name="geometry" args={[10, 10]} />
-      <meshPhongMaterial name="material" color="#272727" />
+      <planeBufferGeometry attach="geometry" args={[10, 10]} />
+      <meshPhongMaterial attach="material" color="#272727" />
     </mesh>
   )
 }
@@ -81,8 +81,8 @@ function Box({ position }) {
 
   return (
     <mesh ref={ref} castShadow receiveShadow>
-      <boxGeometry name="geometry" args={[0.5, 0.5, 0.5]} />
-      <meshStandardMaterial name="material" />
+      <boxGeometry attach="geometry" args={[0.5, 0.5, 0.5]} />
+      <meshStandardMaterial attach="material" />
     </mesh>
   )
 }
