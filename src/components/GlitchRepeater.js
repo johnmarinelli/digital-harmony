@@ -4,7 +4,7 @@ import clock from '../util/Clock'
 import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
 
-const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn }) => {
+const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn, wireframe = false }) => {
   const groupRef = useRef()
   numRepeats = numRepeats || 25
   frameBreak = frameBreak || 10
@@ -45,9 +45,9 @@ const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn }) =>
         current.position.z = next.position.z
 
         const scale = (children.length - i) / children.length
-        current.scale.x = scale //next.scale.x
-        current.scale.y = scale //next.scale.y
-        current.scale.z = scale //next.scale.z
+        current.scale.x = scale
+        current.scale.y = scale
+        current.scale.z = scale
 
         current.rotation.x = next.rotation.x
         current.rotation.y = next.rotation.y
@@ -65,16 +65,23 @@ const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn }) =>
   })
 
   position = position || new THREE.Vector3(0.0, 0.0, 0.0)
+  const repeaterProps = wireframe
+    ? {
+        wireframe,
+        transparent: true,
+        color: 'purple',
+      }
+    : {}
 
   return (
     <group position={position} ref={groupRef}>
       <anim.mesh name="mainMesh" geometry={mesh.geometry}>
-        <anim.lineBasicMaterial name="material" color="pink" transparent={true} opacity={0.5} />
+        <anim.lineBasicMaterial attach="material" color="pink" />
       </anim.mesh>
       {geometries.map((geometry, i) => {
         return (
           <anim.mesh key={i} name="mesh" geometry={geometry}>
-            <anim.lineBasicMaterial name="material" color="purple" wireframe={true} />
+            <anim.lineBasicMaterial attach="material" color={Math.random() * 0xffffff} {...repeaterProps} />
           </anim.mesh>
         )
       })}

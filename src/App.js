@@ -25,7 +25,7 @@ const DatGui = () => {
   globalFolder.addColor(GuiOptions.options, 'color2').name('Color 2')
   globalFolder.addColor(GuiOptions.options, 'color3').name('Color 3')
   globalFolder.add(GuiOptions.options, 'colorOverride').name('Override colors ^')
-  globalFolder.add(GuiOptions.options, 'currentScene', 0, 6, 1)
+  globalFolder.add(GuiOptions.options, 'currentScene', 0, 7, 1).name('Current Scene')
   globalFolder.open()
   const firstSceneFolder = gui.addFolder('First Scene')
   const secondSceneFolder = gui.addFolder('Second Scene')

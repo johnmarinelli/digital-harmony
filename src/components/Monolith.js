@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react'
 import { extend as applyThree, useThree, useRender } from 'react-three-fiber'
 import FirstScene from './FirstScene'
-import SecondScene from './SecondScene'
+import SineFieldScene from './SineFieldScene'
+import BoxRepeatScene from './BoxRepeatScene'
 import ThirdScene from './ThirdScene'
 import FourthScene from './FourthScene'
 import FifthScene from './FifthScene'
@@ -59,7 +60,8 @@ class TransitionManager {
 const Monolith = ({ top }) => {
   const { gl: renderer, camera, size } = useThree()
   const firstSceneRef = useRef()
-  const secondSceneRef = useRef()
+  const sineFieldSceneRef = useRef()
+  const boxRepeatSceneRef = useRef()
   const thirdSceneRef = useRef()
   const fourthSceneRef = useRef()
   const fifthSceneRef = useRef()
@@ -71,13 +73,14 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      fifthSceneRef.current.sceneRef.current,
-      seventhSceneRef.current.sceneRef.current,
-      sixthSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
-      secondSceneRef.current.sceneRef.current,
+      sineFieldSceneRef.current.sceneRef.current,
+      boxRepeatSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
+      fifthSceneRef.current.sceneRef.current,
+      sixthSceneRef.current.sceneRef.current,
+      seventhSceneRef.current.sceneRef.current,
     ]
     transition = new Transition(camera)
     transition.initializeScenes(...scenes.slice(0, 2))
@@ -95,7 +98,8 @@ const Monolith = ({ top }) => {
   return (
     <>
       <FirstScene top={top} size={size} ref={firstSceneRef} />
-      <SecondScene top={top} size={size} ref={secondSceneRef} />
+      <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
+      <BoxRepeatScene top={top} size={size} ref={boxRepeatSceneRef} />
       <ThirdScene top={top} size={size} ref={thirdSceneRef} />
       <FourthScene top={top} size={size} ref={fourthSceneRef} />
       <FifthScene top={top} size={size} ref={fifthSceneRef} />

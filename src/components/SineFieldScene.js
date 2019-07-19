@@ -3,9 +3,7 @@ import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
-import { LissajousKnot } from '../util/Lissajous'
 import Background from './Background'
-import GlitchRepeater from './GlitchRepeater'
 
 const DifferentialMotion = props => {
   let group = useRef()
@@ -95,8 +93,6 @@ class SecondScene extends React.Component {
     geometry.scale(0.5, 0.5, 0.5)
     const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }))
 
-    const glitchRepeatUpdateFn = now => LissajousKnot.getPoint(now * 0.1, 3, 4, 7, 0.7, 1.0, 0.0)
-
     return (
       <scene ref={this.sceneRef} background={new THREE.Color(0xff00ff)}>
         <Background
@@ -105,12 +101,7 @@ class SecondScene extends React.Component {
             ['#97082F', '#247BA0', '#70C1B3', '#f8f3f1']
           )}
         />
-        <anim.group>
-          <DifferentialMotion />
-          <GlitchRepeater mesh={mesh} updateFn={glitchRepeatUpdateFn} />
-          <GlitchRepeater position={new THREE.Vector3(-2.0, 0.0, 0.0)} mesh={mesh} />
-          <GlitchRepeater position={new THREE.Vector3(2.0, 0.0, 0.0)} mesh={mesh} />
-        </anim.group>
+        <DifferentialMotion />
       </scene>
     )
   }
