@@ -8,6 +8,7 @@ import FourthScene from './FourthScene'
 import FifthScene from './FifthScene'
 import SixthScene from './SixthScene'
 import SeventhScene from './SeventhScene'
+import WaveFieldScene from './WaveFieldScene'
 import Transition from '../transition/Transition'
 import clock from '../util/Clock'
 import midi from '../util/WebMidi'
@@ -67,12 +68,14 @@ const Monolith = ({ top }) => {
   const fifthSceneRef = useRef()
   const sixthSceneRef = useRef()
   const seventhSceneRef = useRef()
+  const waveFieldSceneRef = useRef()
 
   let transitionManager = null
   let transition = null
 
   useEffect(() => {
     const scenes = [
+      waveFieldSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       sineFieldSceneRef.current.sceneRef.current,
       boxRepeatSceneRef.current.sceneRef.current,
@@ -105,6 +108,7 @@ const Monolith = ({ top }) => {
       <FifthScene top={top} size={size} ref={fifthSceneRef} />
       <SixthScene top={top} size={size} ref={sixthSceneRef} />
       <SeventhScene top={top} size={size} ref={seventhSceneRef} />
+      <WaveFieldScene top={top} size={size} ref={waveFieldSceneRef} />
     </>
   )
 }

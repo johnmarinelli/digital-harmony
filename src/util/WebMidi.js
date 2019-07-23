@@ -90,7 +90,7 @@ class WebMidiWrapper {
     this.noteArray[number].endedAt = event.timestamp / 1000.0
     this.noteArray[number].noteOffVelocity = event.velocity
 
-    this.noteArray[number].startedAt = 0.0
+    //this.noteArray[number].startedAt = 0.0
     this.noteArray[number].noteOnVelocity = 0.0
     const noteOffListenerNames = Object.keys(this.noteOffListeners)
 

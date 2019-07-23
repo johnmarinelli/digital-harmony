@@ -2,8 +2,6 @@ import React, { useRef, useContext, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
 import * as CANNON from 'cannon'
-import VideoShader from '../shaders/VideoShader'
-import PixelatedShader from '../shaders/PixelatedShader'
 import MeshifyShader from '../shaders/MeshifyShader'
 import clock from '../util/Clock'
 
