@@ -5,7 +5,6 @@ import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
-import midi from '../util/WebMidi'
 
 const PhyllotaxisComponent = props => {
   let group = useRef()

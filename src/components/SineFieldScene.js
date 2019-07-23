@@ -80,7 +80,7 @@ const DifferentialMotion = props => {
   )
 }
 
-class SecondScene extends React.Component {
+class SineFieldScene extends React.Component {
   constructor() {
     super()
     this.sceneRef = React.createRef()
@@ -107,4 +107,4 @@ class SecondScene extends React.Component {
   }
 }
 
-export default SecondScene
+export default SineFieldScene
