@@ -80,7 +80,7 @@ const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn, wire
       </anim.mesh>
       {geometries.map((geometry, i) => {
         return (
-          <anim.mesh key={i} name="mesh" geometry={geometry}>
+          <anim.mesh key={i} geometry={geometry}>
             <anim.lineBasicMaterial attach="material" color={Math.random() * 0xffffff} {...repeaterProps} />
           </anim.mesh>
         )

@@ -1,4 +1,3 @@
-import * as THREE from 'three/src/Three'
 import SquareOutlineStates from './SquareOutline'
 import OctahedronStates from './Octahedron'
 import TetrahedronsStates from './Tetrahedron'

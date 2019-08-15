@@ -91,7 +91,6 @@ class SineFieldScene extends React.Component {
     const scrollMax = size.height * 4.5
     const geometry = new THREE.BoxGeometry(1, 1, 1)
     geometry.scale(0.5, 0.5, 0.5)
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }))
 
     return (
       <scene ref={this.sceneRef} background={new THREE.Color(0xff00ff)}>

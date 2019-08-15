@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import { extend as applyThree, useThree, useRender } from 'react-three-fiber'
-import FirstScene from './FirstScene'
+import PhyllotaxisScene from './PhyllotaxisScene'
 import SineFieldScene from './SineFieldScene'
 import BoxRepeatScene from './BoxRepeatScene'
 import ThirdScene from './ThirdScene'
@@ -11,7 +11,7 @@ import SeventhScene from './SeventhScene'
 import WaveFieldScene from './WaveFieldScene'
 import Transition from '../transition/Transition'
 import clock from '../util/Clock'
-import midi from '../util/WebMidi'
+//import midi from '../util/WebMidi'
 import OrbitControls from '../util/OrbitControls'
 import GuiOptions from '../components/Gui'
 
@@ -19,7 +19,7 @@ applyThree({ Transition })
 
 class TransitionManager {
   // scenes: [sceneRef0, sceneRef1, ...]
-  constructor(scenes, transition, datGuiOverride = false) {
+  constructor(scenes, transition, datGuiOverride) {
     this.scenes = scenes
     this.transition = transition
     this.datGuiOverride = datGuiOverride
@@ -40,6 +40,7 @@ class TransitionManager {
       return
     }
 
+    /*
     if (JSON.stringify(midi.lastNotes.slice(0, 3)) === JSON.stringify([79, 77, 76]) && this.currentScene === 0) {
       transition.setupTransition(elapsedTime)
       this.currentScene = 1
@@ -55,6 +56,7 @@ class TransitionManager {
       this.currentScene = 3
       this.numTimesTransitioned++
     }
+    */
   }
 }
 
@@ -100,7 +102,7 @@ const Monolith = ({ top }) => {
 
   return (
     <>
-      <FirstScene top={top} size={size} ref={firstSceneRef} />
+      <PhyllotaxisScene top={top} size={size} ref={firstSceneRef} />
       <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
       <BoxRepeatScene top={top} size={size} ref={boxRepeatSceneRef} />
       <ThirdScene top={top} size={size} ref={thirdSceneRef} />
