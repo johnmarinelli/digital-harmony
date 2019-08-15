@@ -195,16 +195,15 @@ void main() {
     float noise = 10.0 *  -.10 * turbulence( .5 * normal + time );
     float b = 5.0 * pnoise( 0.05 * position + vec3( 2.0 * time ), vec3( 100.0 ) );
     float displacement = - noise + b;
+    vColor = color;
 
     vec3 newPosition = position + normal * displacement;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
     gl_Position[0] += step(0.0, float(modulatedIndex)) * pnoise(position, vec3(10.) ) * cnoise(position + time );
-    gl_Position[1] += step(1.0, float(modulatedIndex)) * pnoise(position, vec3(10.) ) * cnoise(position + time );
-    vColor = color;
+    //gl_Position[1] += step(1.0, float(modulatedIndex)) * pnoise(position, vec3(10.) ) * cnoise(position + time );
 }
 `
 
-//const FragmentShader = THREE.ShaderLib['basic'].fragmentShader
 const FragmentShader = `
 varying vec3 vColor;
 uniform float time;
@@ -213,7 +212,9 @@ uniform float animationTime;
 
 void main() {
   float factor = 1.0 - clamp(time - startedAt, 0.0, animationTime);
-  gl_FragColor = vec4(factor, factor, factor, 1.0);
+  // if factor is 0, dont use it
+  vec3 color = mix(vColor, vColor * 0.1, factor);
+  gl_FragColor = vec4(color, 1.0);
 }
 `
 

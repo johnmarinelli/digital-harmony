@@ -1,8 +1,6 @@
-import React, { useMemo, useRef } from 'react'
+import React from 'react'
 import * as THREE from 'three'
-import { useRender } from 'react-three-fiber'
 import { animated as anim } from 'react-spring/three'
-import clock from '../util/Clock'
 import { LissajousKnot } from '../util/Lissajous'
 import Background from './Background'
 import GlitchRepeater from './GlitchRepeater'
@@ -19,7 +17,6 @@ class BoxRepeatScene extends React.Component {
     const geometry = new THREE.BoxGeometry(1, 1, 1)
     geometry.scale(0.5, 0.5, 0.5)
     const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }))
-    const wireframeMesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }))
 
     const glitchRepeatUpdateFn = now => LissajousKnot.getPoint(now * 0.1, 3, 4, 7, 0.7, 1.0, 0.0)
 

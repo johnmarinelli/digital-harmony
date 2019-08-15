@@ -5,13 +5,9 @@ import { useSpring, animated } from 'react-spring/three'
 import midi from '../../util/WebMidi'
 import GuiOptions from '../Gui'
 import { OctahedronStates, Triggers } from '../states/scenes/Fifth'
-import * as AnimationHelper from '../../util/AnimationHelper'
-import clock from '../../util/Clock'
 
 const Octahedron = ({ position = [0, 0, 0], states = OctahedronStates }) => {
-  const lineVertices = [[-1, 0, 0], [0, 1, 0], [1, 0, 0], [0, -1, 0], [-1, 0, 0]]
   const [frame, setFrame] = useState(-1)
-  const scaleAnimationTime = 0.5 // one-way, in seconds
   const mesh = useRef()
 
   let nextStateIndex = frame
@@ -42,7 +38,6 @@ const Octahedron = ({ position = [0, 0, 0], states = OctahedronStates }) => {
   )
 
   useRender(() => {
-    let now = clock.getElapsedTime()
     const { options: { subjectState, subjectStateOverride } } = GuiOptions
 
     if (subjectStateOverride) {
@@ -52,7 +47,7 @@ const Octahedron = ({ position = [0, 0, 0], states = OctahedronStates }) => {
       const {
         options: { octahedronOpacity, octahedronColor, octahedronScale: scale, octahedronRotation: rotation },
       } = GuiOptions
-      const { current: { material, geometry } } = mesh
+      const { current: { material } } = mesh
 
       material.color.set(octahedronColor)
       material.opacity = octahedronOpacity

@@ -1,12 +1,6 @@
-import React, { useMemo } from 'react'
-import * as THREE from 'three'
-import { animated } from 'react-spring/three'
+import React from 'react'
 import Background from './Background'
 import Octahedron from './lib/Octahedron'
-import AnimatedSquareOutline from './lib/AnimatedSquareOutline'
-import AnimatedTetrahedrons from './lib/AnimatedTetrahedrons'
-import AnimatedRing from './lib/AnimatedRing'
-import LindenmayerTree from './lib/LindenmayerTree'
 
 const Lights = () => (
   <>

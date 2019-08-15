@@ -65,7 +65,7 @@ const PhyllotaxisComponent = props => {
   )
 }
 
-class FirstScene extends React.Component {
+class PhyllotaxisScene extends React.Component {
   constructor() {
     super()
     this.sceneRef = React.createRef()
@@ -88,4 +88,4 @@ class FirstScene extends React.Component {
     )
   }
 }
-export default FirstScene
+export default PhyllotaxisScene
