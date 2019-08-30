@@ -5,13 +5,13 @@
   "dependencies": {
     "cannon": "^0.6.2",
     "dat.gui": "^0.7.5",
-    "react": "^16.8.4",
+    "react": "^16.9.0",
     "react-dat-gui": "^2.2.0",
-    "react-dom": "^16.8.4",
+    "react-dom": "^16.9.0",
     "react-scripts": "2.1.8",
     "react-spring": "^8.0.14",
-    "react-three-fiber": "^2.2.2",
-    "three": "^0.102.1",
+    "react-three-fiber": "^2.3.5",
+    "three": "^0.107.0",
     "three.meshline": "^1.2.0",
     "webmidi": "^2.3.2"
   },
