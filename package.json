@@ -13,6 +13,7 @@
     "react-three-fiber": "^2.3.5",
     "three": "^0.107.0",
     "three.meshline": "^1.2.0",
+    "tone": "^13.8.25",
     "webmidi": "^2.3.2"
   },
   "scripts": {

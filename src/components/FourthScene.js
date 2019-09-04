@@ -11,7 +11,7 @@ import GuiOptions from './Gui'
 const DifferentialMotion = props => {
   let group = useRef()
 
-  const timeStart = clock.getElapsedTime()
+  const startTime = clock.getElapsedTime()
   const radius = props.radius || 2.5
   const numPoints = props.numPoints || 60
 
@@ -69,7 +69,7 @@ const DifferentialMotion = props => {
       if (GuiOptions.options.cyclePercentageOverride) {
         step = GuiOptions.options.cyclePercentage
       } else {
-        diff = now - timeStart
+        diff = now - startTime
         step = diff * timeScale
         GuiOptions.options.cyclePercentage = step % 1.0
       }
