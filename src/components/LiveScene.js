@@ -6,10 +6,14 @@ import { VertexShader, FragmentShader } from '../shaders/LiveSceneShader'
 import Tone from 'tone'
 import clock from '../util/Clock'
 
-const getBuffer = () =>
-  new Promise(resolve => {
-    new Tone.Buffer('take_me_out_bossa_inside_sound_experiment guitar.wav', buffer => resolve(buffer.getChannelData[0]))
+const loadAudio = baseFilename => {
+  return new Promise(resolve => {
+    const path = `/audio/take_me_out/split/${baseFilename}-0.mp3`
+    new Tone.Buffer(path, buffer => {
+      resolve(buffer.getChannelData(0))
+    })
   })
+}
 
 class RingPointMaterial extends THREE.RawShaderMaterial {
   constructor(
@@ -120,8 +124,9 @@ const ease = {
 
 const Rings = () => {
   const rings = []
-  const data = []
+  const components = []
   const numRings = 96
+  const numWaveforms = 128
   for (let i = 0; i < numRings; ++i) {
     const material = new RingPointMaterial({
       radius: i * 0.05 + 0.5,
@@ -136,13 +141,36 @@ const Rings = () => {
     const ring = new THREE.Points(geometry, material)
     ring.renderOrder = 2
     ring.goalProperties = { radius: material.uniforms.radius.value, opacity: material.uniforms.opacity.value }
+    ring.rotateX(-Math.PI / 2.5)
     rings.push(ring)
+  }
+  const waveforms = new Array(numRings).fill(new Float32Array(numWaveforms))
+  let channelData = []
+  let channelDataOffset = 0
 
-    data.push({ geometry, material })
+  loadAudio('take_me_out_bossa_inside_sound_experiment_battery')
+    .then(data => {
+      channelData = data
+      waveforms.forEach((wf, i) =>
+        copyAndGetAverage(channelData, wf, (channelDataOffset = numWaveforms * i), numWaveforms)
+      )
+    })
+    .catch(error => console.error(error))
+
+  const copyAndGetAverage = (source, target, start, length) => {
+    let avg = 0
+    for (let i = 0; i < length; ++i) {
+      target[i] = source[start + i]
+      avg += target[i]
+    }
+
+    return avg / length
   }
 
   useRender(() => {
+    const wf = waveforms.pop()
     /*
+    const nextAvg = copyAndGetAverage(channelData, wf, (channelDataOffset += numWaveforms) % channelData.length, numWaveforms)
     const now = clock.getElapsedTime()
     const t = THREE.Math.clamp((now - 500) / 8000, 0, 1)
 
@@ -156,12 +184,9 @@ const Rings = () => {
     */
   })
 
-  const components = []
   for (let i = 0; i < numRings; ++i) {
     const ring = rings[i]
-    //components.push(<primitive object={ring} key={i} />)
-    const d = data[i]
-    components.push(<points geometry={d.geometry} material={d.material} key={i} />)
+    components.push(<primitive object={ring} key={i} />)
   }
   return components
 }
@@ -175,8 +200,6 @@ class LiveScene extends React.Component {
   render() {
     const { top, size } = this.props
     const scrollMax = size.height * 4.5
-    const material = new RingPointMaterial()
-    const geometry = new RingBufferGeometry({ resolution: 120 })
     return (
       <scene ref={this.sceneRef}>
         <Background
