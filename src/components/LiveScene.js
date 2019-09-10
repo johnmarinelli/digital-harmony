@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import { extend, useRender } from 'react-three-fiber'
 import * as THREE from 'three'
+import throttle from 'lodash.throttle'
 import Background from './Background'
 import { VertexShader, FragmentShader } from '../shaders/LiveSceneShader'
 import Tone from 'tone'
@@ -8,7 +9,7 @@ import clock from '../util/Clock'
 
 const loadAudio = baseFilename => {
   return new Promise(resolve => {
-    const path = `/audio/take_me_out/split/${baseFilename}-0.mp3`
+    const path = `/audio/reference/split/${baseFilename}-0.mp3`
     new Tone.Buffer(path, buffer => {
       resolve(buffer.getChannelData(0))
     })
@@ -18,6 +19,7 @@ const loadAudio = baseFilename => {
 class RingPointMaterial extends THREE.RawShaderMaterial {
   constructor(
     options = {
+      amplitude: 1,
       opacity: 1,
       size: 1,
       blending: THREE.NormalBlending,
@@ -27,7 +29,7 @@ class RingPointMaterial extends THREE.RawShaderMaterial {
       resolution: 128,
     }
   ) {
-    const { opacity, size, blending, shape, radius, resolution, color } = options
+    const { amplitude, opacity, size, blending, shape, radius, resolution, color } = options
 
     const waveform = new Float32Array(resolution)
     for (let i = 0; i < resolution; i++) {
@@ -69,7 +71,7 @@ class RingPointMaterial extends THREE.RawShaderMaterial {
         },
         amplitude: {
           type: 'f',
-          value: 1.0,
+          value: amplitude,
         },
         fogNear: {
           type: 'f',
@@ -127,35 +129,29 @@ const Rings = () => {
   const components = []
   const numRings = 96
   const numWaveforms = 128
+
   for (let i = 0; i < numRings; ++i) {
     const material = new RingPointMaterial({
       radius: i * 0.05 + 0.5,
       resolution: 120,
       color: new THREE.Color(0x00ff00).setHSL(i / numRings, 1, 0.75),
-      //opacity: Math.min(1, THREE.Math.mapLinear(numRings - i, numRings, 1, 4.0, 0.3)),
-      opacity: 1,
-      blending: THREE.AdditiveBlending,
+      opacity: Math.min(1, THREE.Math.mapLinear(numRings - i, numRings, 1, 4.0, 0.3)),
+      blending: THREE.NormalBlending,
       shape: 'circle',
+      size: 38,
+      amplitude: 1.2,
     })
     const geometry = new RingBufferGeometry({ resolution: 120 })
     const ring = new THREE.Points(geometry, material)
     ring.renderOrder = 2
     ring.goalProperties = { radius: material.uniforms.radius.value, opacity: material.uniforms.opacity.value }
-    ring.rotateX(-Math.PI / 2.5)
+    ring.rotateX(Math.PI * 0.25)
     rings.push(ring)
   }
+
   const waveforms = new Array(numRings).fill(new Float32Array(numWaveforms))
   let channelData = []
   let channelDataOffset = 0
-
-  loadAudio('take_me_out_bossa_inside_sound_experiment_battery')
-    .then(data => {
-      channelData = data
-      waveforms.forEach((wf, i) =>
-        copyAndGetAverage(channelData, wf, (channelDataOffset = numWaveforms * i), numWaveforms)
-      )
-    })
-    .catch(error => console.error(error))
 
   const copyAndGetAverage = (source, target, start, length) => {
     let avg = 0
@@ -167,28 +163,56 @@ const Rings = () => {
     return avg / length
   }
 
-  useRender(() => {
-    const wf = waveforms.pop()
-    /*
-    const nextAvg = copyAndGetAverage(channelData, wf, (channelDataOffset += numWaveforms) % channelData.length, numWaveforms)
-    const now = clock.getElapsedTime()
-    const t = THREE.Math.clamp((now - 500) / 8000, 0, 1)
+  const ramp = (elapsed, duration, minOut = 0, maxOut = 0.005) =>
+    THREE.Math.clamp(THREE.Math.mapLinear(elapsed, 0, duration, minOut, maxOut), minOut, maxOut)
 
-    for (let i = 0; i < numRings; ++i) {
-      const ring = rings[i]
-      for (let propName in ring.goalProperties) {
-        const uniform = ring.material.uniforms[propName]
-        uniform.value = THREE.Math.lerp(0, ring.goalProperties[propName], ease.expoInOut(t))
-      }
+  loadAudio('MBIRA')
+    .then(data => {
+      channelData = data
+      waveforms.forEach((wf, i) =>
+        copyAndGetAverage(channelData, wf, (channelDataOffset = numWaveforms * i), numWaveforms)
+      )
+    })
+    .catch(error => console.error(error))
+
+  let avg = 0
+  const render = throttle(() => {
+    const wf = waveforms.pop()
+    const nextAvg = copyAndGetAverage(
+      channelData,
+      wf,
+      (channelDataOffset += numWaveforms) % channelData.length,
+      numWaveforms
+    )
+
+    if (!isNaN(nextAvg)) {
+      avg = Math.max(avg, avg + (nextAvg - avg) * 0.3)
     }
-    */
-  })
+    waveforms.unshift(wf)
+
+    const parent = parentRef.current
+    const children = parent.children
+    const goal = children[0].rotation.x
+
+    const elapsed = clock.getElapsedTime()
+
+    for (let i = 0; i < children.length; ++i) {
+      const child = children[i]
+      child.material.uniforms.waveform.value = waveforms[i]
+
+      const diff = (goal - rings[0].rotation.x) * ramp(elapsed, 10000)
+      child.rotation.x += diff
+    }
+  }, 16.67) // 60 fps = 1000 / 60 = 16.67
+
+  useRender(render)
 
   for (let i = 0; i < numRings; ++i) {
     const ring = rings[i]
     components.push(<primitive object={ring} key={i} />)
   }
-  return components
+  const parentRef = useRef()
+  return <group ref={parentRef}>{components}</group>
 }
 
 class LiveScene extends React.Component {
