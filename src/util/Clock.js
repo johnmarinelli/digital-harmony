@@ -1,4 +1,6 @@
 import * as THREE from 'three/src/Three'
+
+// https://threejs.org/docs/#api/en/core/Clock
 class ClockImpl {
   constructor() {
     if (this.instance) {

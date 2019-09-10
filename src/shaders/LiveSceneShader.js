@@ -23,20 +23,15 @@ float fnoise(float p){
 }
 
 void main() {
-
 	float ref = reference * float(WAVEFORM_RESOLUTION);
 
 	float angle = ((ref+1.)/float(WAVEFORM_RESOLUTION)) * 6.28318530718;
-	vec3 pos = vec3( cos(angle), 0.0, sin(angle) );
 	float offset = waveform[int(ref)] * amplitude;
 
-	pos *= radius + offset * 0.5 + (amplitude * 0.165); //smoothstep(0.7, 1.0, amplitude)
+	vec3 pos = vec3( cos(angle), 0.0, sin(angle) );
+  pos *= radius + offset * 0.5 + (amplitude * 0.165);
 
-	//pos = position;
-
-
-	vec4 mvPosition = modelViewMatrix * vec4( pos.x, pos.y + offset, pos.z, 1.0 );
-
+  vec4 mvPosition = modelViewMatrix * vec4( pos.x, pos.y + offset, pos.z, 1.0 );
 
 	// Apply Size Attenuation (make smaller when further)
 	gl_PointSize = size * (1.0 / length( mvPosition.xyz ));
@@ -56,7 +51,6 @@ uniform sampler2D shape;
 uniform float fogNear;
 uniform float fogFar;
 uniform vec3 fogColor;
-
 
 //  Function from Iñigo Quiles
 //  https://www.shadertoy.com/view/MsS3Wc
@@ -102,6 +96,6 @@ void main() {
     float fogF = min(smoothstep(fogNear, fogFar, depth), 1.0);
 	c *= texel.rgb;
 
-	gl_FragColor = vec4( c, opacity * texel.a);
+  gl_FragColor = vec4( c, opacity * texel.a);
 }
 `
