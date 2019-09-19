@@ -1,5 +1,5 @@
-import React, { useMemo, useRef } from 'react'
-import { extend, useRender } from 'react-three-fiber'
+import React, { useRef } from 'react'
+import { useRender } from 'react-three-fiber'
 import * as THREE from 'three'
 import throttle from 'lodash.throttle'
 import Background from './Background'
@@ -19,7 +19,7 @@ const loadAudio = baseFilename => {
 class RingPointMaterial extends THREE.RawShaderMaterial {
   constructor(
     options = {
-      amplitude: 1,
+      amplitude: 1.2,
       opacity: 1,
       size: 1,
       blending: THREE.NormalBlending,
@@ -149,7 +149,11 @@ const Rings = () => {
     rings.push(ring)
   }
 
-  const waveforms = new Array(numRings).fill(new Float32Array(numWaveforms))
+  let waveforms = []
+  for (let i = 0; i < numRings; ++i) {
+    waveforms.push(new Float32Array(numWaveforms))
+  }
+
   let channelData = []
   let channelDataOffset = 0
 
@@ -168,6 +172,7 @@ const Rings = () => {
 
   loadAudio('MBIRA')
     .then(data => {
+      console.log('song loaded')
       channelData = data
       waveforms.forEach((wf, i) =>
         copyAndGetAverage(channelData, wf, (channelDataOffset = numWaveforms * i), numWaveforms)
@@ -176,34 +181,40 @@ const Rings = () => {
     .catch(error => console.error(error))
 
   let avg = 0
-  const render = throttle(() => {
-    const wf = waveforms.pop()
-    const nextAvg = copyAndGetAverage(
-      channelData,
-      wf,
-      (channelDataOffset += numWaveforms) % channelData.length,
-      numWaveforms
-    )
+  let accumulatedSeconds = 0,
+    shouldUpdate = false
+  const render = () => {
+    accumulatedSeconds += clock.getDelta()
+    console.log(`Time since last update: ${accumulatedSeconds * 1000}`)
 
-    if (!isNaN(nextAvg)) {
-      avg = Math.max(avg, avg + (nextAvg - avg) * 0.3)
+    shouldUpdate = channelData.length > 0 && accumulatedSeconds > 0.016
+
+    if (shouldUpdate) {
+      const wf = waveforms.pop()
+      const nextAvg = copyAndGetAverage(
+        channelData,
+        wf,
+        (channelDataOffset += numWaveforms) % channelData.length,
+        numWaveforms
+      )
+
+      if (!isNaN(nextAvg)) {
+        avg = Math.max(avg, avg + (nextAvg - avg) * 0.3)
+      }
+      waveforms.unshift(wf)
+
+      const parent = parentRef.current
+      const children = parent.children
+      for (let i = 0; i < children.length; ++i) {
+        const child = children[i]
+        child.material.uniforms.waveform.value = waveforms[i]
+
+        //const diff = (goal - rings[0].rotation.x) * ramp(elapsed, 10000)
+        //child.rotation.x += diff
+      }
+      accumulatedSeconds = 0.0
     }
-    waveforms.unshift(wf)
-
-    const parent = parentRef.current
-    const children = parent.children
-    const goal = children[0].rotation.x
-
-    const elapsed = clock.getElapsedTime()
-
-    for (let i = 0; i < children.length; ++i) {
-      const child = children[i]
-      child.material.uniforms.waveform.value = waveforms[i]
-
-      const diff = (goal - rings[0].rotation.x) * ramp(elapsed, 10000)
-      child.rotation.x += diff
-    }
-  }, 16.67) // 60 fps = 1000 / 60 = 16.67
+  }
 
   useRender(render)
 
