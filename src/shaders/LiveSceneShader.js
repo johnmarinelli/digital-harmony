@@ -31,7 +31,7 @@ void main() {
 	vec3 pos = vec3( cos(angle), 0.0, sin(angle) );
   pos *= radius + offset * 0.5 + (amplitude * 0.165);
 
-  vec4 mvPosition = modelViewMatrix * vec4( pos.x, pos.y + offset, pos.z, 1.0 );
+  vec4 mvPosition = modelViewMatrix * vec4( pos.x, pos.y + offset * 2., pos.z, 1.0 );
 
 	// Apply Size Attenuation (make smaller when further)
 	gl_PointSize = size * (1.0 / length( mvPosition.xyz ));

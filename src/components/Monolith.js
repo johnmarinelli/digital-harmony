@@ -62,7 +62,10 @@ class TransitionManager {
 }
 
 const Monolith = ({ top }) => {
+  console.log('src/components/Monolith.js constructor')
+  console.log(top)
   const { gl: renderer, camera, size } = useThree()
+  /*
   const firstSceneRef = useRef()
   const sineFieldSceneRef = useRef()
   const boxRepeatSceneRef = useRef()
@@ -72,6 +75,7 @@ const Monolith = ({ top }) => {
   const sixthSceneRef = useRef()
   const seventhSceneRef = useRef()
   const waveFieldSceneRef = useRef()
+  */
   const liveSceneRef = useRef()
 
   let transitionManager = null
@@ -80,6 +84,7 @@ const Monolith = ({ top }) => {
   useEffect(() => {
     const scenes = [
       liveSceneRef.current.sceneRef.current,
+      /*
       waveFieldSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       sineFieldSceneRef.current.sceneRef.current,
@@ -89,6 +94,7 @@ const Monolith = ({ top }) => {
       fifthSceneRef.current.sceneRef.current,
       sixthSceneRef.current.sceneRef.current,
       seventhSceneRef.current.sceneRef.current,
+      */
     ]
     transition = new Transition(camera)
     transition.initializeScenes(...scenes.slice(0, 2))
@@ -103,8 +109,7 @@ const Monolith = ({ top }) => {
     transition.render(renderer)
   }, true)
 
-  return (
-    <>
+  /*
       <PhyllotaxisScene top={top} size={size} ref={firstSceneRef} />
       <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
       <BoxRepeatScene top={top} size={size} ref={boxRepeatSceneRef} />
@@ -114,6 +119,9 @@ const Monolith = ({ top }) => {
       <SixthScene top={top} size={size} ref={sixthSceneRef} />
       <SeventhScene top={top} size={size} ref={seventhSceneRef} />
       <WaveFieldScene top={top} size={size} ref={waveFieldSceneRef} />
+      */
+  return (
+    <>
       <LiveScene top={top} size={size} ref={liveSceneRef} />
     </>
   )

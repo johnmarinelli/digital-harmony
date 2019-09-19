@@ -126,6 +126,7 @@ const Main = () => {
   const onScroll = useCallback(e => set({ top: e.target.scrollTop }), [])
 
   //const voronoi3DScale = <DatNumber path="voronoi3DScale" label="Voronoi3D Scale" min={0} max={50} step={0.05} />
+  console.log('src/App.js constructor')
   clock.start()
   return (
     <>
