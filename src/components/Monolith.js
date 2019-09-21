@@ -62,8 +62,6 @@ class TransitionManager {
 }
 
 const Monolith = ({ top }) => {
-  console.log('src/components/Monolith.js constructor')
-  console.log(top)
   const { gl: renderer, camera, size } = useThree()
   /*
   const firstSceneRef = useRef()
