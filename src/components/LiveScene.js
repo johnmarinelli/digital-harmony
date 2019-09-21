@@ -1,20 +1,12 @@
 import React, { useRef } from 'react'
 import { useRender } from 'react-three-fiber'
 import * as THREE from 'three'
-import throttle from 'lodash.throttle'
 import Background from './Background'
 import { VertexShader, FragmentShader } from '../shaders/LiveSceneShader'
-import Tone from 'tone'
 import clock from '../util/Clock'
-
-const loadAudio = baseFilename => {
-  return new Promise(resolve => {
-    const path = `/audio/reference/split/${baseFilename}-0.mp3`
-    new Tone.Buffer(path, buffer => {
-      resolve(buffer.getChannelData(0))
-    })
-  })
-}
+import Player from '../sound-player/Player'
+import events from 'events'
+import { Transport } from 'tone'
 
 class RingPointMaterial extends THREE.RawShaderMaterial {
   constructor(
@@ -117,21 +109,50 @@ class RingBufferGeometry extends THREE.BufferGeometry {
   }
 }
 
-const ease = {
-  expoInOut: t =>
-    t === 0.0 || t === 1.0
-      ? t
-      : t < 0.5 ? +0.5 * Math.pow(2.0, 20.0 * t - 10.0) : -0.5 * Math.pow(2.0, 10.0 - t * 20.0) + 1.0,
+const ease = t =>
+  t === 0.0 || t === 1.0
+    ? t
+    : t < 0.5 ? +0.5 * Math.pow(2.0, 20.0 * t - 10.0) : -0.5 * Math.pow(2.0, 10.0 - t * 20.0) + 1.0
+
+/**
+ * RingPoints
+ * the `Object3D` for a single circle of particles
+ * @extends THREE.Points
+ * @see RingPointMaterial
+ * @param {Object} [options] check `RingPointMaterial` for properties
+ */
+class RingPoints extends THREE.Points {
+  constructor(options) {
+    const geom = new RingBufferGeometry({ resolution: options.resolution })
+
+    super(geom, new RingPointMaterial(options))
+
+    this.renderOrder = 2
+
+    this.__goalProperties = {
+      radius: this.material.uniforms.radius.value,
+      opacity: this.material.uniforms.opacity.value,
+    }
+  }
+
+  transitionStep(t) {
+    for (let prop in this.__goalProperties) {
+      // beginning fade-in movement
+      const uni = this.material.uniforms[prop]
+      uni.value = THREE.Math.lerp(0, this.__goalProperties[prop], t)
+    }
+  }
 }
 
-const Rings = () => {
+const Rings = ({ position = new THREE.Vector3(0, 0, 0), folder, segments, trackNames }) => {
+  const audioFileStatusEmitter = new events.EventEmitter()
   const rings = []
   const components = []
   const numRings = 96
   const numWaveforms = 128
 
   for (let i = 0; i < numRings; ++i) {
-    const material = new RingPointMaterial({
+    const ring = new RingPoints({
       radius: i * 0.05 + 0.5,
       resolution: 120,
       color: new THREE.Color(0x00ff00).setHSL(i / numRings, 1, 0.75),
@@ -141,10 +162,6 @@ const Rings = () => {
       size: 38,
       amplitude: 1.2,
     })
-    const geometry = new RingBufferGeometry({ resolution: 120 })
-    const ring = new THREE.Points(geometry, material)
-    ring.renderOrder = 2
-    ring.goalProperties = { radius: material.uniforms.radius.value, opacity: material.uniforms.opacity.value }
     ring.rotateX(Math.PI * 0.25)
     rings.push(ring)
   }
@@ -154,53 +171,40 @@ const Rings = () => {
     waveforms.push(new Float32Array(numWaveforms))
   }
 
-  let channelData = []
-  let channelDataOffset = 0
-
-  const copyAndGetAverage = (source, target, start, length) => {
-    let avg = 0
-    for (let i = 0; i < length; ++i) {
-      target[i] = source[start + i]
-      avg += target[i]
-    }
-
-    return avg / length
-  }
-
   const ramp = (elapsed, duration, minOut = 0, maxOut = 0.005) =>
     THREE.Math.clamp(THREE.Math.mapLinear(elapsed, 0, duration, minOut, maxOut), minOut, maxOut)
+  const numTracks = trackNames.length
+  const players = []
 
-  loadAudio('MBIRA')
-    .then(data => {
-      console.log('song loaded')
-      channelData = data
-      waveforms.forEach((wf, i) =>
-        copyAndGetAverage(channelData, wf, (channelDataOffset = numWaveforms * i), numWaveforms)
-      )
-    })
-    .catch(error => console.error(error))
+  for (let i = 0; i < numTracks; ++i) {
+    players.push(
+      new Player({ position, name: trackNames[i], folder, segments, eventEmitterRef: audioFileStatusEmitter })
+    )
+  }
 
-  let avg = 0
-  let accumulatedSeconds = 0,
-    shouldUpdate = false
-  const render = () => {
-    accumulatedSeconds += clock.getDelta()
-    console.log(`Time since last update: ${accumulatedSeconds * 1000}`)
-
-    shouldUpdate = channelData.length > 0 && accumulatedSeconds > 0.016
-
-    if (shouldUpdate) {
-      const wf = waveforms.pop()
-      const nextAvg = copyAndGetAverage(
-        channelData,
-        wf,
-        (channelDataOffset += numWaveforms) % channelData.length,
-        numWaveforms
-      )
-
-      if (!isNaN(nextAvg)) {
-        avg = Math.max(avg, avg + (nextAvg - avg) * 0.3)
+  audioFileStatusEmitter.on('player-ready', () => {
+    const allTracksReady = players.map(player => player.isLoaded()).reduce((b, acc) => acc && b, true)
+    if (allTracksReady) {
+      players.forEach(player => player.onSongStart())
+      if (Transport.state !== 'started') {
+        Transport.start()
       }
+    }
+  })
+
+  let elapsed = 0,
+    amplitude = 0
+  const render = () => {
+    elapsed = clock.getElapsedTime()
+
+    const allTracksReady = players.map(player => player.isLoaded()).reduce((b, acc) => acc && b, true)
+    if (allTracksReady && Transport.state === 'started') {
+      const t = THREE.Math.clamp((1000 * elapsed - 500) / 8000, 0, 1)
+      const player = players[2]
+      const nextAmp = player.getAmplitude()
+      amplitude = Math.max(nextAmp, amplitude + (nextAmp - amplitude) * 0.1)
+      const wf = waveforms.pop()
+      player.getWaveform(wf)
       waveforms.unshift(wf)
 
       const parent = parentRef.current
@@ -209,10 +213,11 @@ const Rings = () => {
         const child = children[i]
         child.material.uniforms.waveform.value = waveforms[i]
 
+        child.transitionStep(ease(t))
+
         //const diff = (goal - rings[0].rotation.x) * ramp(elapsed, 10000)
         //child.rotation.x += diff
       }
-      accumulatedSeconds = 0.0
     }
   }
 
@@ -243,8 +248,7 @@ class LiveScene extends React.Component {
             ['#27282F', '#247BA0', '#70C1B3', '#f8f3f1']
           )}
         />
-
-        <Rings />
+        <Rings folder="take_me_out" segments={3} trackNames={['battery', 'guitar', 'vocals']} />
       </scene>
     )
   }
