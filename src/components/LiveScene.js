@@ -2,83 +2,10 @@ import React, { useRef } from 'react'
 import { extend, useRender } from 'react-three-fiber'
 import * as THREE from 'three'
 import Background from './Background'
-import clock from '../util/Clock'
 import Player from '../sound-player/Player'
 import events from 'events'
 import { Transport } from 'tone'
-import { RingPoints } from './sound-enabled/RingPoints'
-const ease = t =>
-  t === 0.0 || t === 1.0
-    ? t
-    : t < 0.5 ? +0.5 * Math.pow(2.0, 20.0 * t - 10.0) : -0.5 * Math.pow(2.0, 10.0 - t * 20.0) + 1.0
-
-const Rings = ({ position = new THREE.Vector3(0, 0, 0), folder, segments, player, amplitude }) => {
-  const rings = []
-  const components = []
-  const numRings = 96
-  const numWaveforms = 128
-
-  for (let i = 0; i < numRings; ++i) {
-    const ring = new RingPoints({
-      radius: i * 0.05 + 0.5,
-      resolution: 120,
-      color: new THREE.Color(0x00ff00).setHSL(i / numRings, 1, 0.75),
-      opacity: Math.min(1, THREE.Math.mapLinear(numRings - i, numRings, 1, 4.0, 0.3)),
-      blending: THREE.NormalBlending,
-      shape: 'circle',
-      size: 38,
-      amplitude,
-    })
-    ring.rotateX(Math.PI * 0.25)
-    rings.push(ring)
-  }
-
-  let waveforms = []
-  for (let i = 0; i < numRings; ++i) {
-    waveforms.push(new Float32Array(numWaveforms))
-  }
-
-  let elapsed = 0,
-    amp = 0
-  const render = () => {
-    elapsed = clock.getElapsedTime()
-
-    if (player && Transport.state === 'started') {
-      const t = THREE.Math.clamp((1000 * elapsed - 500) / 8000, 0, 1)
-      const nextAmp = player.getAmplitude()
-      amp = Math.max(nextAmp, amp + (nextAmp - amp) * 0.1)
-      const wf = waveforms.pop()
-      player.getWaveform(wf)
-      waveforms.unshift(wf)
-
-      if (player && player.isLoaded()) {
-        const parent = parentRef.current
-        const children = parent.children
-        for (let i = 0; i < children.length; ++i) {
-          const child = children[i]
-          child.material.uniforms.waveform.value = waveforms[i]
-          child.transitionStep(ease(t))
-
-          //const diff = (goal - rings[0].rotation.x) * ramp(elapsed, 10000)
-          //child.rotation.x += diff
-        }
-      }
-    }
-  }
-
-  useRender(render)
-
-  for (let i = 0; i < numRings; ++i) {
-    const ring = rings[i]
-    components.push(<primitive object={ring} key={i} />)
-  }
-  const parentRef = useRef()
-  return (
-    <group position={position} ref={parentRef}>
-      {components}
-    </group>
-  )
-}
+import { Rings } from './sound-enabled/Rings'
 
 /*
  * HoC that represents a full song.
@@ -157,7 +84,10 @@ class LiveScene extends React.Component {
   }
 
   render() {
-    const ringComponents = [<Rings amplitude={1} name="battery" />, <Rings amplitude={2} name="vocals" />]
+    const ringComponents = [
+      <Rings amplitude={1} name="battery" />,
+      <Rings amplitude={1.4} name="vocals" baseColor={0x000000} />,
+    ]
 
     const Song = withSong(ringComponents, 'take_me_out', 3)
     extend({ Song })

@@ -1,5 +1,9 @@
 import * as THREE from 'three'
+import React, { useRef } from 'react'
+import { extend, useRender } from 'react-three-fiber'
 import { VertexShader, FragmentShader } from '../../shaders/LiveSceneShader'
+import clock from '../../util/Clock'
+import { Transport } from 'tone'
 
 class RingPointMaterial extends THREE.RawShaderMaterial {
   constructor(
@@ -131,4 +135,85 @@ class RingPoints extends THREE.Points {
     }
   }
 }
-export { RingPoints }
+const ease = t =>
+  t === 0.0 || t === 1.0
+    ? t
+    : t < 0.5 ? +0.5 * Math.pow(2.0, 20.0 * t - 10.0) : -0.5 * Math.pow(2.0, 10.0 - t * 20.0) + 1.0
+
+const Rings = ({
+  rotateX = Math.PI * 0.25,
+  position = new THREE.Vector3(0, 0, 0),
+  size = 38,
+  baseColor = 0x00ff00,
+  folder,
+  segments,
+  player,
+  amplitude,
+}) => {
+  const rings = []
+  const components = []
+  const numRings = 72
+  const numWaveforms = 128
+
+  for (let i = 0; i < numRings; ++i) {
+    const ring = new RingPoints({
+      radius: i * 0.05 + 0.5,
+      resolution: 80,
+      color: new THREE.Color(baseColor).setHSL(i / numRings, 1, 0.75),
+      opacity: Math.min(1, THREE.Math.mapLinear(numRings - i, numRings, 1, 4.0, 0.3)),
+      blending: THREE.NormalBlending,
+      shape: 'circle',
+      size,
+      amplitude,
+    })
+    ring.rotateX(rotateX)
+    rings.push(ring)
+  }
+
+  let waveforms = []
+  for (let i = 0; i < numRings; ++i) {
+    waveforms.push(new Float32Array(numWaveforms))
+  }
+
+  let elapsed = 0,
+    amp = 0
+  const render = () => {
+    elapsed = clock.getElapsedTime()
+
+    if (player && Transport.state === 'started') {
+      const t = THREE.Math.clamp((1000 * elapsed - 500) / 8000, 0, 1)
+      const nextAmp = player.getAmplitude()
+      amp = Math.max(nextAmp, amp + (nextAmp - amp) * 0.1)
+      const wf = waveforms.pop()
+      player.getWaveform(wf)
+      waveforms.unshift(wf)
+
+      if (player && player.isLoaded()) {
+        const parent = parentRef.current
+        const children = parent.children
+        for (let i = 0; i < children.length; ++i) {
+          const child = children[i]
+          child.material.uniforms.waveform.value = waveforms[i]
+          //child.transitionStep(ease(t))
+
+          //const diff = (goal - rings[0].rotation.x) * ramp(elapsed, 10000)
+          //child.rotation.x += diff
+        }
+      }
+    }
+  }
+
+  useRender(render)
+
+  for (let i = 0; i < numRings; ++i) {
+    const ring = rings[i]
+    components.push(<primitive object={ring} key={i} />)
+  }
+  const parentRef = useRef()
+  return (
+    <group position={position} ref={parentRef}>
+      {components}
+    </group>
+  )
+}
+export { Rings }
