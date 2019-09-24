@@ -89,8 +89,7 @@ class SoundPlayer {
     this._panner.setPosition(position.x, position.y, position.z)
 
     if (this._player) {
-      this._player.dispose()
-      this._player = null
+      this.destroy()
     }
     this._player = new StreamingPlayer(this.folder, this.name, this.segments)
     this._player.output.connect(this._level)
@@ -106,6 +105,11 @@ class SoundPlayer {
 
   isBuffering() {
     return this._player && this._player.buffering
+  }
+
+  destroy() {
+    this._player.dispose()
+    this._player = null
   }
 }
 
