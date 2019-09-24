@@ -85,13 +85,14 @@ const Rings = ({ position = new THREE.Vector3(0, 0, 0), folder, segments, player
  * Handles audio player -> component mapping,
  * and starting the player
  */
-function withSong(Components, folder, segments, trackNames, position = new THREE.Vector3(0, 0, 0)) {
+function withSong(Components, folder, segments, position = new THREE.Vector3(0, 0, 0)) {
   return class extends React.Component {
     constructor() {
       super()
       this.audioFileStatusEmitter = new events.EventEmitter()
       this.players = []
-      const numTracks = trackNames.length
+      const trackNames = Components.map(component => component.props.name)
+      const numTracks = Components.length
 
       for (let i = 0; i < numTracks; ++i) {
         this.players.push(
@@ -108,7 +109,7 @@ function withSong(Components, folder, segments, trackNames, position = new THREE
             this.players.forEach(player => player.onSongStart())
 
             if (Transport.state !== 'started') {
-              //Transport.start()
+              Transport.start()
             }
           }
         })
@@ -139,8 +140,7 @@ function withSong(Components, folder, segments, trackNames, position = new THREE
         React.cloneElement(component, {
           folder,
           segments,
-          player: this.players[i],
-          name: trackNames[i],
+          player: this.players.filter(player => player.name === component.props.name)[0],
           key: i,
           position: new THREE.Vector3(i * 3, 0, 0),
         })
@@ -157,9 +157,9 @@ class LiveScene extends React.Component {
   }
 
   render() {
-    const ringComponents = [<Rings amplitude={1} />, <Rings amplitude={2} />]
+    const ringComponents = [<Rings amplitude={1} name="battery" />, <Rings amplitude={2} name="vocals" />]
 
-    const Song = withSong(ringComponents, 'take_me_out', 3, ['battery', 'vocals'])
+    const Song = withSong(ringComponents, 'take_me_out', 3)
     extend({ Song })
     const { top, size } = this.props
     const scrollMax = size.height * 4.5
