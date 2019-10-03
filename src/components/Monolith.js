@@ -63,29 +63,29 @@ class TransitionManager {
 
 const Monolith = ({ top }) => {
   const { gl: renderer, camera, size } = useThree()
+  const liveSceneRef = useRef()
+  const sineFieldSceneRef = useRef()
+  const waveFieldSceneRef = useRef()
   /*
   const firstSceneRef = useRef()
-  const sineFieldSceneRef = useRef()
   const boxRepeatSceneRef = useRef()
   const thirdSceneRef = useRef()
   const fourthSceneRef = useRef()
   const fifthSceneRef = useRef()
   const sixthSceneRef = useRef()
   const seventhSceneRef = useRef()
-  const waveFieldSceneRef = useRef()
   */
-  const liveSceneRef = useRef()
 
   let transitionManager = null
   let transition = null
 
   useEffect(() => {
     const scenes = [
-      liveSceneRef.current.sceneRef.current,
-      /*
       waveFieldSceneRef.current.sceneRef.current,
-      firstSceneRef.current.sceneRef.current,
+      /*
+      liveSceneRef.current.sceneRef.current,
       sineFieldSceneRef.current.sceneRef.current,
+      firstSceneRef.current.sceneRef.current,
       boxRepeatSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
@@ -109,18 +109,18 @@ const Monolith = ({ top }) => {
 
   /*
       <PhyllotaxisScene top={top} size={size} ref={firstSceneRef} />
-      <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
       <BoxRepeatScene top={top} size={size} ref={boxRepeatSceneRef} />
       <ThirdScene top={top} size={size} ref={thirdSceneRef} />
       <FourthScene top={top} size={size} ref={fourthSceneRef} />
       <FifthScene top={top} size={size} ref={fifthSceneRef} />
       <SixthScene top={top} size={size} ref={sixthSceneRef} />
       <SeventhScene top={top} size={size} ref={seventhSceneRef} />
-      <WaveFieldScene top={top} size={size} ref={waveFieldSceneRef} />
+      <LiveScene top={top} size={size} ref={liveSceneRef} />
+      <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
       */
   return (
     <>
-      <LiveScene top={top} size={size} ref={liveSceneRef} />
+      <WaveFieldScene top={top} size={size} ref={waveFieldSceneRef} />
     </>
   )
 }

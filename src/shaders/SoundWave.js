@@ -4,14 +4,10 @@ precision mediump float;
 #define TWO_PI 6.28318530718
 
 attribute float reference;
-
-// this is a raw shader material
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+varying float vReference;
 
 uniform float size;
 uniform float amplitude;
-uniform float radius;
 
 #include <waveform_chunk>
 
@@ -24,38 +20,34 @@ float fnoise(float p){
 }
 
 void main() {
-	float ref = reference * float(WAVEFORM_RESOLUTION);
+	vReference = reference * float(WAVEFORM_RESOLUTION);
+  int ref = int(vReference);
+	float offset = waveform[ref] * amplitude;
 
-  // this will create a nicely spaced circle
-  //float angle = ((ref+1.)/float(WAVEFORM_RESOLUTION)) * 6.28318530718;
-
-  // what happens when we mess with it?
-	float angle = ((ref+1.)/float(WAVEFORM_RESOLUTION)) * 6.28318530718 * rand(ref);
-	float offset = waveform[int(ref)] * amplitude;
-
-	vec3 pos = vec3( cos(angle), 0.0, sin(angle) );
-  pos *= radius + offset * 0.5 + (amplitude * 0.165);
-
-  vec4 mvPosition = modelViewMatrix * vec4( pos.x, pos.y + offset * 2., pos.z, 1.0 );
+	vec3 pos = vec3(position);
+  pos += offset * 10.0;
+  vec4 mvPosition = modelViewMatrix * vec4(pos.x, pos.y, pos.z, 1.0);
 
 	// Apply Size Attenuation (make smaller when further)
-	gl_PointSize = size * (1.0 / length( mvPosition.xyz ));
+  // gl_PointSize = size * (1.0 / length( mvPosition.xyz ));
 
-  gl_Position = projectionMatrix * mvPosition;
+	gl_Position = projectionMatrix * mvPosition;
 }
 `
 
 export const FragmentShader = `
 precision mediump float;
 
+varying float vReference;
+
 uniform vec3 color;
 uniform float opacity;
-uniform float amplitude;
-uniform sampler2D shape;
 
 uniform float fogNear;
 uniform float fogFar;
 uniform vec3 fogColor;
+
+#include <waveform_chunk>
 
 //  Function from Iñigo Quiles
 //  https://www.shadertoy.com/view/MsS3Wc
@@ -84,23 +76,13 @@ vec3 rgb2hsb( in vec3 c ){
 }
 
 void main() {
-	vec4 texel = texture2D(shape, gl_PointCoord);
+  vec3 c = color;
+  c.r = vReference;
+  c.b = vReference;
+  // fog
+  // float depth = gl_FragCoord.z / gl_FragCoord.w;
+  // float fogF = min(smoothstep(fogNear, fogFar, depth), 1.0);
 
-	if(texel.r == 0.0){
-		discard;
-	}
-
-	vec3 c = rgb2hsb(color);
-	c.g *= amplitude;
-	c.b *= 0.5 + smoothstep(0.25, 1.0, amplitude);
-
-	c = hsb2rgb(c);
-
-	//fog
-    float depth = gl_FragCoord.z / gl_FragCoord.w;
-    float fogF = min(smoothstep(fogNear, fogFar, depth), 1.0);
-	c *= texel.rgb;
-
-  gl_FragColor = vec4( c, opacity * texel.a);
+  gl_FragColor = vec4(c, 1.0);
 }
 `
