@@ -16,6 +16,8 @@ uniform float startedAt;
 uniform float animationTime;
 uniform int modulatedIndex;
 
+#include <waveform_chunk>
+
 vec3 mod289(vec3 x)
 {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -191,6 +193,10 @@ float turbulence( vec3 p ) {
 }
 
 void main() {
+    float amplitude = 1.2;
+    float ref = reference * float(WAVEFORM_RESOLUTION);
+    float offset = waveform[int(ref)] * amplitude;
+
     // add time to the noise parameters so it's animated
     float noise = 10.0 *  -.10 * turbulence( .5 * normal + time );
     float b = 5.0 * pnoise( 0.05 * position + vec3( 2.0 * time ), vec3( 100.0 ) );
@@ -200,6 +206,7 @@ void main() {
     vec3 newPosition = position + normal * displacement;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
     gl_Position[0] += step(0.0, float(modulatedIndex)) * pnoise(position, vec3(10.) ) * cnoise(position + time );
+    gl_Position[0] += offset * 10.;
     //gl_Position[1] += step(1.0, float(modulatedIndex)) * pnoise(position, vec3(10.) ) * cnoise(position + time );
 }
 `
