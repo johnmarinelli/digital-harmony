@@ -31,7 +31,8 @@ void main() {
 
   // what happens when we mess with it?
 	float angle = ((ref+1.)/float(WAVEFORM_RESOLUTION)) * 6.28318530718 * rand(ref);
-	float offset = waveform[int(ref)] * amplitude;
+
+  float offset = waveform[int(ref)] * amplitude;
 
 	vec3 pos = vec3( cos(angle), 0.0, sin(angle) );
   pos *= radius + offset * 0.5 + (amplitude * 0.165);

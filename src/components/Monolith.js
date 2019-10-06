@@ -66,6 +66,7 @@ const Monolith = ({ top }) => {
   const liveSceneRef = useRef()
   const sineFieldSceneRef = useRef()
   const waveFieldSceneRef = useRef()
+  const seventhSceneRef = useRef()
   /*
   const firstSceneRef = useRef()
   const boxRepeatSceneRef = useRef()
@@ -73,7 +74,6 @@ const Monolith = ({ top }) => {
   const fourthSceneRef = useRef()
   const fifthSceneRef = useRef()
   const sixthSceneRef = useRef()
-  const seventhSceneRef = useRef()
   */
 
   let transitionManager = null
@@ -81,9 +81,9 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      waveFieldSceneRef.current.sceneRef.current,
-      /*
       liveSceneRef.current.sceneRef.current,
+      /*
+      waveFieldSceneRef.current.sceneRef.current,
       sineFieldSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       boxRepeatSceneRef.current.sceneRef.current,
@@ -115,12 +115,11 @@ const Monolith = ({ top }) => {
       <FifthScene top={top} size={size} ref={fifthSceneRef} />
       <SixthScene top={top} size={size} ref={sixthSceneRef} />
       <SeventhScene top={top} size={size} ref={seventhSceneRef} />
-      <LiveScene top={top} size={size} ref={liveSceneRef} />
       <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
       */
   return (
     <>
-      <WaveFieldScene top={top} size={size} ref={waveFieldSceneRef} />
+      <LiveScene top={top} size={size} ref={liveSceneRef} />
     </>
   )
 }
