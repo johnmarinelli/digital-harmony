@@ -1,3 +1,5 @@
 const DEG = 0.0174533
 
-export { DEG }
+const DASH_OFFSET_DELTA = 0.0005
+
+export { DEG, DASH_OFFSET_DELTA }

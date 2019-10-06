@@ -1,10 +1,9 @@
 import React, { useRef, useState } from 'react'
 import * as THREE from 'three/src/Three'
 import { useRender } from 'react-three-fiber'
+import { DASH_OFFSET_DELTA } from '../../util/Constants'
 
 const colors = ['#A2CCB6', '#FCEEB5', '#EE786E', '#EE786E']
-
-const DASH_OFFSET_DELTA = 0.0005
 
 const RandomFatLine = () => {
   const material = useRef()
@@ -62,4 +61,4 @@ const FatLines = () => {
   return <group ref={group}>{lines.map((_, index) => <RandomFatLine key={index} />)}</group>
 }
 
-export default FatLines
+export { FatLines as FloatingSpaghetti }

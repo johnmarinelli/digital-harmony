@@ -5,6 +5,7 @@ import { VertexShader, FragmentShader } from '../../shaders/LiveSceneShader'
 import clock from '../../util/Clock'
 import { Transport } from 'tone'
 import { AudioEnabledRawShaderMaterial } from '../../materials/AudioEnabled'
+import { ease } from '../../util/Easing'
 
 class RingPointMaterial extends AudioEnabledRawShaderMaterial {
   constructor(options) {
@@ -114,11 +115,6 @@ class RingPoints extends THREE.Points {
     }
   }
 }
-
-const ease = t =>
-  t === 0.0 || t === 1.0
-    ? t
-    : t < 0.5 ? +0.5 * Math.pow(2.0, 20.0 * t - 10.0) : -0.5 * Math.pow(2.0, 10.0 - t * 20.0) + 1.0
 
 const Rings = props => {
   const rings = []
