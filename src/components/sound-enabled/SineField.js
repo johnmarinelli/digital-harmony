@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { SoundWave } from './SoundWave'
 import { withSong } from './WithSong'
 
-class SineField extends React.Component {
+class SineField extends React.PureComponent {
   constructor() {
     super()
     this.groupRef = React.createRef()

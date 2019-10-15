@@ -39,7 +39,7 @@ export class StreamingPlayer extends events.EventEmitter {
     this.started = false
 
     this._startMethod = (time, offset) => {
-      console.log('StreamingPlayer::_startMethod')
+      console.log(`StreamingPlayer id ${this.id} _startMethod() called`)
       // paused and resumed
       if (this.started) {
         const segment = Math.floor(offset / SEG_TIME)

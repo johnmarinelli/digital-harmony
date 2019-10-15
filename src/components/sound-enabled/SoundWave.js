@@ -81,7 +81,6 @@ class SoundWaveBufferGeometry extends AudioEnabledBufferGeometry {
  * SoundWave
  * the `Object3D` for a sine wave that is controlled by audio data
  */
-
 const SoundWave = options => {
   const { player } = options
   const ref = useRef()
