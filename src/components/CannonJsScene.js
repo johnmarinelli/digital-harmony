@@ -100,13 +100,35 @@ const Boxes = () => {
   )
 }
 
-class SixthScene extends React.Component {
+class CannonJs extends React.Component {
   constructor() {
     super()
+    console.log('CannonJsScene::constructor')
     this.sceneRef = React.createRef()
   }
 
+  // dtor
+  componentWillUnmount() {
+    this.players.forEach(player => player.destroy())
+    console.log('componentWillUnmount')
+  }
+
+  shouldComponentUpdate() {
+    console.log('shouldComponentUpdate', arguments)
+    return false
+  }
+
+  getSnapshotBeforeUpdate() {
+    console.log('getSnapshotBeforeUpdate', arguments)
+    return null
+  }
+
+  componentDidUpdate() {
+    console.log('componentDidUpdate', arguments)
+  }
+
   render() {
+    console.log('CannonJsScene::render')
     return (
       <scene ref={this.sceneRef} background={new THREE.Color(0x000000)}>
         <Lights />
@@ -119,4 +141,4 @@ class SixthScene extends React.Component {
   }
 }
 
-export default SixthScene
+export { CannonJs as CannonJsScene }
