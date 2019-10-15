@@ -74,7 +74,7 @@ function withSong(Components, folder, numSegments, position = new THREE.Vector3(
     }
 
     render() {
-      console.log('render')
+      console.log('WithSong::render')
       return this.clonedComponents
     }
   }
