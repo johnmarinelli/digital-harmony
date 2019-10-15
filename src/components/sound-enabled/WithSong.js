@@ -9,7 +9,7 @@ import { Transport } from 'tone'
  * Handles audio player -> component mapping,
  * and starting the player
  */
-function withSong(Components, folder, segments, position = new THREE.Vector3(0, 0, 0)) {
+function withSong(Components, folder, numSegments, position = new THREE.Vector3(0, 0, 0)) {
   return class extends React.Component {
     constructor() {
       super()
@@ -20,7 +20,13 @@ function withSong(Components, folder, segments, position = new THREE.Vector3(0, 
 
       for (let i = 0; i < numTracks; ++i) {
         this.players.push(
-          new Player({ position, name: trackNames[i], folder, segments, eventEmitterRef: this.audioFileStatusEmitter })
+          new Player({
+            position,
+            name: trackNames[i],
+            folder,
+            numSegments,
+            eventEmitterRef: this.audioFileStatusEmitter,
+          })
         )
         this.audioFileStatusEmitter.on('player-ready', () => {
           const allTracksReady = this.players
@@ -38,37 +44,38 @@ function withSong(Components, folder, segments, position = new THREE.Vector3(0, 
           }
         })
       }
+
+      this.clonedComponents = Components.map((component, i) =>
+        React.cloneElement(component, {
+          folder,
+          segments: numSegments,
+          player: this.players.filter(player => player.name === component.props.name)[0],
+          key: i,
+        })
+      )
     }
 
     // dtor
     componentWillUnmount() {
       this.players.forEach(player => player.destroy())
-      console.log('componentWillUnmount')
+      console.log('WithSong::componentWillUnmount')
     }
 
     shouldComponentUpdate() {
-      console.log('shouldComponentUpdate', arguments)
+      console.log('WithSong::shouldComponentUpdate', arguments)
     }
 
     getSnapshotBeforeUpdate() {
-      console.log('getSnapshotBeforeUpdate', arguments)
+      console.log('WithSong::getSnapshotBeforeUpdate', arguments)
     }
 
     componentDidUpdate() {
-      console.log('componentDidUpdate', arguments)
+      console.log('WithSong::componentDidUpdate', arguments)
     }
 
     render() {
       console.log('render')
-      const newComponents = Components.map((component, i) =>
-        React.cloneElement(component, {
-          folder,
-          segments,
-          player: this.players.filter(player => player.name === component.props.name)[0],
-          key: i,
-        })
-      )
-      return newComponents
+      return this.clonedComponents
     }
   }
 }

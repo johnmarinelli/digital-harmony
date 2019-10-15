@@ -9,6 +9,11 @@ class SineFieldScene extends React.Component {
     this.sceneRef = React.createRef()
   }
 
+  shouldComponentUpdate() {
+    console.log('shouldComponentUpdate', arguments)
+    return false
+  }
+
   render() {
     const { top, size } = this.props
     const scrollMax = size.height * 4.5

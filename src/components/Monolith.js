@@ -6,7 +6,7 @@ import BoxRepeatScene from './BoxRepeatScene'
 import ThirdScene from './ThirdScene'
 import FourthScene from './FourthScene'
 import FifthScene from './FifthScene'
-import SixthScene from './SixthScene'
+import { CannonJsScene } from './CannonJsScene'
 import SeventhScene from './SeventhScene'
 import WaveFieldScene from './WaveFieldScene'
 import LiveScene from './LiveScene'
@@ -67,13 +67,13 @@ const Monolith = ({ top }) => {
   const sineFieldSceneRef = useRef()
   const waveFieldSceneRef = useRef()
   const seventhSceneRef = useRef()
+  const cannonJsSceneRef = useRef()
   /*
   const firstSceneRef = useRef()
   const boxRepeatSceneRef = useRef()
   const thirdSceneRef = useRef()
   const fourthSceneRef = useRef()
   const fifthSceneRef = useRef()
-  const sixthSceneRef = useRef()
   */
 
   let transitionManager = null
@@ -81,16 +81,16 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      liveSceneRef.current.sceneRef.current,
-      /*
-      waveFieldSceneRef.current.sceneRef.current,
       sineFieldSceneRef.current.sceneRef.current,
+      /*
+      cannonJsSceneRef.current.sceneRef.current,
+      liveSceneRef.current.sceneRef.current,
+      waveFieldSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       boxRepeatSceneRef.current.sceneRef.current,
       thirdSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
       fifthSceneRef.current.sceneRef.current,
-      sixthSceneRef.current.sceneRef.current,
       seventhSceneRef.current.sceneRef.current,
       */
     ]
@@ -113,13 +113,12 @@ const Monolith = ({ top }) => {
       <ThirdScene top={top} size={size} ref={thirdSceneRef} />
       <FourthScene top={top} size={size} ref={fourthSceneRef} />
       <FifthScene top={top} size={size} ref={fifthSceneRef} />
-      <SixthScene top={top} size={size} ref={sixthSceneRef} />
       <SeventhScene top={top} size={size} ref={seventhSceneRef} />
-      <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
+      <CannonJsScene ref={cannonJsSceneRef} />
       */
   return (
     <>
-      <LiveScene top={top} size={size} ref={liveSceneRef} />
+      <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
     </>
   )
 }
