@@ -10,7 +10,7 @@ import { Transport } from 'tone'
  * and starting the player
  */
 function withSong(Components, folder, numSegments, position = new THREE.Vector3(0, 0, 0)) {
-  return class extends React.Component {
+  return class extends React.PureComponent {
     constructor() {
       super()
       this.audioFileStatusEmitter = new events.EventEmitter()
@@ -56,13 +56,14 @@ function withSong(Components, folder, numSegments, position = new THREE.Vector3(
     }
 
     // dtor
+    componentDidMount() {
+      console.log('WithSong::componentDidMount')
+    }
+
+    // dtor
     componentWillUnmount() {
       this.players.forEach(player => player.destroy())
       console.log('WithSong::componentWillUnmount')
-    }
-
-    shouldComponentUpdate() {
-      console.log('WithSong::shouldComponentUpdate', arguments)
     }
 
     getSnapshotBeforeUpdate() {

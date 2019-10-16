@@ -1,3 +1,4 @@
+/*eslint no-unused-vars: 0 */
 import React, { useRef, useEffect } from 'react'
 import { extend as applyThree, useThree, useRender } from 'react-three-fiber'
 import PhyllotaxisScene from './PhyllotaxisScene'
@@ -9,14 +10,16 @@ import FifthScene from './FifthScene'
 import { CannonJsScene } from './CannonJsScene'
 import SeventhScene from './SeventhScene'
 import WaveFieldScene from './WaveFieldScene'
-import LiveScene from './LiveScene'
+import { InsideMusic, InsideMusicWithBackground } from './InsideMusic'
 import Transition from '../transition/Transition'
+import EnvMapScene from './EnvMapScene'
 import clock from '../util/Clock'
 //import midi from '../util/WebMidi'
 import OrbitControls from '../util/OrbitControls'
 import GuiOptions from '../components/Gui'
+import Background from './Background'
 
-applyThree({ Transition })
+//applyThree({ Transition })
 
 class TransitionManager {
   // scenes: [sceneRef0, sceneRef1, ...]
@@ -61,9 +64,73 @@ class TransitionManager {
   }
 }
 
+/*
+ * would be nice to have WithScene + WithTransitions,
+ * but i still need to figure out how R3F interacts w/ React lifecycle
+ */
+const WithScene = Component => {
+  return class extends React.Component {
+    constructor() {
+      super()
+      console.log('WithScene::Ctor')
+      this.sceneRef = React.createRef()
+    }
+
+    render() {
+      console.log('WithScene::render', this.sceneRef)
+      return (
+        <scene ref={this.sceneRef}>
+          <Component />
+        </scene>
+      )
+    }
+  }
+}
+const WithTransitions = Scenes => {
+  const { gl: renderer, camera, size } = useThree()
+  let transitionManager = null
+  let transition = null
+
+  useRender(() => {
+    const elapsed = clock.getElapsedTime()
+    transitionManager.update(elapsed)
+    transition.render(renderer)
+  }, true)
+
+  return class extends React.PureComponent {
+    constructor() {
+      super()
+      this.orbitControls = null
+      this.ref = React.createRef()
+      //this.refs = Scenes.map(() => React.createRef())
+    }
+
+    componentDidMount() {
+      this.scenes = [this.ref.current.sceneRef.current]
+      transition = new Transition(camera)
+      transition.initializeScenes(...this.scenes.slice(0, 2))
+      transitionManager = new TransitionManager(this.scenes, transition, true)
+
+      this.orbitControls = new OrbitControls(camera, document.querySelector('.scroll-container'))
+    }
+
+    render() {
+      const InsideMusicScene = WithScene(InsideMusic)
+      console.log('Monolith::render')
+      return (
+        <>
+          <InsideMusicScene ref={this.ref} />
+        </>
+      )
+
+      //return Scenes.map((Scene, i) => <Scene ref={this.refs[i]} />)
+    }
+  }
+}
+
 const Monolith = ({ top }) => {
   const { gl: renderer, camera, size } = useThree()
-  const liveSceneRef = useRef()
+  const insideMusicSceneRef = useRef()
   const sineFieldSceneRef = useRef()
   const waveFieldSceneRef = useRef()
   const seventhSceneRef = useRef()
@@ -78,13 +145,14 @@ const Monolith = ({ top }) => {
 
   let transitionManager = null
   let transition = null
+  let hasBeenInitialized = false
 
   useEffect(() => {
     const scenes = [
-      sineFieldSceneRef.current.sceneRef.current,
+      insideMusicSceneRef.current.sceneRef.current,
       /*
+      sineFieldSceneRef.current.sceneRef.current,
       cannonJsSceneRef.current.sceneRef.current,
-      liveSceneRef.current.sceneRef.current,
       waveFieldSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       boxRepeatSceneRef.current.sceneRef.current,
@@ -94,12 +162,16 @@ const Monolith = ({ top }) => {
       seventhSceneRef.current.sceneRef.current,
       */
     ]
-    transition = new Transition(camera)
-    transition.initializeScenes(...scenes.slice(0, 2))
-    transitionManager = new TransitionManager(scenes, transition, true)
+    if (!hasBeenInitialized) {
+      console.log('Initializing Transition Manager')
+      transition = new Transition(camera)
+      transition.initializeScenes(...scenes.slice(0, 2))
+      transitionManager = new TransitionManager(scenes, transition, true)
+      hasBeenInitialized = true
+    }
 
     new OrbitControls(camera, document.querySelector('.scroll-container'))
-  })
+  }, hasBeenInitialized)
 
   useRender(() => {
     const elapsed = clock.getElapsedTime()
@@ -118,8 +190,9 @@ const Monolith = ({ top }) => {
       */
   return (
     <>
-      <SineFieldScene top={top} size={size} ref={sineFieldSceneRef} />
+      <InsideMusicWithBackground top={top} scrollMax={size.height * 3} ref={insideMusicSceneRef} />
     </>
   )
 }
+
 export default Monolith
