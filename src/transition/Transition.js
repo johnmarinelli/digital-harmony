@@ -33,6 +33,7 @@ const Transition = function(camera) {
   this.material.uniforms.tDiffuse1.value = null
   this.material.uniforms.tDiffuse2.value = null
 
+  this.hasBeenInitialized = false
   this.needChange = false
 
   this.setTextureThreshold = function(value) {
@@ -60,6 +61,8 @@ const Transition = function(camera) {
     this.sceneBFbo = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParameters)
     this.material.uniforms.tDiffuse1.value = this.sceneAFbo
     this.material.uniforms.tDiffuse2.value = this.sceneBFbo
+
+    this.hasBeenInitialized = true
   }
 
   this.activeCamera = camera

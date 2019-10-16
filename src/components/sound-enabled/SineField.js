@@ -2,7 +2,7 @@ import React from 'react'
 import { extend } from 'react-three-fiber'
 import * as THREE from 'three'
 import { SoundWave } from './SoundWave'
-import { withSong } from './WithSong'
+import { withSong } from '../420/WithSong'
 
 class SineField extends React.PureComponent {
   constructor() {

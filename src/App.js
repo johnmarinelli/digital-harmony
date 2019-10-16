@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import './App.css'
 import { extend, Canvas } from 'react-three-fiber'
-import { useSpring } from 'react-spring/three'
+import { useSpring, a as animated } from 'react-spring/three'
 import 'react-dat-gui/build/react-dat-gui.css'
 //import DatGui, { DatColor, DatNumber, DatBoolean } from 'react-dat-gui'
 import * as dat from 'dat.gui'
@@ -118,15 +118,12 @@ const DatGui = () => {
 
 const Main = () => {
   const [{ top }, set] = useSpring(() => ({ top: 0 }))
-  const onMouseMove = useCallback(({ clientX: x, clientY: y }) => {
-    return set({
-      mouse: [x - window.innerWidth / 2, y - window.innerHeight / 2],
-    })
+  const onScroll = useCallback(e => {
+    set({ top: e.target.scrollTop })
   }, [])
-  const onScroll = useCallback(e => set({ top: e.target.scrollTop }), [])
 
   //const voronoi3DScale = <DatNumber path="voronoi3DScale" label="Voronoi3D Scale" min={0} max={50} step={0.05} />
-  console.log('src/App.js constructor')
+  console.log('App::constructor')
   clock.start()
   return (
     <>
@@ -134,8 +131,8 @@ const Main = () => {
       <Canvas className="canvas">
         <Monolith top={top} />
       </Canvas>
-      <div className="scroll-container" onScroll={onScroll} onMouseMove={onMouseMove}>
-        <div style={{ height: '525vh' }} />
+      <div className="scroll-container" onScroll={onScroll}>
+        <div style={{ height: '150vh' }} />
       </div>
     </>
   )

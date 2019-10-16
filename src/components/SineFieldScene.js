@@ -3,15 +3,10 @@ import * as THREE from 'three'
 import Background from './Background'
 import { SineField } from './sound-enabled/SineField'
 
-class SineFieldScene extends React.Component {
+class SineFieldScene extends React.PureComponent {
   constructor() {
     super()
     this.sceneRef = React.createRef()
-  }
-
-  shouldComponentUpdate() {
-    console.log('shouldComponentUpdate', arguments)
-    return false
   }
 
   render() {

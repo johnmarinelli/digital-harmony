@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import { Transport } from 'tone'
 import { AudioEnabledShaderMaterial } from '../../materials/AudioEnabled'
-import { withSong } from './WithSong'
+import { withSong } from '../420/WithSong'
 import clock from '../../util/Clock'
 import { extend, useRender } from 'react-three-fiber'
 import * as THREE from 'three'
@@ -9,6 +9,7 @@ import { animated as anim } from 'react-spring/three'
 import * as WaveFieldShader from '../../shaders/WaveFieldShader'
 import midi from '../../util/WebMidi'
 
+/*eslint no-useless-constructor: 0 */
 class TwistingWaveFieldMaterial extends AudioEnabledShaderMaterial {
   constructor(options) {
     super(options)
@@ -140,31 +141,32 @@ const WaveField = props => {
   )
 }
 
-const TwistingWaveFields = () => {
-  const tracks = ['battery', 'guitar']
-  const waves = []
-  for (let i = 0; i < tracks.length; ++i) {
-    const wave = (
-      <WaveField
-        position={[-i * 2, 0, 0]}
-        waveformResolution={128}
-        size={10}
-        color={new THREE.Color(0xffff00)}
-        opacity={1.0}
-        name={tracks[i]}
-      />
-    )
-    waves.push(wave)
+class TwistingWaveFields extends React.PureComponent {
+  constructor() {
+    super()
+    const tracks = ['battery', 'guitar']
+    const waves = []
+    for (let i = 0; i < tracks.length; ++i) {
+      const wave = (
+        <WaveField
+          position={[-i * 2, 0, 0]}
+          waveformResolution={128}
+          size={10}
+          color={new THREE.Color(0xffff00)}
+          opacity={1.0}
+          name={tracks[i]}
+        />
+      )
+      waves.push(wave)
+    }
+
+    const Song = withSong(waves, 'take_me_out', 3)
+    extend({ Song })
+    this.Song = Song
   }
 
-  const Song = withSong(waves, 'take_me_out', 3)
-  extend({ Song })
-
-  return (
-    <group>
-      <Song />
-    </group>
-  )
+  render() {
+    return <group>{this.Song}</group>
+  }
 }
-
 export { WaveField as TwistingWaveField, TwistingWaveFields }
