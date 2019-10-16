@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import React, { useRef } from 'react'
 import { useRender } from 'react-three-fiber'
-import { VertexShader, FragmentShader } from '../../shaders/LiveSceneShader'
+import { VertexShader, FragmentShader } from '../../shaders/InsideMusicSceneShader'
 import clock from '../../util/Clock'
 import { Transport } from 'tone'
 import { AudioEnabledRawShaderMaterial } from '../../materials/AudioEnabled'

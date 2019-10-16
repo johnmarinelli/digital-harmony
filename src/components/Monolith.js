@@ -12,7 +12,7 @@ import SeventhScene from './SeventhScene'
 import WaveFieldScene from './WaveFieldScene'
 import { InsideMusic, InsideMusicWithBackground } from './InsideMusic'
 import Transition from '../transition/Transition'
-import EnvMapScene from './EnvMapScene'
+import { EnvironmentMapScene } from './EnvironmentMap'
 import clock from '../util/Clock'
 //import midi from '../util/WebMidi'
 import OrbitControls from '../util/OrbitControls'
@@ -135,6 +135,7 @@ const Monolith = ({ top }) => {
   const waveFieldSceneRef = useRef()
   const seventhSceneRef = useRef()
   const cannonJsSceneRef = useRef()
+  const environmentMapSceneRef = useRef()
   /*
   const firstSceneRef = useRef()
   const boxRepeatSceneRef = useRef()
@@ -149,8 +150,9 @@ const Monolith = ({ top }) => {
 
   useEffect(() => {
     const scenes = [
-      insideMusicSceneRef.current.sceneRef.current,
+      environmentMapSceneRef.current.sceneRef.current,
       /*
+      insideMusicSceneRef.current.sceneRef.current,
       sineFieldSceneRef.current.sceneRef.current,
       cannonJsSceneRef.current.sceneRef.current,
       waveFieldSceneRef.current.sceneRef.current,
@@ -180,6 +182,7 @@ const Monolith = ({ top }) => {
   }, true)
 
   /*
+      <InsideMusicWithBackground top={top} scrollMax={size.height * 3} ref={insideMusicSceneRef} />
       <PhyllotaxisScene top={top} size={size} ref={firstSceneRef} />
       <BoxRepeatScene top={top} size={size} ref={boxRepeatSceneRef} />
       <ThirdScene top={top} size={size} ref={thirdSceneRef} />
@@ -190,7 +193,7 @@ const Monolith = ({ top }) => {
       */
   return (
     <>
-      <InsideMusicWithBackground top={top} scrollMax={size.height * 3} ref={insideMusicSceneRef} />
+      <EnvironmentMapScene ref={environmentMapSceneRef} />
     </>
   )
 }
