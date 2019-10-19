@@ -6,7 +6,7 @@ import clock from '../util/Clock'
 import Background from './Background'
 import { DEG } from '../util/Constants'
 
-const PhyllotaxisComponent = props => {
+const Phyllotaxis = props => {
   let group = useRef()
 
   const timeStart = clock.getElapsedTime()
@@ -72,20 +72,27 @@ class PhyllotaxisScene extends React.Component {
   }
 
   render() {
-    const { top, size } = this.props
-    const scrollMax = size.height * 4.5
-
     return (
       <scene ref={this.sceneRef}>
-        <Background
-          color={top.interpolate(
-            [0, scrollMax * 0.25, scrollMax * 0.8, scrollMax],
-            ['#27282F', '#247BA0', '#70C1B3', '#f8f3f1']
-          )}
-        />
-        <PhyllotaxisComponent position={[0, 0, 0]} scale={[1, 1, 1]} />
+        <Phyllotaxis position={[0, 0, 0]} scale={[1, 1, 1]} />
       </scene>
     )
   }
 }
+
+const PhyllotaxisWithScrollingBackground = ({ top, scrollMax }) => {
+  return (
+    <scene ref={this.sceneRef}>
+      <Background
+        color={top.interpolate(
+          [0, scrollMax * 0.25, scrollMax * 0.8, scrollMax],
+          ['#27282F', '#247BA0', '#70C1B3', '#f8f3f1']
+        )}
+      />
+      <Phyllotaxis position={[0, 0, 0]} scale={[1, 1, 1]} />
+    </scene>
+  )
+}
+
+export { PhyllotaxisScene, Phyllotaxis, PhyllotaxisWithScrollingBackground }
 export default PhyllotaxisScene
