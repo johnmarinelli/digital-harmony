@@ -55,7 +55,6 @@ function withSong(Components, folder, numSegments, position = new THREE.Vector3(
       )
     }
 
-    // dtor
     componentDidMount() {
       console.log('WithSong::componentDidMount')
     }

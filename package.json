@@ -5,6 +5,7 @@
   "dependencies": {
     "cannon": "^0.6.2",
     "dat.gui": "^0.7.5",
+    "obj2gltf": "^3.0.4",
     "react": "^16.9.0",
     "react-dat-gui": "^2.2.0",
     "react-dom": "^16.9.0",

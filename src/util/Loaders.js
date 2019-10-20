@@ -14,7 +14,6 @@ const loadEnvironmentMapUrls = directory => {
   const names = ['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg']
   const root = '/textures/cube/'
   const urls = names.map(name => path.join(root, directory, name))
-  console.log(urls)
   const cubeTexture = new THREE.CubeTextureLoader().load(urls)
   cubeTexture.format = THREE.RGBFormat
   cubeTexture.mapping = THREE.CubeReflectionMapping

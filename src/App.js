@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import './App.css'
 import { extend, Canvas } from 'react-three-fiber'
-import { useSpring, a as animated } from 'react-spring/three'
+import { useSpring } from 'react-spring/three'
 import 'react-dat-gui/build/react-dat-gui.css'
 //import DatGui, { DatColor, DatNumber, DatBoolean } from 'react-dat-gui'
 import * as dat from 'dat.gui'
@@ -132,7 +132,7 @@ const Main = () => {
         <Monolith top={top} />
       </Canvas>
       <div className="scroll-container" onScroll={onScroll}>
-        <div style={{ height: '150vh' }} />
+        <div style={{ height: '200vh' }} />
       </div>
     </>
   )

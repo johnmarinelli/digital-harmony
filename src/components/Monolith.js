@@ -1,5 +1,5 @@
 /*eslint no-unused-vars: 0 */
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useMemo, useState } from 'react'
 import { extend as applyThree, useThree, useRender } from 'react-three-fiber'
 import PhyllotaxisScene from './PhyllotaxisScene'
 import SineFieldScene from './SineFieldScene'
@@ -18,11 +18,9 @@ import clock from '../util/Clock'
 import OrbitControls from '../util/OrbitControls'
 import Background from './Background'
 import { TransitionManager } from '../transition/TransitionManager'
-import { StorySegment, ScrollingStory } from './ScrollingStory'
-import { loadEnvironmentMapUrls } from '../util/Loaders'
+import { FirstStory } from './stories/FirstStory'
 
 //applyThree({ Transition })
-
 const Monolith = ({ top }) => {
   const { gl: renderer, camera, size } = useThree()
   const insideMusicSceneRef = useRef()
@@ -72,11 +70,13 @@ const Monolith = ({ top }) => {
     new OrbitControls(camera, document.querySelector('.scroll-container'))
   }, hasBeenInitialized)
 
+  /*
   useRender(() => {
     const elapsed = clock.getElapsedTime()
     transitionManager.update(elapsed)
     transition.render(renderer)
   }, true)
+  */
 
   /*
       <InsideMusicWithBackground top={top} scrollMax={size.height * 3} ref={insideMusicSceneRef} />
@@ -93,15 +93,7 @@ const Monolith = ({ top }) => {
     </>
   )
       */
-  const cubeTexture = loadEnvironmentMapUrls('daylight-bridge')
-
-  return (
-    <ScrollingStory top={top} ref={scrollingStoryRef}>
-      <StorySegment startYOffset={0}>
-        <EnvironmentMap cubeTexture={cubeTexture} />
-      </StorySegment>
-    </ScrollingStory>
-  )
+  return <FirstStory top={top} ref={scrollingStoryRef} />
 }
 
 export default Monolith
