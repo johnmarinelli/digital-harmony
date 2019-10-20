@@ -1,0 +1,115 @@
+{
+  "accessors": [
+    {
+      "name": "Diamond_Cone-Mesh_0_positions",
+      "componentType": 5126,
+      "count": 107,
+      "min": [
+        -1.6400059461593628,
+        -1.9724429845809937,
+        -1.6400059461593628
+      ],
+      "max": [
+        1.6400059461593628,
+        0.14671599864959717,
+        1.6400059461593628
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "byteOffset": 0
+    },
+    {
+      "name": "Diamond_Cone-Mesh_0_indices",
+      "componentType": 5123,
+      "count": 420,
+      "min": [
+        0
+      ],
+      "max": [
+        106
+      ],
+      "type": "SCALAR",
+      "bufferView": 1,
+      "byteOffset": 0
+    }
+  ],
+  "asset": {
+    "generator": "obj2gltf",
+    "version": "2.0"
+  },
+  "buffers": [
+    {
+      "name": "DIAMOND",
+      "byteLength": 2124,
+      "uri": "data:application/octet-stream;base64,XMi7P2iU7r0sLlq/HVaAPjhMxL9RL6i+HVYAP20fjL9iLyi/HVaAP7IuXr5aL6i/LC5av2iU7r1cyLu/US+ovjhMxL8dVoC+Yi8ov20fjL8dVgC/Wi+ov7IuXr4dVoC/z2rhvW0fjL8VrFG/EmthvrIuXr4drNG/fZPePmiU7r2369G/SGphvThMxL8VrNG+t+vRv2iU7r1ck96+FazRvjhMxL9Va2E9FaxRv20fjL/PauE9HazRv/UuXr4Sa2E+t+vRP2iU7r1ck94+FazRPjhMxL9Va2G9JqxRP20fjL/PauG9HazRP7IuXr4Sa2G+EmthPrIuXr4drNE/VWvhPW0fjL8VrFE/VWthPThMxL8VrNE+LC5aP2iU7r1UyLs/XJPevmiU7r2369E/vMnXvs++8r1o6tE/HVaAvjhMxL9RL6g+HVYAv20fjL9iLyg/XMi7v2iU7r0sLlo/HVaAv7IuXr5iL6g/YoGfP2iU7r0zbXM/Yi+oP7IuXr4dVoA/cy+oPjhMxL8dVoA+Yi8oP20fjL8dVgA/SGphvThMxL8VrNG+LC5av2iU7r1cyLu/t+vRP2iU7r1ck94+FazRPjhMxL9Va2G9XMi7v2iU7r0sLlo/XMi7v2iU7r0sLlo/HVaAvjhMxL9RL6g+US+ovjhMxL8dVoC+t+vRv2iU7r1ck96+XJPevmiU7r2369E/RpXhviS18L0xfdE/XMi7P2iU7r0sLlq/FazRvjhMxL9Va2E9AAAAAAN5/L8AAACAHVaAPjhMxL9RL6i+fZPePmiU7r2369G/cy+oPjhMxL8dVoA+LC5aP2iU7r1UyLs/VWthPThMxL8VrNE+u17ivmiU7r1qMtE/CtrGP2iU7r3ayFW+LC5av2iU7r1cyLu/fZPePmiU7r2369G/XMi7v2iU7r0sLlo/t+vRv2iU7r1ck96+LC5aP2iU7r1UyLs/XMi7P2iU7r0sLlq/j6fVvmiU7r35ntE/XJPevmiU7r2369E/XMi7P2iU7r0sLlq/Tkd0P7g8Fj4p6Q2/PYG0PyGUdzxvD0K+t+vRP2iU7r1ck94+YoGfP2iU7r0zbXM/LC5aP2iU7r1UyLs/M21zP2iU7r1igZ+/YoGfv2iU7r0zbXO/LC5av2iU7r1cyLu/9KfVvmiU7r0Cn9E/XJPevmiU7r2369E/CtrGP2iU7r3ayFW+t+vRP2iU7r1ck94+2shVvmiU7r0K2sa/fZPePmiU7r2369G/Ug0Lvrg8Fj7BVoG/KekNv7g8Fj5OR3S/gH5Pv7g8Fj74VB6/IsWQPrg8Fj7jiYi/+FQeP7g8Fj6Afk+/44mIv7g8Fj4ixZC+yVaBP7g8Fj5SDQu+yVaBv7g8Fj5SDQs+44mIP7g8Fj4ixZA+Tkd0v7g8Fj4p6Q0/gH5PP7g8Fj7nVB4/+FQev7g8Fj6Afk8/KekNP7g8Fj5OR3Q/Ug0LPrg8Fj7JVoE/IsWQvrg8Fj7jiYg/bw9CviGUdzw9gbS/mPdcvyGUdzzzyZA/TirivmiU7r1oPNE/PYG0vyGUdzxvD0I+VYW4v8XL0736Y1Y/88mQPyGUdzyY91w/mPdcPyGUdzzzyZC/t+vRv2iU7r1ck96+88mQvyGUdzyY91y/bw9CPiGUdzw9gbQ/XMi7v2iU7r0sLlo/M21zv2iU7r1igZ8/2shVPmiU7r0K2sY/CtrGv2iU7r3ayFU+AgADAAAAAAABAAIABQAHAAQABwAFAAYACQALAAgACwAJAAoADAAOAA8ADgAMAA0AEgATABAAEAARABIAFwAUABUAFQAWABcAGAAWABUAGAAVABQAGAAUABkAGgAbABwAGwAdABwAFwAfABAAEAAeABcAIQAfABcAFwAgACEAEQAAABMAEwASABEACAAEAAkABAAIAAsAAgAKAAMACgACAAEABgAMAAcADAAGAAUAIAAQAB8AHwAhACAAGwAaABgAGwAYACwAHQAbACwADgAmAA8AJgAOAA0ALwAwAC0ALQAlAC8AIgApACMAKQAiAC8AMAAiADEAIgAwAC8AKQAuACoALgApAC8ALwAlACQAJAAyAC8ALwAyADMAMwA0AC8ALwA0ACsAKwAoAC8ALgAoACcAKAAuAC8AGAA1ACwAGQAUABcAFwAYABkAEAATAAAAAAA2ABAACgAAAAMACQAEAAoABAAHAAwAJgAMAA8AOQA1ABgAHgAQADsAPQA+ABcAPwBAAEEAQgBDAEQAOABFAD8AOgBGAEcASABJAD0APABKAEsANwBMAE0ATgBPAFAAUQBOAFIATgBQAFIAUABTAFIAUwBAAFIAUwBUAEAAUwBVAFQAVQBWAFQAVQBXAFYAVwBYAFYAVwBZAFgAWQBaAFgAWQBbAFoAWQBcAFsARwBPAF0AXABfAEkAXwBcAF4AYABhAFcASwBWAGIATQBRAGMAZABTAGUARABaAGYATwBHAGUAUQBNAF0AQAA/AGMAVgBLAEEAWgBEAGIASQBmAFwAZgBJAEgAVwBhAF4AUwBkAGAAWQBeAFwAXgBZAFcAYABVAFMAVQBgAFcAWwBmAFoAZgBbAFwAYwBSAEAAUgBjAFEAQQBUAFYAVABBAEAAYgBYAFoAWABiAFYATwBRAF0AUQBPAE4AZQBQAE8AUABlAFMAZwBeAGEAXgBnAGgATQBMAF0AQwBLAGIASwBKAEEARgBkAGUATABHAF0AaQA9ADsAaQBIAD0AJgAdACwANQAmACwAZgBIAGkARwBGAGUAZwBgAGoAYABnAGEAZABqAGAAPwBFAGMARQBNAGMARABDAGIAaQBEAGYAXwBeAGgASgA/AEEA"
+    }
+  ],
+  "bufferViews": [
+    {
+      "name": "bufferView_0",
+      "buffer": 0,
+      "byteLength": 1284,
+      "byteOffset": 0,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_1",
+      "buffer": 0,
+      "byteLength": 840,
+      "byteOffset": 1284,
+      "target": 34963
+    }
+  ],
+  "materials": [
+    {
+      "name": "Material.002",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.64,
+          0.64,
+          0.64,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.903921569
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Diamond_Cone-Mesh",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0
+          },
+          "indices": 1,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Diamond_Cone",
+      "mesh": 0
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
