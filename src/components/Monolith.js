@@ -93,7 +93,7 @@ const Monolith = ({ top }) => {
     </>
   )
       */
-  return <FirstStory top={top} ref={scrollingStoryRef} />
+  return <FirstStory renderer={renderer} top={top} ref={scrollingStoryRef} />
 }
 
 export default Monolith
