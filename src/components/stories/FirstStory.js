@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react'
 import { useRender, extend, useThree } from 'react-three-fiber'
-import { apply as applySpring, animated } from 'react-spring/three'
+import { animated, apply as applySpring } from 'react-spring/three'
 import { StorySegment, ScrollingStory } from './ScrollingStory'
 import { FiftyNote } from '../models/UkCurrency'
 import { EnvironmentMap } from '../EnvironmentMap'
-import { loadEnvironmentMapUrls } from '../../util/Loaders'
+import { loadHDREnvironmentMap, loadEnvironmentMapUrls } from '../../util/Loaders'
 
 import { withSong } from '../420/WithSong'
 import { Rings } from '../sound-enabled/Rings'
@@ -14,14 +14,14 @@ import { RenderPass } from '../../postprocessing/RenderPass'
 import { GlitchPass } from '../../postprocessing/GlitchPass'
 import { ShaderPass } from '../../postprocessing/ShaderPass'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
-import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterimagePass'
+import { DrunkPass } from '../../postprocessing/DrunkPass'
 
-applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass })
-extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass })
-applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, AfterimagePass })
-extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, AfterimagePass })
+import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
 
-const Effects = ({ factor }) => {
+applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
+extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
+
+const Effects = React.memo(({ factor }) => {
   const { gl, scene, camera, size } = useThree()
   const composer = useRef()
 
@@ -44,10 +44,10 @@ const Effects = ({ factor }) => {
         args={[FXAAShader]}
         uniforms-resolution-value={[1 / size.width, 1 / size.height]}
       />
-      <animated.afterimagePass args={0.8} attachArray="passes" renderToScreen factor={factor} />
+      <DrunkPass factor={factor} shouldRenderToScreen={true} />
     </effectComposer>
   )
-}
+})
 
 class FirstStory extends React.Component {
   constructor() {
@@ -73,8 +73,22 @@ class FirstStory extends React.Component {
   }
 
   render() {
-    const { top } = this.props
-    const cubeTexture = loadEnvironmentMapUrls('daylight-bridge')
+    const { top, renderer } = this.props
+    const cubeTexture = loadEnvironmentMapUrls('daylight-bridge', [
+      'posx.jpg',
+      'negx.jpg',
+      'posy.jpg',
+      'negy.jpg',
+      'posz.jpg',
+      'negz.jpg',
+    ])
+    const pisaCubeTexture = loadEnvironmentMapUrls('pisa', ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'])
+    const hdrEnvMap = loadHDREnvironmentMap(
+      'pisa-hdr',
+      ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'],
+      renderer
+    )
+    console.log(cubeTexture)
     return (
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top}>
@@ -83,9 +97,7 @@ class FirstStory extends React.Component {
             <FiftyNote />
           </StorySegment>
           <StorySegment>
-            <mesh>
-              <cubeGeometry attach="geometry" />
-            </mesh>
+            <EnvironmentMapHDR hdrEnvMap={hdrEnvMap} envMap={pisaCubeTexture} />
           </StorySegment>
           <StorySegment>
             <EnvironmentMap cubeTexture={cubeTexture} />
@@ -101,7 +113,7 @@ class FirstStory extends React.Component {
             </mesh>
           </StorySegment>
         </ScrollingStory>
-        <Effects factor={top.interpolate([0, 150], [1, 0])} />
+        <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
       </scene>
     )
   }

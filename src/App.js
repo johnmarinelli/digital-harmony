@@ -123,7 +123,6 @@ const Main = () => {
   }, [])
 
   //const voronoi3DScale = <DatNumber path="voronoi3DScale" label="Voronoi3D Scale" min={0} max={50} step={0.05} />
-  console.log('App::constructor')
   clock.start()
   return (
     <>
@@ -132,7 +131,7 @@ const Main = () => {
         <Monolith top={top} />
       </Canvas>
       <div className="scroll-container" onScroll={onScroll}>
-        <div style={{ height: '200vh' }} />
+        <div style={{ height: '500vh' }} />
       </div>
     </>
   )

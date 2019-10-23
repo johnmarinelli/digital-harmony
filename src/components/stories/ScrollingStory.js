@@ -24,15 +24,11 @@ class ScrollingStory extends React.Component {
     // the y axis spans 6 units in both directions.
     const screenCoordinatesYInterval = 6.0
     const segments = children.map((child, i) => {
-      const startPositionScreenCoordinates = i * screenCoordinatesYInterval
+      const startPositionScreenCoordinates = i * screenCoordinatesYInterval * 2
       return React.cloneElement(
         child,
         Object.assign({}, child.props, {
           factor: top.interpolate(top => {
-            /*
-            const positionInPercent = top / totalAvailableHeight
-            const indexInPercent = (i + 1) / numChildren
-            */
             const newY = startPositionScreenCoordinates - (-1 + top / 50.0)
             return newY * -1
           }),

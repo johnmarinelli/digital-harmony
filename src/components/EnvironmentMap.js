@@ -17,7 +17,7 @@ const EnvironmentMappedSphere = ({ cubeTexture, sphereBufferGeometryArgs }) => {
 const EnvironmentCube = ({ fragmentShader, vertexShader, uniforms }) => {
   return (
     <mesh>
-      <boxBufferGeometry attach="geometry" args={[10, 10, 10]} />
+      <boxBufferGeometry attach="geometry" args={[5, 5, 5]} />
       <shaderMaterial
         attach="material"
         fragmentShader={fragmentShader}
@@ -30,27 +30,13 @@ const EnvironmentCube = ({ fragmentShader, vertexShader, uniforms }) => {
   )
 }
 
-/*
-const EnvironmentCubeMesh = ({ fragmentShader, vertexShader, uniforms }) => {
-  const geometry = new THREE.BoxBufferGeometry(10, 10, 10)
-  const material = new THREE.ShaderMaterial({
-    fragmentShader,
-    vertexShader,
-    uniforms,
-    depthWrite: false,
-    side: THREE.BackSide,
-  })
-
-  const mesh = new THREE.Mesh(geometry, material)
-  return mesh
-}
-*/
-
 const EnvironmentMap = props => {
   const { gl: renderer } = useThree()
+  //renderer.gammaOutput = true
+
   const { cubeTexture } = props
-  renderer.gammaOutput = true
   const cubeShader = THREE.ShaderLib.cube
+  cubeShader.uniforms = THREE.UniformsUtils.clone(THREE.ShaderLib.cube.uniforms)
   cubeShader.uniforms.tCube.value = cubeTexture
   return (
     <>
@@ -69,7 +55,14 @@ class EnvironmentMapScene extends React.Component {
   constructor() {
     super()
     this.sceneRef = React.createRef()
-    this.cubeTexture = loadEnvironmentMapUrls('daylight-bridge')
+    this.cubeTexture = loadEnvironmentMapUrls('daylight-bridge', [
+      'posx.jpg',
+      'negx.jpg',
+      'posy.jpg',
+      'negy.jpg',
+      'posz.jpg',
+      'negz.jpg',
+    ])
   }
 
   render() {
