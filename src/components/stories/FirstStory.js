@@ -15,10 +15,11 @@ import { GlitchPass } from '../../postprocessing/GlitchPass'
 import { ShaderPass } from '../../postprocessing/ShaderPass'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { DrunkPass } from '../../postprocessing/DrunkPass'
+import { Video } from '../Video'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
 
-applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
+applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
 
 const Effects = React.memo(({ factor }) => {
@@ -88,16 +89,20 @@ class FirstStory extends React.Component {
       ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'],
       renderer
     )
-    console.log(cubeTexture)
     return (
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top}>
           <StorySegment>
             {this.Song}
             <FiftyNote />
+            <Video domElementId="kris_drinking" dimensions={[2, 2]} />
           </StorySegment>
           <StorySegment>
-            <EnvironmentMapHDR hdrEnvMap={hdrEnvMap} envMap={pisaCubeTexture} />
+            <EnvironmentMapHDR
+              factor={top.interpolate([0, 1000], [0, 1])}
+              hdrEnvMap={hdrEnvMap}
+              envMap={pisaCubeTexture}
+            />
           </StorySegment>
           <StorySegment>
             <EnvironmentMap cubeTexture={cubeTexture} />

@@ -12,6 +12,8 @@ import { Triggers } from './components/states/scenes/Fifth/index'
 import clock from './util/Clock'
 import * as meshline from 'three.meshline'
 
+import { VideoExampleScene } from './components/VideoExampleScene'
+
 const initialize = () => {
   extend(meshline)
 }
