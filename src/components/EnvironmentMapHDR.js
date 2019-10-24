@@ -1,15 +1,25 @@
 import React, { useRef } from 'react'
-import { useRender } from 'react-three-fiber'
+import { useRender, useThree } from 'react-three-fiber'
+import { animated } from 'react-spring/three'
 import * as THREE from 'three'
 
-const EnvironmentCubeHDR = ({ envMap }) => {
+const RotateCamera = ({ Component, factor }) => {
+  const { camera } = useThree()
+  useRender(() => {
+    camera.rotation.x = factor.getValue()
+    camera.position.z = 6 - factor.getValue()
+  })
+  return Component
+}
+
+const EnvironmentCubeHDR = ({ envMap, factor }) => {
   const cubeShader = THREE.ShaderLib.cube
   cubeShader.uniforms = THREE.UniformsUtils.clone(THREE.ShaderLib.cube.uniforms)
   cubeShader.uniforms.tCube.value = envMap
 
   const { fragmentShader, vertexShader, uniforms } = cubeShader
   return (
-    <mesh>
+    <animated.mesh>
       <boxBufferGeometry attach="geometry" args={[5, 5, 5]} />
       <shaderMaterial
         attach="material"
@@ -19,10 +29,10 @@ const EnvironmentCubeHDR = ({ envMap }) => {
         depthWrite={false}
         side={THREE.BackSide}
       />
-    </mesh>
+    </animated.mesh>
   )
 }
-const EnvironmentMapHDR = ({ metalness, roughness, hdrEnvMap, envMap, color, args }) => {
+const EnvironmentMappedTorus = ({ metalness, roughness, hdrEnvMap, color, geometryArgs, factor }) => {
   const mesh = useRef()
   useRender(() => {
     if (mesh.current) {
@@ -30,18 +40,31 @@ const EnvironmentMapHDR = ({ metalness, roughness, hdrEnvMap, envMap, color, arg
     }
   })
   return (
+    <mesh ref={mesh}>
+      <torusKnotBufferGeometry attach="geometry" args={geometryArgs || [2, 0.5, 150, 20]} />
+      <meshStandardMaterial
+        attach="material"
+        envMap={hdrEnvMap}
+        color={color || 0xffffff}
+        metalness={metalness || 0.5}
+        roughness={roughness || 0.5}
+      />
+    </mesh>
+  )
+}
+
+const EnvironmentMapHDR = ({ metalness, roughness, hdrEnvMap, envMap, color, geometryArgs, factor }) => {
+  return (
     <>
-      <EnvironmentCubeHDR envMap={envMap} />
-      <mesh ref={mesh}>
-        <torusKnotBufferGeometry attach="geometry" args={args || [2, 0.5, 150, 20]} />
-        <meshStandardMaterial
-          attach="material"
-          envMap={hdrEnvMap}
-          color={color || 0xffffff}
-          metalness={metalness || 0.5}
-          roughness={roughness || 0.5}
-        />
-      </mesh>
+      {/* <RotateCamera Component={<EnvironmentCubeHDR envMap={envMap} factor={factor} />} factor={factor} /> */}
+      <EnvironmentCubeHDR envMap={envMap} factor={factor} />
+      <EnvironmentMappedTorus
+        metalness={metalness}
+        roughness={roughness}
+        hdrEnvMap={hdrEnvMap}
+        color={color}
+        gometryArgs={geometryArgs}
+      />
     </>
   )
 }

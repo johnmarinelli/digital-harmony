@@ -8,7 +8,7 @@ import ThirdScene from './ThirdScene'
 import FourthScene from './FourthScene'
 import FifthScene from './FifthScene'
 import { CannonJsScene } from './CannonJsScene'
-import SeventhScene from './SeventhScene'
+import { VideoExampleScene } from './VideoExampleScene'
 import WaveFieldScene from './WaveFieldScene'
 import { InsideMusic, InsideMusicWithBackground } from './InsideMusic'
 import Transition from '../transition/Transition'
@@ -26,7 +26,7 @@ const Monolith = ({ top }) => {
   const insideMusicSceneRef = useRef()
   const sineFieldSceneRef = useRef()
   const waveFieldSceneRef = useRef()
-  const seventhSceneRef = useRef()
+  const videoExampleSceneRef = useRef()
   const cannonJsSceneRef = useRef()
   const environmentMapSceneRef = useRef()
   const firstSceneRef = useRef()
@@ -46,6 +46,7 @@ const Monolith = ({ top }) => {
     const scenes = [
       scrollingStoryRef.current.sceneRef.current,
       /*
+      videoExampleSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       environmentMapSceneRef.current.sceneRef.current,
       insideMusicSceneRef.current.sceneRef.current,
@@ -56,7 +57,6 @@ const Monolith = ({ top }) => {
       thirdSceneRef.current.sceneRef.current,
       fourthSceneRef.current.sceneRef.current,
       fifthSceneRef.current.sceneRef.current,
-      seventhSceneRef.current.sceneRef.current,
       */
     ]
     if (!hasBeenInitialized) {
@@ -85,7 +85,7 @@ const Monolith = ({ top }) => {
       <ThirdScene top={top} size={size} ref={thirdSceneRef} />
       <FourthScene top={top} size={size} ref={fourthSceneRef} />
       <FifthScene top={top} size={size} ref={fifthSceneRef} />
-      <SeventhScene top={top} size={size} ref={seventhSceneRef} />
+      <VideoExampleScene top={top} size={size} ref={videoExampleSceneRef} />
       <CannonJsScene ref={cannonJsSceneRef} />
   return (
     <>
