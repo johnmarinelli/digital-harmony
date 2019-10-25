@@ -23,8 +23,8 @@ const Text = ({ children, position, opacity, color = 'white', fontSize = 410 }) 
 
   return (
     <anim.sprite scale={[scale, scale, 1]} position={position}>
-      <anim.spriteMaterial name="material" transparent opacity={opacity}>
-        <canvasTexture name="map" image={canvas} premultiplyAlpha onUpdate={s => (s.needsUpdate = true)} />
+      <anim.spriteMaterial attach="material" transparent opacity={opacity}>
+        <canvasTexture attach="map" image={canvas} premultiplyAlpha onUpdate={s => (s.needsUpdate = true)} />
       </anim.spriteMaterial>
     </anim.sprite>
   )

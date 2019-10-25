@@ -8,6 +8,7 @@ import GuiOptions from './Gui'
 import midi from '../util/WebMidi'
 import { LissajousKnot, LissajousTrail } from '../util/Lissajous'
 import * as AnimationHelper from '../util/AnimationHelper'
+import { BaseController } from './controllers/Base'
 
 const DifferentialMotion = props => {
   let knotGroup = useRef(),
@@ -33,7 +34,7 @@ const DifferentialMotion = props => {
           if (midiNumber > 85) {
           }
         },
-        'ThirdSceneObjectScale'
+        'LissajousKnotSceneObjectScale'
       )
       midiHandlersAdded = true
     }
@@ -113,30 +114,22 @@ const DifferentialMotion = props => {
     opacity: 0.5,
   })
   return (
-    <anim.group>
-      <anim.group ref={trailGroup}>
+    <group>
+      <group ref={trailGroup}>
         {movingObjects.map((position, index) => (
-          <anim.mesh position={[0, 0, 0]} key={index} material={movingMaterial} geometry={movingGeometry} />
+          <mesh position={[0, 0, 0]} key={index} material={movingMaterial} geometry={movingGeometry} />
         ))}
-      </anim.group>
-      <anim.group ref={knotGroup}>
+      </group>
+      <group ref={knotGroup}>
         {knot.points.map((point, index) => (
-          <anim.mesh position={[point.x, point.y, point.z]} key={index} material={material} geometry={sphereGeometry} />
+          <mesh position={[point.x, point.y, point.z]} key={index} material={material} geometry={sphereGeometry} />
         ))}
-      </anim.group>
-    </anim.group>
+      </group>
+    </group>
   )
 }
 
-class ThirdScene extends React.Component {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-    this.differentialMotionProps = {
-      timeScale: 0.1,
-    }
-  }
-
+class LissajousKnotScene extends BaseController {
   render() {
     const { top, size } = this.props
     const scrollMax = size.height * 4.5
@@ -149,9 +142,9 @@ class ThirdScene extends React.Component {
             ['#e82968', '#eec919', '#504006', '#e32f01']
           )}
         />
-        <DifferentialMotion {...this.differentialMotionProps} />
+        <DifferentialMotion timeScale={0.1} />
       </scene>
     )
   }
 }
-export default ThirdScene
+export default LissajousKnotScene

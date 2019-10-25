@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import { useRender, extend, useThree } from 'react-three-fiber'
-import { animated, apply as applySpring } from 'react-spring/three'
+import { apply as applySpring } from 'react-spring/three'
 import { StorySegment, ScrollingStory } from './ScrollingStory'
 import { FiftyNote } from '../models/UkCurrency'
 import { EnvironmentMap } from '../EnvironmentMap'
@@ -18,6 +18,7 @@ import { DrunkPass } from '../../postprocessing/DrunkPass'
 import { Video } from '../Video'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
+import { BaseController } from '../controllers/Base'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -50,10 +51,9 @@ const Effects = React.memo(({ factor }) => {
   )
 })
 
-class FirstStory extends React.Component {
+class FirstStory extends BaseController {
   constructor() {
     super()
-    this.sceneRef = React.createRef()
 
     const ringComponents = [
       <Rings amplitude={1} name="battery" position={[-2, 0, 2]} rotateX={Math.PI * -0.5} waveformResolution={5} />,

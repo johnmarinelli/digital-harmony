@@ -1,15 +1,14 @@
 /*eslint no-unused-vars: 0 */
 import React, { useRef, useEffect, useMemo, useState } from 'react'
 import { extend as applyThree, useThree, useRender } from 'react-three-fiber'
-import PhyllotaxisScene from './PhyllotaxisScene'
+import { PhyllotaxisWithScrollingBackground } from './PhyllotaxisScene'
 import SineFieldScene from './SineFieldScene'
-import BoxRepeatScene from './BoxRepeatScene'
-import ThirdScene from './ThirdScene'
-import FourthScene from './FourthScene'
-import FifthScene from './FifthScene'
+import { BoxRepeatScene } from './BoxRepeatScene'
+import LissajousKnotScene from './LissajousKnotScene'
+import DigitalHarmonyScene from './DigitalHarmonyScene'
 import { CannonJsScene } from './CannonJsScene'
 import { VideoExampleScene } from './VideoExampleScene'
-import WaveFieldScene from './WaveFieldScene'
+import { WaveFieldScene } from './WaveFieldScene'
 import { InsideMusic, InsideMusicWithBackground } from './InsideMusic'
 import Transition from '../transition/Transition'
 import { EnvironmentMapScene, EnvironmentMap } from './EnvironmentMap'
@@ -19,6 +18,7 @@ import OrbitControls from '../util/OrbitControls'
 import Background from './Background'
 import { TransitionManager } from '../transition/TransitionManager'
 import { FirstStory } from './stories/FirstStory'
+import { VoronoiScene } from './Voronoi3D'
 
 //applyThree({ Transition })
 const Monolith = ({ top }) => {
@@ -29,14 +29,12 @@ const Monolith = ({ top }) => {
   const videoExampleSceneRef = useRef()
   const cannonJsSceneRef = useRef()
   const environmentMapSceneRef = useRef()
-  const firstSceneRef = useRef()
-  const scrollingStoryRef = useRef()
-  /*
-  const boxRepeatSceneRef = useRef()
-  const thirdSceneRef = useRef()
+  const phyllotaxisSceneRef = useRef()
   const fourthSceneRef = useRef()
-  const fifthSceneRef = useRef()
-  */
+  const scrollingStoryRef = useRef()
+  const lissajousKnotSceneRef = useRef()
+  const boxRepeatSceneRef = useRef()
+  const voronoiSceneRef = useRef()
 
   let transitionManager = null
   let transition = null
@@ -45,19 +43,20 @@ const Monolith = ({ top }) => {
   useEffect(
     () => {
       const scenes = [
-        scrollingStoryRef.current.sceneRef.current,
+        fourthSceneRef.current.sceneRef.current,
         /*
+        waveFieldSceneRef.current.sceneRef.current,
+        voronoiSceneRef.current.sceneRef.current,
+        insideMusicSceneRef.current.sceneRef.current,
+        boxRepeatSceneRef.current.sceneRef.current,
+        phyllotaxisSceneRef,
+        lissajousKnotSceneRef.current.sceneRef.current,
+        scrollingStoryRef.current.sceneRef.current,
       videoExampleSceneRef.current.sceneRef.current,
-      firstSceneRef.current.sceneRef.current,
+      phyllotaxisSceneRef.current.sceneRef.current,
       environmentMapSceneRef.current.sceneRef.current,
-      insideMusicSceneRef.current.sceneRef.current,
       sineFieldSceneRef.current.sceneRef.current,
       cannonJsSceneRef.current.sceneRef.current,
-      waveFieldSceneRef.current.sceneRef.current,
-      boxRepeatSceneRef.current.sceneRef.current,
-      thirdSceneRef.current.sceneRef.current,
-      fourthSceneRef.current.sceneRef.current,
-      fifthSceneRef.current.sceneRef.current,
       */
       ]
       if (!hasBeenInitialized) {
@@ -81,21 +80,22 @@ const Monolith = ({ top }) => {
   */
 
   /*
-      <InsideMusicWithBackground top={top} scrollMax={size.height * 3} ref={insideMusicSceneRef} />
-      <PhyllotaxisScene top={top} size={size} ref={firstSceneRef} />
-      <BoxRepeatScene top={top} size={size} ref={boxRepeatSceneRef} />
-      <ThirdScene top={top} size={size} ref={thirdSceneRef} />
-      <FourthScene top={top} size={size} ref={fourthSceneRef} />
-      <FifthScene top={top} size={size} ref={fifthSceneRef} />
+
+      <DigitalHarmonyScene top={top} size={size} ref={fourthSceneRef} />
       <VideoExampleScene top={top} size={size} ref={videoExampleSceneRef} />
       <CannonJsScene ref={cannonJsSceneRef} />
+      <LissajousKnotScene top={top} size={size} ref={lissajousKnotSceneRef} />
+      <PhyllotaxisWithScrollingBackground top={top} scrollMax={size.height * 5} ref={phyllotaxisSceneRef} />
+      <BoxRepeatScene top={top} size={size} ref={boxRepeatSceneRef} />
+      <InsideMusicWithBackground top={top} scrollMax={size.height * 3} ref={insideMusicSceneRef} />
   return (
     <>
       <EnvironmentMapScene ref={environmentMapSceneRef} />
     </>
   )
       */
-  return <FirstStory renderer={renderer} top={top} ref={scrollingStoryRef} />
+  //return <FirstStory renderer={renderer} top={top} ref={scrollingStoryRef} />
+  return <DigitalHarmonyScene top={top} size={size} ref={fourthSceneRef} />
 }
 
 export default Monolith

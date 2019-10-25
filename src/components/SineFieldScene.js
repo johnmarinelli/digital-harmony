@@ -2,13 +2,9 @@ import React from 'react'
 import * as THREE from 'three'
 import Background from './Background'
 import { SineField } from './sound-enabled/SineField'
+import { BaseController } from './controllers/Base'
 
-class SineFieldScene extends React.PureComponent {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class SineFieldScene extends BaseController {
   render() {
     const { top, size } = this.props
     const scrollMax = size.height * 4.5

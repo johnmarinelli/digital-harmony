@@ -4,13 +4,9 @@ import { animated as anim } from 'react-spring/three'
 import { LissajousKnot } from '../util/Lissajous'
 import Background from './Background'
 import GlitchRepeater from './GlitchRepeater'
+import { BaseController } from './controllers/Base'
 
-class BoxRepeatScene extends React.Component {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class BoxRepeatScene extends BaseController {
   render() {
     const { top, size } = this.props
     const scrollMax = size.height * 4.5
@@ -38,4 +34,4 @@ class BoxRepeatScene extends React.Component {
   }
 }
 
-export default BoxRepeatScene
+export { BoxRepeatScene }

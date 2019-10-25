@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import { useRender, useThree } from 'react-three-fiber'
 import { animated } from 'react-spring/three'
 import * as THREE from 'three'
+import { BaseController } from './controllers/Base'
 
 const RotateCamera = ({ Component, factor }) => {
   const { camera } = useThree()
@@ -69,12 +70,7 @@ const EnvironmentMapHDR = ({ metalness, roughness, hdrEnvMap, envMap, color, geo
   )
 }
 
-class EnvironmentMapHDRScene extends React.Component {
-  constructor(props) {
-    super(props)
-    this.sceneRef = React.createRef()
-  }
-
+class EnvironmentMapHDRScene extends BaseController {
   render() {
     const { hdrEnvMap } = this.props
     return (

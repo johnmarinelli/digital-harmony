@@ -1,6 +1,7 @@
 import React, { useRef, useContext, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
+import { BaseController } from './controllers/Base'
 import * as CANNON from 'cannon'
 
 // Cannon-world context provider
@@ -100,35 +101,8 @@ const Boxes = () => {
   )
 }
 
-class CannonJs extends React.Component {
-  constructor() {
-    super()
-    console.log('CannonJsScene::constructor')
-    this.sceneRef = React.createRef()
-  }
-
-  // dtor
-  componentWillUnmount() {
-    this.players.forEach(player => player.destroy())
-    console.log('componentWillUnmount')
-  }
-
-  shouldComponentUpdate() {
-    console.log('shouldComponentUpdate', arguments)
-    return false
-  }
-
-  getSnapshotBeforeUpdate() {
-    console.log('getSnapshotBeforeUpdate', arguments)
-    return null
-  }
-
-  componentDidUpdate() {
-    console.log('componentDidUpdate', arguments)
-  }
-
+class CannonJs extends BaseController {
   render() {
-    console.log('CannonJsScene::render')
     return (
       <scene ref={this.sceneRef} background={new THREE.Color(0x000000)}>
         <Lights />
