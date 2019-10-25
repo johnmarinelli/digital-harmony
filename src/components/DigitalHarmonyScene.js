@@ -7,6 +7,7 @@ import clock from '../util/Clock'
 import { DEG } from '../util/Constants'
 import { rgbToHex } from '../util/Colors'
 import GuiOptions from './Gui'
+import { BaseController } from './controllers/Base'
 
 const DifferentialMotion = props => {
   let group = useRef()
@@ -101,12 +102,7 @@ const DifferentialMotion = props => {
   )
 }
 
-class FourthScene extends React.Component {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class DigitalHarmonyScene extends BaseController {
   render() {
     const { top, size } = this.props
     const scrollMax = size.height * 4.5
@@ -119,7 +115,7 @@ class FourthScene extends React.Component {
         <Background
           color={top.interpolate(
             [0, scrollMax * 0.25, scrollMax * 0.8, scrollMax],
-            ['#FF0000', '#247BA0', '#70C1B3', '#f8f3f1']
+            ['#FFAA33', '#247BA0', '#70C1B3', '#f8f3f1']
           )}
         />
         <DifferentialMotion numPoints={60} geometry={geometry} />
@@ -128,4 +124,4 @@ class FourthScene extends React.Component {
   }
 }
 
-export default FourthScene
+export default DigitalHarmonyScene

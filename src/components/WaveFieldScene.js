@@ -1,16 +1,11 @@
 import React from 'react'
 import Background from './Background'
 import { TwistingWaveFields } from './sound-enabled/TwistingWaveField'
+import { BaseController } from './controllers/Base'
 
-class WaveFieldScene extends React.Component {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class WaveFieldScene extends BaseController {
   render() {
-    const { top, size } = this.props
-    const scrollMax = size.height * 4.5
+    const { top, scrollMax } = this.props
 
     return (
       <scene ref={this.sceneRef}>
@@ -25,4 +20,4 @@ class WaveFieldScene extends React.Component {
     )
   }
 }
-export default WaveFieldScene
+export { WaveFieldScene }

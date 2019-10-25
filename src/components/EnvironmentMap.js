@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import * as THREE from 'three'
 import { useThree, useRender } from 'react-three-fiber'
 import { withSong } from './420/WithSong'
+import { BaseController } from './controllers/Base'
 import { loadEnvironmentMapUrls } from '../util/Loaders'
 
 const EnvironmentMappedSphere = ({ cubeTexture, sphereBufferGeometryArgs }) => {
@@ -51,10 +52,9 @@ const EnvironmentMap = props => {
   )
 }
 
-class EnvironmentMapScene extends React.Component {
+class EnvironmentMapScene extends BaseController {
   constructor() {
     super()
-    this.sceneRef = React.createRef()
     this.cubeTexture = loadEnvironmentMapUrls('daylight-bridge', [
       'posx.jpg',
       'negx.jpg',

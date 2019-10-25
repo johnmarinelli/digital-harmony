@@ -57,8 +57,11 @@ const Voronoi3D = ({ clock, segments, colorPalette, top, voronoiScale, datGuiOve
   let uniforms = Uniforms([window.innerWidth, window.innerHeight], parseInt(color.slice(1, 7), 16))
 
   useRender(() => {
+    if (!mesh.current) {
+      return
+    }
     mesh.current.material.uniforms.time.value = clock.getElapsedTime()
-    mesh.current.material.uniforms.scale.value = voronoiScale.getValue()
+    //mesh.current.material.uniforms.scale.value = voronoiScale.getValue()
     if (datGuiOverride) {
       mesh.current.material.uniforms.color.value = new THREE.Color(
         new THREE.Color(parseInt(GuiOptions.options.feelsLike.slice(1, 7), 16))
@@ -72,9 +75,9 @@ const Voronoi3D = ({ clock, segments, colorPalette, top, voronoiScale, datGuiOve
 
   return (
     <mesh ref={mesh} scale={[width, height, 1.0]}>
-      <planeGeometry name="geometry" args={[1, 1]} />
+      <planeGeometry attach="geometry" args={[1, 1]} />
       <anim.shaderMaterial
-        name="material"
+        attach="material"
         ref={shaderRef}
         color={color}
         depthTest={false}

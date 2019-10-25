@@ -3,6 +3,7 @@ import { extend } from 'react-three-fiber'
 import { Rings } from './sound-enabled/Rings'
 import { withSong } from './420/WithSong'
 import Background from './Background'
+import { BaseController } from './controllers/Base'
 
 class InsideMusic extends React.PureComponent {
   constructor() {
@@ -31,12 +32,7 @@ class InsideMusic extends React.PureComponent {
   }
 }
 
-class WithScrollingBackground extends React.PureComponent {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class WithScrollingBackground extends BaseController {
   render() {
     const { scrollMax, top } = this.props
     return (
@@ -53,12 +49,7 @@ class WithScrollingBackground extends React.PureComponent {
   }
 }
 
-class InsideMusicScene extends React.PureComponent {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class InsideMusicScene extends BaseController {
   render() {
     return (
       <scene ref={this.sceneRef}>

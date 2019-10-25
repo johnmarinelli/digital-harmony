@@ -1,5 +1,6 @@
 import React from 'react'
 import { animated } from 'react-spring/three'
+import { BaseController } from '../controllers/Base'
 
 class StorySegment extends React.Component {
   render() {
@@ -7,12 +8,7 @@ class StorySegment extends React.Component {
   }
 }
 
-class ScrollingStory extends React.Component {
-  constructor(props) {
-    super(props)
-    this.sceneRef = React.createRef()
-  }
-
+class ScrollingStory extends BaseController {
   render() {
     const { top, children: childrenOrChild } = this.props
 

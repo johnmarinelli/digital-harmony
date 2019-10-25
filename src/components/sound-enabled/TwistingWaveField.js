@@ -162,7 +162,7 @@ class TwistingWaveFields extends React.PureComponent {
 
     const Song = withSong(waves, 'take_me_out', 3)
     extend({ Song })
-    this.Song = Song
+    this.Song = <Song />
   }
 
   render() {

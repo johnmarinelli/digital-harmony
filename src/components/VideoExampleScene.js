@@ -1,6 +1,7 @@
 import React from 'react'
 import * as THREE from 'three'
 import { Video } from './Video'
+import { BaseController } from './controllers/Base'
 
 const Lights = () => (
   <>
@@ -8,12 +9,7 @@ const Lights = () => (
     <spotLight color={0xffffff} intensity={0.7} position={[30, 30, 50]} angle={0.2} penumbra={1} castShadow />
   </>
 )
-class VideoExampleScene extends React.PureComponent {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class VideoExampleScene extends BaseController {
   render() {
     return (
       <scene ref={this.sceneRef} background={new THREE.Color(0x000000)}>

@@ -1,4 +1,4 @@
-import React, { Component, useRef, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { apply as applySpring, animated as anim } from 'react-spring/three'
 import { extend as applyThree, useThree } from 'react-three-fiber'
 import { Voronoi3D } from '../postprocessing/Voronoi3D'
@@ -7,44 +7,14 @@ import { RenderPass } from '../postprocessing/RenderPass'
 import { GlitchPass } from '../postprocessing/GlitchPass'
 import clock from '../util/Clock'
 import Text from './Text'
+import { BaseController } from './controllers/Base'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass })
 applyThree({ EffectComposer, RenderPass, GlitchPass })
 
-const Effects = ({ factor }) => {
-  // scene comes from "stateContext" from here:
-  // https://github.com/drcmda/react-three-fiber/blob/master/src/canvas.js
-  const { gl, scene, camera, size } = useThree()
-  const composer = useRef()
-
-  useEffect(
-    () => {
-      composer.current.obj.setSize(size.width, size.height)
-    },
-    [size.width, size.height, composer.current]
-  )
-  // This takes over as the main render-loop (when 2nd arg is set to true)
-  //useRender(() => composer.current.obj.render(), true)
-  //useRender(() => composer.current.obj.render())
-
-  return (
-    <effectComposer ref={composer} args={[gl]}>
-      <renderPass name="passes" args={[scene, camera]} />
-      <anim.glitchPass name="glitchPass" renderToScreen factor={factor} />
-    </effectComposer>
-  )
-}
-
-class VoronoiScene extends Component {
-  constructor() {
-    super()
-    this.sceneRef = React.createRef()
-  }
-
+class VoronoiScene extends BaseController {
   render() {
-    const { top, size } = this.props
-    const scrollMax = size.height * 4.5
-
+    const { top, scrollMax } = this.props
     return (
       <scene ref={this.sceneRef}>
         <anim.spotLight intensity={1.2} color="black" />
@@ -54,7 +24,7 @@ class VoronoiScene extends Component {
           colorPalette={['#D358B1', '#AE1B85', '#FF7070', '#F3B1E1']}
           top={top}
           voronoiScale={top.interpolate([0, scrollMax * 0.25, scrollMax * 0.8, scrollMax], [0.0, 5.0, 10.0, 20.0])}
-          datGuiOverride={true}
+          datGuiOverride={false}
         />
         <Text
           opacity={top.interpolate([0, 200], [1, 0])}
@@ -64,10 +34,9 @@ class VoronoiScene extends Component {
         >
           rêverie
         </Text>
-        <Effects factor={top.interpolate([0, 150], [1, 0])} />
       </scene>
     )
   }
 }
 
-export default VoronoiScene
+export { VoronoiScene }
