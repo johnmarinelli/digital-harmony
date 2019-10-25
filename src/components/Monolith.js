@@ -42,10 +42,11 @@ const Monolith = ({ top }) => {
   let transition = null
   let hasBeenInitialized = false
 
-  useEffect(() => {
-    const scenes = [
-      scrollingStoryRef.current.sceneRef.current,
-      /*
+  useEffect(
+    () => {
+      const scenes = [
+        scrollingStoryRef.current.sceneRef.current,
+        /*
       videoExampleSceneRef.current.sceneRef.current,
       firstSceneRef.current.sceneRef.current,
       environmentMapSceneRef.current.sceneRef.current,
@@ -58,17 +59,18 @@ const Monolith = ({ top }) => {
       fourthSceneRef.current.sceneRef.current,
       fifthSceneRef.current.sceneRef.current,
       */
-    ]
-    if (!hasBeenInitialized) {
-      console.log('Initializing Transition Manager')
-      transition = new Transition(camera)
-      transition.initializeScenes(...scenes.slice(0, 2))
-      transitionManager = new TransitionManager(scenes, transition, true)
-      hasBeenInitialized = true
-    }
+      ]
+      if (!hasBeenInitialized) {
+        transition = new Transition(camera)
+        transition.initializeScenes(...scenes.slice(0, 2))
+        transitionManager = new TransitionManager(scenes, transition, true)
+        hasBeenInitialized = true
+      }
 
-    new OrbitControls(camera, document.querySelector('.scroll-container'))
-  }, hasBeenInitialized)
+      new OrbitControls(camera, document.querySelector('.scroll-container'))
+    },
+    [hasBeenInitialized]
+  )
 
   /*
   useRender(() => {
