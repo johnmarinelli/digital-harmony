@@ -10,7 +10,7 @@ class StorySegment extends React.Component {
 
 class ScrollingStory extends BaseController {
   render() {
-    const { top, children: childrenOrChild } = this.props
+    const { top, children: childrenOrChild, BackgroundComponent } = this.props
 
     const children = Array.isArray(childrenOrChild) ? childrenOrChild : [childrenOrChild]
 
@@ -32,7 +32,13 @@ class ScrollingStory extends BaseController {
         })
       )
     })
-    return segments
+
+    return (
+      <>
+        {BackgroundComponent ? BackgroundComponent : null}
+        {segments}
+      </>
+    )
   }
 }
 export { StorySegment, ScrollingStory }

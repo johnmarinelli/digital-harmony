@@ -13,30 +13,24 @@ const MagneticFieldLine = ({ id, totalLines }) => {
   const numPoints = 10
   const radius = 0.5
 
-  const [curve] = useState(() => {
-    let pos = new THREE.Vector3(0, 0, 0)
-    return new Array(numPoints).fill().map((_, index) => {
-      const phi = THREE.Math.mapLinear(id, 0, totalLines, 0, Math.PI * 2)
-      const theta = THREE.Math.mapLinear(index, 0, numPoints, 0, Math.PI * 2)
-      let x = radius * Math.sin(theta) * Math.cos(phi)
-      let z = radius * Math.sin(theta) * Math.sin(phi)
-      let y = radius * Math.cos(theta)
-      pos.add(new THREE.Vector3(x, y, z))
+  const vertices = []
 
-      return pos.clone()
-    })
-  })
+  let turtle = new THREE.Vector3(0, 0, 0)
+  for (let i = 0; i < numPoints; ++i) {
+    const phi = THREE.Math.mapLinear(id, 0, totalLines, 0, Math.PI * 2)
+    const theta = THREE.Math.mapLinear(i, 0, numPoints, 0, Math.PI * 2)
+    let x = radius * Math.sin(theta) * Math.cos(phi)
+    let z = radius * Math.sin(theta) * Math.sin(phi)
+    let y = radius * Math.cos(theta)
+    turtle.add(new THREE.Vector3(x, y, z))
+    vertices.push(turtle.clone())
+  }
 
   useRender(() => (material.current.uniforms.dashOffset.value -= DASH_OFFSET_DELTA))
 
   return (
     <mesh position={[0, 0, 0]}>
-      {/* MeshLine and CatmullRomCurve are OOP factories, so we need imperative code */}
-      <meshLine onUpdate={self => (self.parent.geometry = self.geometry)}>
-        <geometry onUpdate={self => self.parent.setGeometry(self)}>
-          <catmullRomCurve3 args={[curve]} onUpdate={self => (self.parent.vertices = self.getPoints(50))} />
-        </geometry>
-      </meshLine>
+      <meshLine attach="geometry" vertices={vertices} />
       <meshLineMaterial
         attach="material"
         ref={material}
@@ -52,7 +46,6 @@ const MagneticFieldLine = ({ id, totalLines }) => {
 
 const MagneticField = () => {
   const group = useRef()
-  let theta = 0
   const numLines = 20
   const lines = new Array(numLines).fill()
   return (
@@ -62,4 +55,4 @@ const MagneticField = () => {
   )
 }
 
-export default MagneticField
+export { MagneticField }

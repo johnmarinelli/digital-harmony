@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import './App.css'
-import { extend, Canvas } from 'react-three-fiber'
+import { extend, Canvas, useRender } from 'react-three-fiber'
 import { useSpring } from 'react-spring/three'
 import 'react-dat-gui/build/react-dat-gui.css'
 //import DatGui, { DatColor, DatNumber, DatBoolean } from 'react-dat-gui'
@@ -10,13 +10,6 @@ import GuiOptions from './components/Gui'
 import Monolith from './components/Monolith'
 import { Triggers } from './components/states/scenes/Fifth/index'
 import clock from './util/Clock'
-import * as meshline from 'three.meshline'
-
-const initialize = () => {
-  extend(meshline)
-}
-
-initialize()
 
 const DatGui = () => {
   const gui = new dat.GUI()

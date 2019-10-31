@@ -157,7 +157,7 @@ void main()
 }
 `
 
-const VideoShader = ({ texture, resolution }) => {
+const AsciiVideoShader = ({ texture, resolution }) => {
   return {
     uniforms: {
       videoTexture: { type: 't', value: texture },
@@ -170,4 +170,4 @@ const VideoShader = ({ texture, resolution }) => {
   }
 }
 
-export default VideoShader
+export default AsciiVideoShader

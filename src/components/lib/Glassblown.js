@@ -1,48 +1,47 @@
 import React, { useRef, useState } from 'react'
+import { MeshLine, MeshLineMaterial } from 'threejs-meshline'
 import * as THREE from 'three/src/Three'
-import { useRender } from 'react-three-fiber'
+import { extend, useRender } from 'react-three-fiber'
+import { DASH_OFFSET_DELTA } from '../../util/Constants'
 
-const DASH_OFFSET_DELTA = 0.0005
-const GlassblownLine = ({ id, totalLines }) => {
+extend({ MeshLine, MeshLineMaterial })
+
+const GlassblownLine = props => {
+  const id = props.id
+  const totalLines = props.totalLines || 20
+  const lineWidth = props.lineWidth || 0.05
+
   const material = useRef()
   const color = new THREE.Color(0xff0000)
-  const width = 0.01
   const ratio = 0.2
-
   const numPoints = 10
   const radius = 0.25
 
-  const [curve] = useState(() => {
-    let pos = new THREE.Vector3(0, 0, 0)
-    return new Array(numPoints).fill().map((_, index) => {
-      const thetaDeg = id / totalLines * 360.0
-      const theta = THREE.Math.degToRad(thetaDeg)
-      const phiDeg = index / numPoints * 360.0
-      const phi = THREE.Math.degToRad(phiDeg)
-      let x = radius * Math.sin(theta) * Math.cos(phi)
-      let y = radius * Math.cos(theta)
-      let z = radius * Math.sin(theta) * Math.sin(phi)
-      pos.add(new THREE.Vector3(x, y, z))
+  const vertices = []
 
-      return pos.clone()
-    })
-  })
+  let turtle = new THREE.Vector3(0, 0, 0)
+  for (let i = 0; i < numPoints; ++i) {
+    const thetaDeg = id / totalLines * 360.0
+    const theta = THREE.Math.degToRad(thetaDeg)
+    const phiDeg = i / numPoints * 360.0
+    const phi = THREE.Math.degToRad(phiDeg)
+    let x = radius * Math.sin(theta) * Math.cos(phi)
+    let y = radius * Math.cos(theta)
+    let z = radius * Math.sin(theta) * Math.sin(phi)
+    turtle.add(new THREE.Vector3(x, y, z))
+    vertices.push(turtle.clone())
+  }
 
   useRender(() => (material.current.uniforms.dashOffset.value -= DASH_OFFSET_DELTA))
 
   return (
     <mesh>
-      {/* MeshLine and CatmullRomCurve are OOP factories, so we need imperative code */}
-      <meshLine onUpdate={self => (self.parent.geometry = self.geometry)}>
-        <geometry onUpdate={self => self.parent.setGeometry(self)}>
-          <catmullRomCurve3 args={[curve]} onUpdate={self => (self.parent.vertices = self.getPoints(50))} />
-        </geometry>
-      </meshLine>
+      <meshLine attach="geometry" vertices={vertices} />
       <meshLineMaterial
         attach="material"
         ref={material}
         transparent
-        lineWidth={width}
+        lineWidth={lineWidth}
         color={color}
         dashArray={0.2}
         dashRatio={ratio}
@@ -51,22 +50,23 @@ const GlassblownLine = ({ id, totalLines }) => {
   )
 }
 
-const Glassblown = () => {
+const Glassblown = props => {
+  const scale = props.scale || [1, 1, 1]
   const group = useRef()
-  let theta = 0
   const numLines = 20
   const lines = new Array(numLines).fill()
+  let theta = 0
 
   useRender(() => {
-    //const rotation = 5 * Math.sin(THREE.Math.degToRad((theta += 0.02)))
-    //group.current.rotation.set(0, rotation, 0)
+    const rotation = 5 * Math.sin(THREE.Math.degToRad((theta += 0.02)))
+    group.current.rotation.set(0, rotation, 0)
   })
 
   return (
-    <group ref={group}>
+    <group ref={group} scale={scale}>
       {lines.map((_, index) => <GlassblownLine key={index} id={index} totalLines={numLines} />)}
     </group>
   )
 }
 
-export default Glassblown
+export { Glassblown }

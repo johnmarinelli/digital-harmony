@@ -1,5 +1,6 @@
 /*eslint no-unused-vars: 0 */
 import React, { useRef, useEffect, useMemo, useState } from 'react'
+import { useSpring } from 'react-spring/three'
 import { extend as applyThree, useThree, useRender } from 'react-three-fiber'
 import { PhyllotaxisWithScrollingBackground } from './PhyllotaxisScene'
 import SineFieldScene from './SineFieldScene'
@@ -14,7 +15,8 @@ import Transition from '../transition/Transition'
 import { EnvironmentMapScene, EnvironmentMap } from './EnvironmentMap'
 import clock from '../util/Clock'
 //import midi from '../util/WebMidi'
-import OrbitControls from '../util/OrbitControls'
+//import OrbitControls from '../util/OrbitControls'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import Background from './Background'
 import { TransitionManager } from '../transition/TransitionManager'
 import { FirstStory } from './stories/FirstStory'
@@ -43,15 +45,15 @@ const Monolith = ({ top }) => {
   useEffect(
     () => {
       const scenes = [
-        fourthSceneRef.current.sceneRef.current,
+        scrollingStoryRef.current.sceneRef.current,
         /*
+        fourthSceneRef.current.sceneRef.current,
         waveFieldSceneRef.current.sceneRef.current,
         voronoiSceneRef.current.sceneRef.current,
         insideMusicSceneRef.current.sceneRef.current,
         boxRepeatSceneRef.current.sceneRef.current,
         phyllotaxisSceneRef,
         lissajousKnotSceneRef.current.sceneRef.current,
-        scrollingStoryRef.current.sceneRef.current,
       videoExampleSceneRef.current.sceneRef.current,
       phyllotaxisSceneRef.current.sceneRef.current,
       environmentMapSceneRef.current.sceneRef.current,
@@ -94,8 +96,15 @@ const Monolith = ({ top }) => {
     </>
   )
       */
-  //return <FirstStory renderer={renderer} top={top} ref={scrollingStoryRef} />
-  return <DigitalHarmonyScene top={top} size={size} ref={fourthSceneRef} />
+
+  /*
+   * automate the scroll
+  const [{ top }, set] = useSpring(() => ({ top: 0 }))
+  useRender(() => {
+    set({ top: top.getValue() + 10 })
+  })
+  */
+  return <FirstStory renderer={renderer} top={top} ref={scrollingStoryRef} />
 }
 
 export default Monolith
