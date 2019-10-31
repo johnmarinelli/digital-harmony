@@ -9547,15 +9547,15 @@ text-table@0.2.0, text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-three.meshline@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/three.meshline/-/three.meshline-1.2.0.tgz#89a0c9d67d8062e5649dc0ac9aa16f14e7c199b5"
-  integrity sha512-E7s9xwgjUhQWIvXBMIdCOIvpT1qV9UlntzaaJTWzJvYtvI2ZvVsX8EM8FxoiG5aptXuKbp5osnvcJCCkYOjmBA==
-
 three@^0.107.0:
   version "0.107.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.107.0.tgz#0c862c348d61bd3f22058e01f5e771c1294315a1"
   integrity sha512-vqbKJRLBEviPVa7poEzXocobicwxzsctr5mnymA7n8fEzcVS49rYP0RrwqZ98JqujRoruK+/YzcchNpRP+kXsQ==
+
+threejs-meshline@^2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/threejs-meshline/-/threejs-meshline-2.0.9.tgz#572d5d42b18717861661a8392c66a3d0a373d0d3"
+  integrity sha512-SGntUkty9ENOWDsxiK4QHMRKZhNO8G7Tvc3oPG/vYmAJNxSCja6a08uKHaHji7WhR/dqK4LSjDJLKs39YWzI0w==
 
 throat@^4.0.0:
   version "4.1.0"

@@ -13,26 +13,20 @@ const RandomFatLine = () => {
 
   const numPoints = 10
 
-  const [curve] = useState(() => {
-    let pos = new THREE.Vector3(3 - 6 * Math.random(), -0.5, 1 - 2 * Math.random())
-    //let pos = new THREE.Vector3(0, 0, 0)
-    return new Array(numPoints)
-      .fill()
-      .map(() =>
-        pos.add(new THREE.Vector3(2 - Math.random() * 4, 2 - Math.random() * 4, 5 - Math.random() * 10)).clone()
-      )
-  })
+  const vertices = []
+
+  let turtle = new THREE.Vector3(3 - 6 * Math.random(), -0.5, 1 - 2 * Math.random())
+
+  for (let i = 0; i < numPoints; ++i) {
+    const pos = turtle.add(new THREE.Vector3(2 - Math.random() * 4, 2 - Math.random() * 4, 5 - Math.random() * 10))
+    vertices.push(pos.clone())
+  }
 
   useRender(() => (material.current.uniforms.dashOffset.value -= DASH_OFFSET_DELTA))
 
   return (
     <mesh position={[0, 0, -2]} rotation={[90, 0, 0]}>
-      {/* MeshLine and CatmullRomCurve are OOP factories, so we need imperative code */}
-      <meshLine onUpdate={self => (self.parent.geometry = self.geometry)}>
-        <geometry onUpdate={self => self.parent.setGeometry(self)}>
-          <catmullRomCurve3 args={[curve]} onUpdate={self => (self.parent.vertices = self.getPoints(50))} />
-        </geometry>
-      </meshLine>
+      <meshLine attach="geometry" vertices={vertices} />
       <meshLineMaterial
         attach="material"
         ref={material}

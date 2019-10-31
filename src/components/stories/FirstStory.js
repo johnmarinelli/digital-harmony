@@ -5,9 +5,12 @@ import { StorySegment, ScrollingStory } from './ScrollingStory'
 import { FiftyNote } from '../models/UkCurrency'
 import { EnvironmentMap } from '../EnvironmentMap'
 import { loadHDREnvironmentMap, loadEnvironmentMapUrls } from '../../util/Loaders'
+import { getScrollableHeight } from '../../util/ScrollHelper'
 
 import { withSong } from '../420/WithSong'
 import { Rings } from '../sound-enabled/Rings'
+
+import { MoireEffect } from '../MoireEffect'
 
 import { EffectComposer } from '../../postprocessing/EffectComposer'
 import { RenderPass } from '../../postprocessing/RenderPass'
@@ -15,10 +18,16 @@ import { GlitchPass } from '../../postprocessing/GlitchPass'
 import { ShaderPass } from '../../postprocessing/ShaderPass'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { DrunkPass } from '../../postprocessing/DrunkPass'
-import { Video } from '../Video'
+import { Video, VideoBackground } from '../Video'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
 import { BaseController } from '../controllers/Base'
+
+import { Glassblown } from '../lib/Glassblown'
+import { FloatingSpaghetti } from '../lib/FloatingSpaghetti'
+import { Sprinkler } from '../lib/Sprinkler'
+import { MagneticField } from '../lib/MagneticField'
+import Background from '../Background'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -54,7 +63,6 @@ const Effects = React.memo(({ factor }) => {
 class FirstStory extends BaseController {
   constructor() {
     super()
-
     const ringComponents = [
       <Rings amplitude={1} name="battery" position={[-2, 0, 2]} rotateX={Math.PI * -0.5} waveformResolution={5} />,
       <Rings
@@ -89,9 +97,32 @@ class FirstStory extends BaseController {
       ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'],
       renderer
     )
+    const scrollMax = getScrollableHeight()
+    const BackgroundComponent = (
+      <Background
+        color={top.interpolate(
+          [0, scrollMax * 0.25, scrollMax * 0.33, scrollMax * 0.5, scrollMax],
+          ['#e82968', '#e0c919', '#504006', '#e32f01', '#333333']
+        )}
+      />
+    )
+
+    const videoBackground = <VideoBackground domElementId="kris_drinking" top={top} />
     return (
       <scene ref={this.sceneRef}>
-        <ScrollingStory top={top}>
+        <ScrollingStory top={top} BackgroundComponent={videoBackground}>
+          <StorySegment>
+            <MoireEffect totalTimeInSeconds={5} />
+          </StorySegment>
+          <StorySegment>
+            <Sprinkler />
+          </StorySegment>
+          <StorySegment>
+            <FloatingSpaghetti />
+          </StorySegment>
+          <StorySegment>
+            <Glassblown />
+          </StorySegment>
           <StorySegment>
             {this.Song}
             <FiftyNote />
@@ -106,11 +137,6 @@ class FirstStory extends BaseController {
           </StorySegment>
           <StorySegment>
             <EnvironmentMap cubeTexture={cubeTexture} />
-          </StorySegment>
-          <StorySegment>
-            <mesh>
-              <cubeGeometry attach="geometry" />
-            </mesh>
           </StorySegment>
           <StorySegment>
             <mesh>
