@@ -18,7 +18,8 @@ import { GlitchPass } from '../../postprocessing/GlitchPass'
 import { ShaderPass } from '../../postprocessing/ShaderPass'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { DrunkPass } from '../../postprocessing/DrunkPass'
-import { Video, VideoBackground } from '../Video'
+import { Video } from '../Video'
+import { VideoBackground } from '../VideoBackground'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
 import { BaseController } from '../controllers/Base'
@@ -110,9 +111,9 @@ class FirstStory extends BaseController {
     const videoBackground = <VideoBackground domElementId="kris_drinking" top={top} />
     return (
       <scene ref={this.sceneRef}>
-        <ScrollingStory top={top} BackgroundComponent={videoBackground}>
+        <ScrollingStory top={top} BackgroundComponent={BackgroundComponent}>
           <StorySegment>
-            <MoireEffect totalTimeInSeconds={5} />
+            <VideoBackground domElementId="kris_drinking" top={top} />
           </StorySegment>
           <StorySegment>
             <Sprinkler />
@@ -121,9 +122,11 @@ class FirstStory extends BaseController {
             <FloatingSpaghetti />
           </StorySegment>
           <StorySegment>
+            <VideoBackground domElementId="sintel" top={top} startAt={1750} endAt={2169} zPosition={-1.5} />
             <Glassblown />
           </StorySegment>
           <StorySegment>
+            <MoireEffect totalTimeInSeconds={5} />
             {this.Song}
             <FiftyNote />
             <Video domElementId="kris_drinking" dimensions={[2, 2]} />

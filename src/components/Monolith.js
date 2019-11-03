@@ -15,7 +15,6 @@ import Transition from '../transition/Transition'
 import { EnvironmentMapScene, EnvironmentMap } from './EnvironmentMap'
 import clock from '../util/Clock'
 //import midi from '../util/WebMidi'
-//import OrbitControls from '../util/OrbitControls'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import Background from './Background'
 import { TransitionManager } from '../transition/TransitionManager'
@@ -68,7 +67,9 @@ const Monolith = ({ top }) => {
         hasBeenInitialized = true
       }
 
-      new OrbitControls(camera, document.querySelector('.scroll-container'))
+      const controls = new OrbitControls(camera, document.querySelector('.scroll-container'))
+      controls.enableZoom = false
+      controls.update()
     },
     [hasBeenInitialized]
   )

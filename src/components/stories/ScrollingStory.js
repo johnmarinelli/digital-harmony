@@ -25,7 +25,7 @@ class ScrollingStory extends BaseController {
         child,
         Object.assign({}, child.props, {
           factor: top.interpolate(top => {
-            const newY = startPositionScreenCoordinates - (-1 + top / 50.0)
+            const newY = startPositionScreenCoordinates - top / 50.0
             return newY * -1
           }),
           key: i,
