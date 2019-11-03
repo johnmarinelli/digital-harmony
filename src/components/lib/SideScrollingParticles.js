@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useContext, useState, useEffect } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { useRender, useThree } from 'react-three-fiber'
 import * as THREE from 'three'
 

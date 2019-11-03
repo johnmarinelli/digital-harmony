@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react'
+import * as THREE from 'three'
 import { useRender, extend, useThree } from 'react-three-fiber'
 import { apply as applySpring } from 'react-spring/three'
 import { StorySegment, ScrollingStory } from './ScrollingStory'
@@ -28,7 +29,10 @@ import { Glassblown } from '../lib/Glassblown'
 import { FloatingSpaghetti } from '../lib/FloatingSpaghetti'
 import { Sprinkler } from '../lib/Sprinkler'
 import { MagneticField } from '../lib/MagneticField'
+import { SoundEnabledBackground } from '../sound-enabled/Background'
 import Background from '../Background'
+import events from 'events'
+import Player from '../../sound-player/Player'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -64,11 +68,11 @@ const Effects = React.memo(({ factor }) => {
 class FirstStory extends BaseController {
   constructor() {
     super()
-    const ringComponents = [
-      <Rings amplitude={1} name="battery" position={[-2, 0, 2]} rotateX={Math.PI * -0.5} waveformResolution={5} />,
+    const songComponents = [
+      <Rings amplitude={1} name="piano" position={[-2, 0, 2]} rotateX={Math.PI * -0.5} waveformResolution={5} />,
       <Rings
         amplitude={2}
-        name="guitar"
+        name="battery"
         position={[2, 2, -2]}
         waveformResolution={16}
         rotate-y={Math.PI * 0.5}
@@ -77,9 +81,21 @@ class FirstStory extends BaseController {
       />,
     ]
 
-    const Song = withSong(ringComponents, 'take_me_out', 3)
+    const Song = withSong(songComponents, 'sadette', 4)
     extend({ Song })
     this.Song = <Song />
+
+    this.audioFileStatusEmitter = new events.EventEmitter()
+    this.soundPlayer = new Player({
+      position: new THREE.Vector3(0, 0, -2),
+      segments: 4,
+      folder: 'sadette',
+      name: 'background',
+      eventEmitterRef: this.audioFileStatusEmitter,
+    })
+    this.audioFileStatusEmitter.on('player-ready', () => {
+      this.soundPlayer.onSongStart()
+    })
   }
 
   render() {
@@ -108,13 +124,14 @@ class FirstStory extends BaseController {
       />
     )
 
+    // todo: implement mechanism for withSong that allows for cross-component
+    // Player integration
+    // see: https://tonejs.github.io/docs/13.8.25/Players
+    const soundEnabledBackground = <SoundEnabledBackground folder="sadette" segments={4} player={this.soundPlayer} />
     const videoBackground = <VideoBackground domElementId="kris_drinking" top={top} />
     return (
       <scene ref={this.sceneRef}>
-        <ScrollingStory top={top} BackgroundComponent={BackgroundComponent}>
-          <StorySegment>
-            <VideoBackground domElementId="kris_drinking" top={top} />
-          </StorySegment>
+        <ScrollingStory top={top} BackgroundComponent={soundEnabledBackground}>
           <StorySegment>
             <Sprinkler />
           </StorySegment>

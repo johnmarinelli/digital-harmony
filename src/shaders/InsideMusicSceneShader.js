@@ -3,8 +3,6 @@ precision mediump float;
 
 #define TWO_PI 6.28318530718
 
-attribute float reference;
-
 // this is a raw shader material
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -98,8 +96,8 @@ void main() {
 	c = hsb2rgb(c);
 
 	//fog
-    float depth = gl_FragCoord.z / gl_FragCoord.w;
-    float fogF = min(smoothstep(fogNear, fogFar, depth), 1.0);
+  float depth = gl_FragCoord.z / gl_FragCoord.w;
+  float fogF = min(smoothstep(fogNear, fogFar, depth), 1.0);
 	c *= texel.rgb;
 
   gl_FragColor = vec4( c, opacity * texel.a);

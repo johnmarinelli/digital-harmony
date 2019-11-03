@@ -41,16 +41,25 @@ const Background = ({ color, receiveShadow = false, depthTest = false }) => {
  *     customUniforms={Uniforms()}
  * />
  */
-export const ShaderBackground = ({ top, scrollMax, color, fragmentShader, customUniforms, receiveShadow = false }) => {
+export const ShaderBackground = ({
+  top,
+  scrollMax,
+  color,
+  vertexShader,
+  fragmentShader,
+  customUniforms,
+  receiveShadow = false,
+}) => {
   const { viewport } = useThree()
   const { width, height } = viewport
-  let shaderRef = useRef()
   let mesh = useRef()
   let uniforms = Object.assign({}, customUniforms, Uniforms([window.innerWidth, window.innerHeight], 0x000000))
   const fs = fragmentShader || FragmentShader
+  const vs = vertexShader || VertexShader
 
   useRender(() => {
     mesh.current.material.uniforms.time.value = clock.getElapsedTime()
+    /*
     const { options: { colorOverride, feelsLike, color2, color3 } } = GuiOptions
     if (colorOverride) {
       const interpolatedColor = top.interpolate([0, scrollMax * 0.5, scrollMax * 1.1], [feelsLike, color2, color3])
@@ -64,20 +73,13 @@ export const ShaderBackground = ({ top, scrollMax, color, fragmentShader, custom
     if (mesh.current.material.uniforms.mixFactor) {
       mesh.current.material.uniforms.mixFactor.value = GuiOptions.options.mixPercentage
     }
+    */
   })
-  const material = (
-    <anim.shaderMaterial
-      name="material"
-      ref={shaderRef}
-      vertexShader={VertexShader}
-      fragmentShader={fs}
-      uniforms={uniforms}
-    />
-  )
+  const material = <anim.shaderMaterial attach="material" vertexShader={vs} fragmentShader={fs} uniforms={uniforms} />
 
   return (
     <mesh ref={mesh} scale={[width, height, 1.0]} receiveShadow>
-      <planeBufferGeometry name="geometry" args={[1, 1]} />
+      <planeBufferGeometry attach="geometry" args={[1, 1]} />
       {material}
     </mesh>
   )
