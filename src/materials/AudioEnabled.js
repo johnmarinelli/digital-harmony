@@ -21,12 +21,17 @@ class AudioEnabledShaderMaterial extends THREE.ShaderMaterial {
     options.defines.WAVEFORM_RESOLUTION = waveformResolution
 
     super(options)
-    this.waveformUniformChunk = `uniform float waveform[${waveformResolution}];\nattribute float reference;`
+    this.uniformWaveformArrayChunk = `uniform float waveform[${waveformResolution}];`
+    this.attributeReferenceChunk = 'attribute float reference;'
+    // todo: automate setting `varying float vReference = reference;`
   }
 
   onBeforeCompile(shader) {
-    shader.fragmentShader = shader.fragmentShader.replace('#include <waveform_chunk>', this.waveformUniformChunk)
-    shader.vertexShader = shader.vertexShader.replace('#include <waveform_chunk>', this.waveformUniformChunk)
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <waveform_chunk>',
+      `${this.uniformWaveformArrayChunk}\n${this.attributeReferenceChunk}`
+    )
+    shader.fragmentShader = shader.fragmentShader.replace('#include <waveform_chunk>', this.uniformWaveformArrayChunk)
   }
 }
 
@@ -51,12 +56,16 @@ class AudioEnabledRawShaderMaterial extends THREE.RawShaderMaterial {
     options.defines.WAVEFORM_RESOLUTION = waveformResolution
 
     super(options)
-    this.waveformUniformChunk = `uniform float waveform[${waveformResolution}];`
+    this.uniformWaveformArrayChunk = `uniform float waveform[${waveformResolution}];`
+    this.attributeReferenceChunk = 'attribute float reference;'
   }
 
   onBeforeCompile(shader) {
-    shader.fragmentShader = shader.fragmentShader.replace('#include <waveform_chunk>', this.waveformUniformChunk)
-    shader.vertexShader = shader.vertexShader.replace('#include <waveform_chunk>', this.waveformUniformChunk)
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <waveform_chunk>',
+      `${this.uniformWaveformArrayChunk}\n${this.attributeReferenceChunk}`
+    )
+    shader.fragmentShader = shader.fragmentShader.replace('#include <waveform_chunk>', this.uniformWaveformArrayChunk)
   }
 }
 
@@ -93,12 +102,12 @@ class AudioEnabledLineMaterial extends THREE.ShaderMaterial {
     //options.linejoin = 'round'
     super(options)
 
-    this.waveformUniformChunk = `uniform float waveform[${waveformResolution}];`
+    this.uniformWaveformArrayChunk = `uniform float waveform[${waveformResolution}];`
   }
 
   onBeforeCompile(shader) {
-    shader.fragmentShader = shader.fragmentShader.replace('#include <waveform_chunk>', this.waveformUniformChunk)
-    shader.vertexShader = shader.vertexShader.replace('#include <waveform_chunk>', this.waveformUniformChunk)
+    shader.fragmentShader = shader.fragmentShader.replace('#include <waveform_chunk>', this.uniformWaveformArrayChunk)
+    shader.vertexShader = shader.vertexShader.replace('#include <waveform_chunk>', this.uniformWaveformArrayChunk)
   }
 }
 

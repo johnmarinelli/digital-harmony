@@ -24,7 +24,7 @@ function withSong(Components, folder, numSegments, position = new THREE.Vector3(
             position,
             name: trackNames[i],
             folder,
-            numSegments,
+            segments: numSegments,
             eventEmitterRef: this.audioFileStatusEmitter,
           })
         )
@@ -45,14 +45,14 @@ function withSong(Components, folder, numSegments, position = new THREE.Vector3(
         })
       }
 
-      this.clonedComponents = Components.map((component, i) =>
-        React.cloneElement(component, {
+      this.clonedComponents = Components.map((component, i) => {
+        return React.cloneElement(component, {
           folder,
           segments: numSegments,
           player: this.players.filter(player => player.name === component.props.name)[0],
           key: i,
         })
-      )
+      })
     }
 
     componentDidMount() {
