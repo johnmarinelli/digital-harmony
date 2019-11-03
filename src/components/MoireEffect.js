@@ -82,7 +82,7 @@ const MoireEffect = props => {
   })
 
   return (
-    <group rotation-x={Math.PI * 0.5} position-z={2.0} position-y={1}>
+    <group rotation-x={Math.PI * 0.5}>
       <gridHelper position-y={-0.1} ref={gridA} args={[6, 100, 0xff0077]} />
       <gridHelper position-y={-0.2} ref={gridB} args={[6, 100, 0x00eeff]} />
       <gridHelper position-y={-0.3} ref={gridC} args={[6, 100]} />

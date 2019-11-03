@@ -47,4 +47,13 @@ const loadHDREnvironmentMap = (directory, names, renderer) => {
   return hdrCubeTexture
 }
 
-export { loadEnvironmentMapUrls, loadHDREnvironmentMap }
+const loadVideoAsTexture = (videoElement, opts) => {
+  const texture = new THREE.VideoTexture(videoElement)
+  texture.minFilter = THREE.LinearFilter
+  texture.magFilter = THREE.LinearFilter
+  texture.format = THREE.RGBFormat
+
+  return texture
+}
+
+export { loadEnvironmentMapUrls, loadHDREnvironmentMap, loadVideoAsTexture }
