@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { FragmentShader as VoronoiFragmentShader } from './Voronoi3D'
 const Uniforms = (resolution, color) => ({
   resolution: {
     type: 'v2',
@@ -22,32 +23,22 @@ void main() {
 }
 `
 
-const FragmentShader = `
-#ifdef GL_ES
+const fragmentShader = VoronoiFragmentShader.replace('void main', '#include <waveform_chunk>\nvoid main')
+
+const fragmentShader2 = `
 precision mediump float;
-#endif
 
 uniform vec2 resolution;
 uniform vec3 color;
 uniform float time;
-
-varying vec3 vPosition;
+uniform float scale;
 
 #include <waveform_chunk>
 
 void main(void) {
   vec2 st = gl_FragCoord.xy/resolution.xy;
-  vec3 newColor = vec3(0.0);
-
-  float waveformValue = waveform[int(WAVEFORM_RESOLUTION / 2)];
-
-  float red = mix(0.49, 0.51, waveformValue);
-  float blue = 0.5;
-
-  gl_FragColor = vec4(newColor, 1.0);
-  gl_FragColor.r = red;
-  gl_FragColor.b = blue;
+  gl_FragColor = mix(vec4(color, 1.0), vec4(st.x, st.y, 1.0), 0.5);
 }
 `
 
-export { VertexShader, FragmentShader, Uniforms }
+export { VertexShader, fragmentShader2 as FragmentShader, Uniforms }

@@ -1,7 +1,5 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import * as THREE from 'three'
-import { useThree, useRender } from 'react-three-fiber'
-import { withSong } from './420/WithSong'
 import { BaseController } from './controllers/Base'
 import { loadEnvironmentMapUrls } from '../util/Loaders'
 
@@ -32,9 +30,6 @@ const EnvironmentCube = ({ fragmentShader, vertexShader, uniforms }) => {
 }
 
 const EnvironmentMap = props => {
-  const { gl: renderer } = useThree()
-  //renderer.gammaOutput = true
-
   const { cubeTexture } = props
   const cubeShader = THREE.ShaderLib.cube
   cubeShader.uniforms = THREE.UniformsUtils.clone(THREE.ShaderLib.cube.uniforms)

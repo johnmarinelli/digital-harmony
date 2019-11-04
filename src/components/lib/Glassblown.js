@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { MeshLine, MeshLineMaterial } from 'threejs-meshline'
 import * as THREE from 'three/src/Three'
 import { extend, useRender } from 'react-three-fiber'

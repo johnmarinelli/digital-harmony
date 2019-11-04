@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react'
+import React from 'react'
 import { apply as applySpring, animated as anim } from 'react-spring/three'
-import { extend as applyThree, useThree } from 'react-three-fiber'
+import { extend as applyThree } from 'react-three-fiber'
 import { Voronoi3D } from '../postprocessing/Voronoi3D'
 import { EffectComposer } from '../postprocessing/EffectComposer'
 import { RenderPass } from '../postprocessing/RenderPass'

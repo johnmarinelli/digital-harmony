@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import * as THREE from 'three/src/Three'
 import { useRender } from 'react-three-fiber'
 

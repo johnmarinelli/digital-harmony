@@ -1,7 +1,5 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import * as THREE from 'three'
-import { useRender, useThree } from 'react-three-fiber'
-import { VideoShaderWithOpacity } from '../shaders/VideoShaderWithOpacity'
 import { loadVideoAsTexture } from '../util/Loaders'
 
 /*
@@ -20,14 +18,6 @@ class Video extends React.PureComponent {
     video.play()
 
     const texture = loadVideoAsTexture(video)
-
-    /*
-     * if we want to use custom shader
-    let material = null
-    if (props.shader) {
-      material = new THREE.ShaderMaterial(props.shader)
-    }
-    */
 
     return (
       <mesh>

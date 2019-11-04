@@ -28,8 +28,8 @@ import { BaseController } from '../controllers/Base'
 import { Glassblown } from '../lib/Glassblown'
 import { FloatingSpaghetti } from '../lib/FloatingSpaghetti'
 import { Sprinkler } from '../lib/Sprinkler'
-import { MagneticField } from '../lib/MagneticField'
 import { SoundEnabledBackground } from '../sound-enabled/Background'
+import { TwistingWaveField } from '../sound-enabled/TwistingWaveField'
 import Background from '../Background'
 import events from 'events'
 import Player from '../../sound-player/Player'
@@ -69,7 +69,6 @@ class FirstStory extends BaseController {
   constructor() {
     super()
     const songComponents = [
-      <Rings amplitude={1} name="piano" position={[-2, 0, 2]} rotateX={Math.PI * -0.5} waveformResolution={5} />,
       <Rings
         amplitude={2}
         name="battery"
@@ -78,6 +77,14 @@ class FirstStory extends BaseController {
         rotate-y={Math.PI * 0.5}
         size={18}
         hue={0.7}
+      />,
+      <TwistingWaveField
+        position={[-3, 0, 0]}
+        waveformResolution={128}
+        size={10}
+        color={new THREE.Color(0xffff00)}
+        opacity={1.0}
+        name="piano"
       />,
     ]
 
@@ -132,6 +139,7 @@ class FirstStory extends BaseController {
     return (
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top} BackgroundComponent={soundEnabledBackground}>
+          <StorySegment>{this.Song}</StorySegment>
           <StorySegment>
             <Sprinkler />
           </StorySegment>
@@ -139,12 +147,11 @@ class FirstStory extends BaseController {
             <FloatingSpaghetti />
           </StorySegment>
           <StorySegment>
-            <VideoBackground domElementId="sintel" top={top} startAt={1750} endAt={2169} zPosition={-1.5} />
+            <VideoBackground domElementId="sintel" top={top} startAt={1750} endAt={2169} />
             <Glassblown />
           </StorySegment>
           <StorySegment>
             <MoireEffect totalTimeInSeconds={5} />
-            {this.Song}
             <FiftyNote />
             <Video domElementId="kris_drinking" dimensions={[2, 2]} />
           </StorySegment>

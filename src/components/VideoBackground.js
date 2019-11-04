@@ -4,6 +4,10 @@ import { useRender, useThree } from 'react-three-fiber'
 import { VideoShaderWithOpacity } from '../shaders/VideoShaderWithOpacity'
 import { loadVideoAsTexture } from '../util/Loaders'
 
+/*
+ * todo: clean the useRender() isPlaying logic up
+ * startAt & endAt should be fractional values, not absolute pixel values
+*/
 const VideoBackground = props => {
   const { viewport } = useThree()
   const { width, height } = viewport
