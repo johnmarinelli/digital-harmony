@@ -21,6 +21,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { DrunkPass } from '../../postprocessing/DrunkPass'
 import { Video } from '../Video'
 import { VideoBackground } from '../VideoBackground'
+import { FloatingSphereLights } from '../FloatingSphereLights.js'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
 import { BaseController } from '../controllers/Base'
@@ -72,14 +73,17 @@ class FirstStory extends BaseController {
       <Rings
         amplitude={2}
         name="battery"
-        position={[2, 2, -2]}
+        position={[3.5, 0, 1.5]}
         waveformResolution={16}
-        rotate-y={Math.PI * 0.5}
+        rotateX={0}
+        rotateY={0}
+        rotateZ={Math.PI * 0.25}
         size={18}
         hue={0.7}
+        scale={0.35}
       />,
       <TwistingWaveField
-        position={[-3, 0, 0]}
+        position={[-4.5, 0, 0]}
         waveformResolution={128}
         size={10}
         color={new THREE.Color(0xffff00)}
@@ -139,21 +143,19 @@ class FirstStory extends BaseController {
     return (
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top} BackgroundComponent={soundEnabledBackground}>
-          <StorySegment>{this.Song}</StorySegment>
           <StorySegment>
+            <FloatingSphereLights />
             <Sprinkler />
           </StorySegment>
+          <StorySegment>{this.Song}</StorySegment>
           <StorySegment>
-            <FloatingSpaghetti />
-          </StorySegment>
-          <StorySegment>
-            <VideoBackground domElementId="sintel" top={top} startAt={1750} endAt={2169} />
             <Glassblown />
           </StorySegment>
           <StorySegment>
             <MoireEffect totalTimeInSeconds={5} />
             <FiftyNote />
             <Video domElementId="kris_drinking" dimensions={[2, 2]} />
+            <FloatingSpaghetti />
           </StorySegment>
           <StorySegment>
             <EnvironmentMapHDR

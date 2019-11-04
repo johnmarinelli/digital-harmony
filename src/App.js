@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react'
+import * as THREE from 'three'
 import './App.css'
 import { extend, Canvas, useRender } from 'react-three-fiber'
 import { useSpring } from 'react-spring/three'
@@ -120,7 +121,7 @@ const Main = () => {
   return (
     <>
       <DatGui />
-      <Canvas className="canvas">
+      <Canvas className="canvas" shadowMap={{ type: THREE.BasicShadowMap }}>
         <Monolith top={top} />
       </Canvas>
       <div className="scroll-container" onScroll={onScroll}>

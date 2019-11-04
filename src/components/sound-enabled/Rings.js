@@ -120,10 +120,28 @@ const Rings = props => {
   const rings = []
   const components = []
 
-  let { rotateX, position, size, color, numRings, waveformResolution, hue, sat, lit, player, amplitude } = props
+  let {
+    rotateX,
+    rotateY,
+    rotateZ,
+    position,
+    scale,
+    size,
+    color,
+    numRings,
+    waveformResolution,
+    hue,
+    sat,
+    lit,
+    player,
+    amplitude,
+  } = props
   numRings = numRings || 72
-  rotateX = rotateX || Math.PI * 0.25
+  rotateX = rotateX === null || rotateX === undefined ? 0 : rotateX
+  rotateY = rotateY === null || rotateY === undefined ? 0.0 : rotateY
+  rotateZ = rotateZ === null || rotateZ === undefined ? 0.0 : rotateZ
   position = position || new THREE.Vector3(0, 0, 0)
+  scale = scale === null || scale === undefined ? 1.0 : scale
   size = size || 38
   color = color || new THREE.Color()
   numRings = numRings || 72
@@ -150,6 +168,8 @@ const Rings = props => {
       amplitude,
     })
     ring.rotateX(rotateX)
+    ring.rotateY(rotateY)
+    ring.rotateZ(rotateZ)
     rings.push(ring)
   }
 
@@ -197,7 +217,7 @@ const Rings = props => {
   }
   const parentRef = useRef()
   return (
-    <group position={position} ref={parentRef}>
+    <group position={position} ref={parentRef} scale={[scale, scale, scale]}>
       {components}
     </group>
   )

@@ -42,6 +42,7 @@ const synthManager = new SynthManager()
 
 const MoireEffect = props => {
   const totalTimeInSeconds = props.totalTimeInSeconds
+  const positionZ = props.positionZ || 0.5
   const gridA = useRef()
   const gridB = useRef()
   const gridC = useRef()
@@ -82,7 +83,7 @@ const MoireEffect = props => {
   })
 
   return (
-    <group rotation-x={Math.PI * 0.5}>
+    <group rotation-x={Math.PI * 0.5} position-z={positionZ}>
       <gridHelper position-y={-0.1} ref={gridA} args={[6, 100, 0xff0077]} />
       <gridHelper position-y={-0.2} ref={gridB} args={[6, 100, 0x00eeff]} />
       <gridHelper position-y={-0.3} ref={gridC} args={[6, 100]} />
