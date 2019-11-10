@@ -21,7 +21,8 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { DrunkPass } from '../../postprocessing/DrunkPass'
 import { Video } from '../Video'
 import { VideoBackground } from '../VideoBackground'
-import { FloatingSphereLights } from '../FloatingSphereLights.js'
+//import { FloatingSphereLights } from '../FloatingSphereLights.js'
+import { FloatingSphereLights } from '../sound-enabled/FloatingSphereLights.js'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
 import { BaseController } from '../controllers/Base'
@@ -34,6 +35,7 @@ import { TwistingWaveField } from '../sound-enabled/TwistingWaveField'
 import Background from '../Background'
 import events from 'events'
 import Player from '../../sound-player/Player'
+import { LightingLaboratory } from '../LightingLaboratory'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -73,7 +75,7 @@ class FirstStory extends BaseController {
       <Rings
         amplitude={2}
         name="battery"
-        position={[3.5, 0, 1.5]}
+        position={[0.5, 0, 1.5]}
         waveformResolution={16}
         rotateX={0}
         rotateY={0}
@@ -92,6 +94,7 @@ class FirstStory extends BaseController {
       />,
     ]
 
+    /*
     const Song = withSong(songComponents, 'sadette', 4)
     extend({ Song })
     this.Song = <Song />
@@ -107,6 +110,7 @@ class FirstStory extends BaseController {
     this.audioFileStatusEmitter.on('player-ready', () => {
       this.soundPlayer.onSongStart()
     })
+    */
   }
 
   render() {
@@ -138,18 +142,21 @@ class FirstStory extends BaseController {
     // todo: implement mechanism for withSong that allows for cross-component
     // Player integration
     // see: https://tonejs.github.io/docs/13.8.25/Players
-    const soundEnabledBackground = <SoundEnabledBackground folder="sadette" segments={4} player={this.soundPlayer} />
+    //const soundEnabledBackground = <SoundEnabledBackground folder="sadette" segments={4} player={this.soundPlayer} />
     const videoBackground = <VideoBackground domElementId="kris_drinking" top={top} />
     return (
       <scene ref={this.sceneRef}>
-        <ScrollingStory top={top} BackgroundComponent={soundEnabledBackground}>
+        <ScrollingStory top={top} BackgroundComponent={null}>
           <StorySegment>
             <FloatingSphereLights />
-            <Sprinkler />
           </StorySegment>
-          <StorySegment>{this.Song}</StorySegment>
+          <StorySegment>
+            <LightingLaboratory />
+          </StorySegment>
+          {/* <StorySegment>{this.Song}</StorySegment>*/}
           <StorySegment>
             <Glassblown />
+            <Sprinkler />
           </StorySegment>
           <StorySegment>
             <MoireEffect totalTimeInSeconds={5} />
@@ -164,14 +171,11 @@ class FirstStory extends BaseController {
               envMap={pisaCubeTexture}
             />
           </StorySegment>
+          {/*
           <StorySegment>
             <EnvironmentMap cubeTexture={cubeTexture} />
           </StorySegment>
-          <StorySegment>
-            <mesh>
-              <cubeGeometry attach="geometry" />
-            </mesh>
-          </StorySegment>
+          */}
         </ScrollingStory>
         <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
       </scene>

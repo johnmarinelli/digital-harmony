@@ -51,8 +51,8 @@ uniform float threshold;
 varying vec2 vUv;
 
 void main() {
-  vec4 texel1 = texture2D( tDiffuse1, vUv );
-  vec4 texel2 = texture2D( tDiffuse2, vUv );
+  vec4 texel1 = texture2D(tDiffuse1, vUv);
+  vec4 texel2 = texture2D(tDiffuse2, vUv);
 
   if (useTexture==1) {
     vec4 transitionTexel = texture2D( tMixTexture, vUv );
