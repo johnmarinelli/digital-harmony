@@ -121,7 +121,11 @@ const Main = () => {
   return (
     <>
       <DatGui />
-      <Canvas className="canvas" shadowMap={{ type: THREE.BasicShadowMap }}>
+      <Canvas
+        className="canvas"
+        shadowMap={{ enabled: true, type: THREE.BasicShadowMap }}
+        pixelRatio={window.devicePixelRatio}
+      >
         <Monolith top={top} />
       </Canvas>
       <div className="scroll-container" onScroll={onScroll}>

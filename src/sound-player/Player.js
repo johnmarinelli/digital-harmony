@@ -31,7 +31,7 @@ class SoundPlayer {
   onSongStart() {
     this._level.gain.cancelScheduledValues()
     // while developing i don't want to hear the music
-    this._level.gain.value = 0.001
+    this._level.gain.value = 0.0001
   }
 
   getWaveform(array) {

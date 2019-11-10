@@ -81,11 +81,11 @@ class SoundWaveBufferGeometry extends AudioEnabledBufferGeometry {
  * SoundWave
  * the `Object3D` for a sine wave that is controlled by audio data
  */
-const SoundWave = options => {
-  const { player } = options
+const SoundWave = props => {
+  const { player } = props
   const ref = useRef()
 
-  let waveform = new Float32Array(options.waveformResolution)
+  let waveform = new Float32Array(props.waveformResolution)
 
   const render = () => {
     if (player && Transport.state === 'started') {
@@ -99,10 +99,10 @@ const SoundWave = options => {
   }
 
   useRender(render)
-  const geom = new SoundWaveBufferGeometry({ waveformResolution: options.waveformResolution })
-  const material = new SoundWaveMaterial(options)
+  const geom = new SoundWaveBufferGeometry({ waveformResolution: props.waveformResolution })
+  const material = new SoundWaveMaterial(props)
   const line = new THREE.Line(geom, material)
 
-  return <primitive position={options.position || [0, 0, 0]} object={line} ref={ref} />
+  return <primitive position={props.position || [0, 0, 0]} object={line} ref={ref} />
 }
 export { SoundWave }

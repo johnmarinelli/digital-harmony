@@ -36,7 +36,7 @@ const EnvironmentMap = props => {
   cubeShader.uniforms.tCube.value = cubeTexture
   return (
     <>
-      <ambientLight color={0xffffff} />
+      <ambientLight color={0xffffff} intensity={0.5} />
       <EnvironmentCube
         fragmentShader={cubeShader.fragmentShader}
         vertexShader={cubeShader.vertexShader}
