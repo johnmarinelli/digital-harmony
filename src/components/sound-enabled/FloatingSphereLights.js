@@ -91,9 +91,10 @@ const Light = props => {
 }
 
 const Box = props => {
+  const boxDimensions = props.boxDimensions || [6, 6, 6]
   return (
     <mesh position-y={1} receiveShadow>
-      <boxBufferGeometry attach="geometry" args={[6, 6, 6]} />
+      <boxBufferGeometry attach="geometry" args={boxDimensions} />
       <meshPhongMaterial attach="material" color={0xa0adaf} shininess={1} specular={0x111111} side={THREE.BackSide} />
     </mesh>
   )
@@ -107,20 +108,21 @@ class FloatingSphereLights extends React.PureComponent {
       z: Math.sin(time * 0.8) * 0.9,
     })
     const components = [
-      <Light name="battery" waveformResolution={16} color={0xff0000} positionFn={this.positionFn} timeOffset={0} />,
+      <Light name="snare" waveformResolution={16} color={0xff0000} positionFn={this.positionFn} timeOffset={0} />,
     ]
 
-    const Song = withSong(components, 'sadette', 4)
+    const Song = withSong(components, 'grandfather_story', 3)
     extend({ Song })
     this.Song = <Song />
   }
 
   render() {
+    const { boxDimensions } = this.props
     return (
       <group>
         {this.Song}
         <Light color={0x0000ff} positionFn={this.positionFn} timeOffset={10} />
-        <Box />
+        <Box boxDimensions={boxDimensions} />
       </group>
     )
   }

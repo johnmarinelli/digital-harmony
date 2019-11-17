@@ -122,7 +122,7 @@ const Main = () => {
     <>
       <DatGui />
       <Canvas
-        className="canvas"
+        className="canvasContainer"
         shadowMap={{ enabled: true, type: THREE.BasicShadowMap }}
         pixelRatio={window.devicePixelRatio}
       >
