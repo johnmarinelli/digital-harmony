@@ -10,7 +10,7 @@ class Video extends React.PureComponent {
   render() {
     const { props } = this
 
-    const { dimensions, domElementId } = props
+    const { position, rotation, dimensions, domElementId } = props
 
     const video = document.getElementById(domElementId)
     const loop = props.loop || true
@@ -18,9 +18,10 @@ class Video extends React.PureComponent {
     video.play()
 
     const texture = loadVideoAsTexture(video)
+    console.log(position)
 
     return (
-      <mesh>
+      <mesh rotation={rotation || [0, 0, 0]} position={position || [0, 0, 0]}>
         <meshBasicMaterial attach="material" map={texture} side={THREE.DoubleSide} />
         <planeBufferGeometry attach="geometry" args={dimensions || [5, 5]} />
       </mesh>

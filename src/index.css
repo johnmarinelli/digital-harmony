@@ -36,7 +36,7 @@ body {
   color: black;
 }
 
-.canvas {
+.canvasContainer {
   position: absolute;
   top: 0;
   pointer-events: none;
@@ -53,6 +53,14 @@ body {
   line-height: 0.9em;
 }
 
-.react-dat-gui {
-  z-index: 9999;
+.dg.ac {
+  z-index: 9999 !important;
+}
+
+.fizzyTextCanvas {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    opacity: 1;
+    width: 100%;
 }
