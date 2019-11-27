@@ -64,12 +64,22 @@ class GrandfatherStory extends BaseController {
         )}
       />
     )
+
+    const floatingSphereLightsPositionFn = time => ({
+      x: Math.sin(time * 0.6) * 0.9,
+      y: Math.sin(time * 0.7) * 0.9 + 0.6,
+      z: 1,
+    })
     return (
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top} BackgroundComponent={BackgroundComponent}>
           <StorySegment>
-            <Video domElementId="brandy_eve_allen_1" dimensions={[4, 4]} rotation={[0, 0, 0]} position={[0, 0, 0]} />
-            <FloatingSphereLights boxDimensions={[6, 36, 6]} />
+            <Video domElementId="brandy_eve_allen_1" dimensions={[5, 5]} rotation={[0, 0, 0]} position={[0, 0, 0]} />
+            <FloatingSphereLights
+              boxDimensions={[6, 36, 6]}
+              boxYPosition={-12}
+              positionFn={floatingSphereLightsPositionFn}
+            />
           </StorySegment>
           <StorySegment>
             <Video

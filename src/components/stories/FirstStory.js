@@ -4,6 +4,7 @@ import { useRender, extend, useThree } from 'react-three-fiber'
 import { apply as applySpring } from 'react-spring/three'
 import { StorySegment, ScrollingStory } from './ScrollingStory'
 import { FiftyNote } from '../models/UkCurrency'
+import { Nefertiti } from '../models/Nefertiti'
 import { EnvironmentMap } from '../EnvironmentMap'
 import { loadHDREnvironmentMap, loadEnvironmentMapUrls } from '../../util/Loaders'
 import { getScrollableHeight } from '../../util/ScrollHelper'
@@ -21,7 +22,6 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { DrunkPass } from '../../postprocessing/DrunkPass'
 import { Video } from '../Video'
 import { VideoBackground } from '../VideoBackground'
-//import { FloatingSphereLights } from '../FloatingSphereLights.js'
 import { FloatingSphereLights } from '../sound-enabled/FloatingSphereLights.js'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
@@ -93,24 +93,6 @@ class FirstStory extends BaseController {
         name="piano"
       />,
     ]
-
-    /*
-    const Song = withSong(songComponents, 'sadette', 4)
-    extend({ Song })
-    this.Song = <Song />
-
-    this.audioFileStatusEmitter = new events.EventEmitter()
-    this.soundPlayer = new Player({
-      position: new THREE.Vector3(0, 0, -2),
-      segments: 4,
-      folder: 'sadette',
-      name: 'background',
-      eventEmitterRef: this.audioFileStatusEmitter,
-    })
-    this.audioFileStatusEmitter.on('player-ready', () => {
-      this.soundPlayer.onSongStart()
-    })
-    */
   }
 
   render() {
@@ -142,13 +124,11 @@ class FirstStory extends BaseController {
     // todo: implement mechanism for withSong that allows for cross-component
     // Player integration
     // see: https://tonejs.github.io/docs/13.8.25/Players
-    //const soundEnabledBackground = <SoundEnabledBackground folder="sadette" segments={4} player={this.soundPlayer} />
-    const videoBackground = <VideoBackground domElementId="kris_drinking" top={top} />
     return (
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top} BackgroundComponent={null}>
           <StorySegment>
-            <FloatingSphereLights />
+            <Nefertiti />
           </StorySegment>
           <StorySegment>
             <LightingLaboratory />
@@ -161,7 +141,6 @@ class FirstStory extends BaseController {
           <StorySegment>
             <MoireEffect totalTimeInSeconds={5} />
             <FiftyNote />
-            <Video domElementId="kris_drinking" dimensions={[2, 2]} />
             <FloatingSpaghetti />
           </StorySegment>
           <StorySegment>

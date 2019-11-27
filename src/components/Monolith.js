@@ -19,7 +19,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import Background from './Background'
 import { TransitionManager } from '../transition/TransitionManager'
 import { FirstStory } from './stories/FirstStory'
-import { GrandfatherStory } from './stories/GrandfatherStory'
+//import { GrandfatherStory } from './stories/GrandfatherStory'
 import { VoronoiScene } from './Voronoi3D'
 
 //applyThree({ Transition })
@@ -106,7 +106,7 @@ const Monolith = ({ top }) => {
     set({ top: top.getValue() + 10 })
   })
   */
-  return <GrandfatherStory renderer={renderer} top={top} ref={scrollingStoryRef} />
+  return <FirstStory renderer={renderer} top={top} ref={scrollingStoryRef} />
 }
 
 export default Monolith

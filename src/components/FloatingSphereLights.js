@@ -13,14 +13,14 @@ const generateTexture = () => {
   return canvas
 }
 
-const Light = props => {
-  const { color, positionFn, timeOffset } = props
+const StripedLight = props => {
+  const { color, positionFn, timeOffset, soundReactionFn } = props
   const groupRef = useRef()
-  const distance = 7
-  const intensity = 0.9
-  const shadowCameraNear = 0.1
-  const shadowCameraFar = 6
-  const shadowBias = -0.0005 // reduces self-shadowing on double sided objects
+  const distance = props.distance || 7
+  const intensity = props.intensity || 0.9
+  const shadowCameraNear = props.shadowCameraNear || 0.1
+  const shadowCameraFar = props.shadowCameraFar || 6
+  const shadowBias = props.shadowBias || -0.0005 // reduces self-shadowing on double sided objects
 
   const sphereColor = new THREE.Color(color)
   sphereColor.multiplyScalar(intensity)
@@ -42,6 +42,9 @@ const Light = props => {
 
       groupRef.current.rotation.x = time
       groupRef.current.rotation.z = time
+    }
+    if (soundReactionFn) {
+      soundReactionFn(groupRef)
     }
   })
 
@@ -69,10 +72,12 @@ const Light = props => {
   )
 }
 
-const Box = props => {
+const ShadowEnabledBox = props => {
+  const boxDimensions = props.boxDimensions || [6, 6, 6]
+  const yPosition = props.yPosition || 1
   return (
-    <mesh position-y={1} receiveShadow>
-      <boxBufferGeometry attach="geometry" args={[6, 6, 6]} />
+    <mesh position-y={yPosition} receiveShadow>
+      <boxBufferGeometry attach="geometry" args={boxDimensions} />
       <meshPhongMaterial attach="material" color={0xa0adaf} shininess={1} specular={0x111111} side={THREE.BackSide} />
     </mesh>
   )
@@ -84,13 +89,14 @@ const FloatingSphereLights = props => {
     y: Math.sin(time * 0.7) * 0.9 + 0.6,
     z: Math.sin(time * 0.8) * 0.9,
   })
+  const { boxDimensions, boxYPosition } = props
   return (
     <group>
-      <Light color={0xff0000} positionFn={positionFn} timeOffset={0} />
-      <Light color={0x0000ff} positionFn={positionFn} timeOffset={10} />
-      <Box />
+      <StripedLight color={0xff0000} positionFn={positionFn} timeOffset={0} />
+      <StripedLight color={0x0000ff} positionFn={positionFn} timeOffset={10} />
+      <ShadowEnabledBox boxDimensions={boxDimensions} yPosition={boxYPosition} />
     </group>
   )
 }
 
-export { FloatingSphereLights }
+export { StripedLight, FloatingSphereLights, ShadowEnabledBox }

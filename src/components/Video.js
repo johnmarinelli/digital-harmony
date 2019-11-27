@@ -18,7 +18,6 @@ class Video extends React.PureComponent {
     video.play()
 
     const texture = loadVideoAsTexture(video)
-    console.log(position)
 
     return (
       <mesh rotation={rotation || [0, 0, 0]} position={position || [0, 0, 0]}>

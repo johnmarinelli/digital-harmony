@@ -187,7 +187,7 @@ const initialize = () => {
     return true
   }
 
-  const fizzyText = new FizzyText('GRANDFATHER', 800, 150, true, 100)
+  const fizzyText = new FizzyText('"GRANDFATHER"', 800, 150, true, 100)
   setInterval(() => {
     fizzyText.render()
   }, 16.66)

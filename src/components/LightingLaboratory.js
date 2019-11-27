@@ -20,7 +20,7 @@ const LightingLaboratory = () => {
   const materialParams = {
     diffuse: texture,
     specular,
-    shininess: 64,
+    shininess: 128,
   }
   const uniforms = Uniforms(modelMatrix, lightParams, materialParams)
 
