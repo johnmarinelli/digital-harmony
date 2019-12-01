@@ -36,7 +36,9 @@ import Background from '../Background'
 import events from 'events'
 import Player from '../../sound-player/Player'
 import { LightingLaboratory } from '../LightingLaboratory'
+import { ReturnToSender } from '../ReturnToSender'
 
+import clock from '../../util/Clock'
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
 
@@ -128,7 +130,7 @@ class FirstStory extends BaseController {
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top} BackgroundComponent={null}>
           <StorySegment>
-            <Nefertiti />
+            <ReturnToSender top={top} />
           </StorySegment>
           <StorySegment>
             <LightingLaboratory />
