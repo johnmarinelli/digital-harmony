@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import clock from '../util/Clock'
 import { BaseController } from './controllers/Base'
 import { Nefertiti } from './models/Nefertiti'
+import { Text3D } from './Text3D'
 
 class ReturnToSender extends React.Component {
   constructor() {
@@ -25,40 +26,29 @@ class ReturnToSender extends React.Component {
   }
 
   render() {
-    const { top } = this.props
     return (
-      <group position={[0, 1, 0]}>
+      <group position={[0, 0, 0]}>
         <pointLight position={[0, 1, 1]} decay={2} intensity={2} />
         <pointLight position={[1, -1, 0]} decay={2} intensity={2} />
         <pointLight position={[0, -2, 0]} decay={2} intensity={2} />
+        <mesh scale={[4, 4, 4]}>
+          <cubeGeometry attach="geometry" />
+          <meshBasicMaterial attach="material" color="white" opacity={0.1} transparent side={THREE.DoubleSide} />
+        </mesh>
+        <mesh scale={[4, 4, 4]}>
+          <cubeGeometry attach="geometry" />
+          <meshBasicMaterial attach="material" color="white" side={THREE.DoubleSide} wireframe />
+        </mesh>
         <Nefertiti
           customRenderFn={mesh => {
             mesh.rotation.y += Math.sin(clock.getElapsedTime()) * 0.001
           }}
         />
-        {this.state.fontLoaded ? (
-          <mesh position={[-3.5, -3, 0]}>
-            <textGeometry
-              attach="geometry"
-              args={[
-                '"RETURN TO SENDER"',
-                {
-                  font: this.state.font,
-                  size: 0.5,
-                  height: 0.5,
-                  curveSegments: 1,
-                  bevelEnabled: false,
-                },
-              ]}
-            />
-            <meshPhongMaterial attach="material" color={0xff0000} specular={0xffffff} />
-          </mesh>
-        ) : null}
-        {/*
-        <Text opacity={top.interpolate([0, 200], [1, 0])} position={[0, 1.5, 2]} color="red" fontSize={100}>
-          RETURN TO SENDER
-        </Text>
-        */}
+        <Text3D
+          position={[-3.5, -4, 0]}
+          fontPath="/fonts/gentilis_bold.typeface.json"
+          textContent="&quot;RETURN 2 SENDER&quot;"
+        />
       </group>
     )
   }
