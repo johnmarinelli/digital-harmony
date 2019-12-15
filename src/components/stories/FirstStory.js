@@ -35,17 +35,15 @@ import { TwistingWaveField } from '../sound-enabled/TwistingWaveField'
 import Background from '../Background'
 import events from 'events'
 import Player from '../../sound-player/Player'
-import { LightingLaboratory } from '../LightingLaboratory'
 import { ReturnToSender } from '../ReturnToSender'
+import { FlippantSquares } from '../FlippantSquares'
 
-import clock from '../../util/Clock'
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
 
 const Effects = React.memo(({ factor }) => {
   const { gl, scene, camera, size } = useThree()
   const composer = useRef()
-
   useEffect(
     () => {
       composer.current.setSize(size.width, size.height)
@@ -130,10 +128,10 @@ class FirstStory extends BaseController {
       <scene ref={this.sceneRef}>
         <ScrollingStory top={top} BackgroundComponent={null}>
           <StorySegment>
-            <ReturnToSender top={top} />
+            <FlippantSquares />
           </StorySegment>
           <StorySegment>
-            <LightingLaboratory />
+            <ReturnToSender top={top} />
           </StorySegment>
           {/* <StorySegment>{this.Song}</StorySegment>*/}
           <StorySegment>
