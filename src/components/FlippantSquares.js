@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useSprings, animated } from 'react-spring/three'
 import * as THREE from 'three'
 
-const CUBE_SIZE = 0.3 /* width, height */
+const CUBE_SIZE = 1 /* width, height */
 const GRID = 3 /* cols, rows */
 const TOTAL_CUBES = GRID * GRID
 const WALL_SIZE = CUBE_SIZE * GRID
@@ -18,7 +18,7 @@ const randomAngle = () => THREE.Math.degToRad(Math.round(Math.random()) * (Math.
 const random = () => {
   return {
     color: colors[Math.round(Math.random() * (colors.length - 1))],
-    rotation: [0, randomAngle(), randomAngle()],
+    rotation: [randomAngle(), randomAngle(), 0],
   }
 }
 
@@ -46,7 +46,7 @@ const Tiles = props => {
     config: { mass: 20, tension: 500, friction: 200 },
   }))
 
-  useEffect(() => void setInterval(() => set(i => ({ ...random(), delay: 500 })), 2000), [])
+  useEffect(() => void setInterval(() => set(i => ({ ...random(), delay: (i + 1) * 50 })), 2000), [])
   for (let i = 0; i < TOTAL_CUBES; ++i) {
     if (i % GRID === 0) {
       col = 1
@@ -68,120 +68,103 @@ const Tiles = props => {
       </animated.mesh>
     )
   }
-  return <animated.group>{cubes}</animated.group>
+  return <group>{cubes}</group>
 }
 
-class FlippantSquares extends React.Component {
-  _setupBox(parent) {
-    const boxes = []
+const Lights = () => {
+  const lightPosition = [-WALL_SIZE, 2, -1]
+  return (
+    <group>
+      <directionalLight color={MAIN_COLOR} intensity={1} position={lightPosition} castShadow shadowDarkness={0.5} />
+      <mesh position={lightPosition} scale={[0.1, 0.1, 0.1]}>
+        <boxGeometry attach="geometry" />
+        <meshBasicMaterial color={MAIN_COLOR} attach="material" />
+      </mesh>
+      <directionalLight color={MAIN_COLOR} intensity={1.2} position={[WALL_SIZE, WALL_SIZE, 1]} />
+    </group>
+  )
+}
 
-    const geometry = new THREE.BoxGeometry(WALL_SIZE, WALL_SIZE, 0.05)
-    geometry.faces[8].color.setHex(SECONDARY_COLOR)
-    geometry.faces[9].color.setHex(SECONDARY_COLOR)
-    geometry.colorsNeedUpdate = true
-    const material = new THREE.MeshBasicMaterial({ color: MAIN_COLOR, vertexColors: THREE.FaceColors })
+const Well = () => {
+  const boxes = []
 
-    for (let i = 0; i < 5; ++i) {
-      boxes.push(new THREE.Mesh(geometry, material))
-    }
+  const geometry = new THREE.BoxGeometry(WALL_SIZE, WALL_SIZE, 0.05)
+  geometry.faces[8].color.setHex(SECONDARY_COLOR)
+  geometry.faces[9].color.setHex(SECONDARY_COLOR)
+  geometry.colorsNeedUpdate = true
+  const material = new THREE.MeshBasicMaterial({ color: MAIN_COLOR, vertexColors: THREE.FaceColors })
 
-    // back
-    boxes[0].position.set(0, HALF_WALL_SIZE, -HALF_WALL_SIZE)
-    boxes[0].rotation.x = 90 * (PI / 180)
-
-    // right
-    boxes[1].position.set(HALF_WALL_SIZE, 0, -HALF_WALL_SIZE)
-    boxes[1].rotation.y = -90 * (PI / 180)
-
-    // front
-    boxes[2].position.set(0, -HALF_WALL_SIZE, -HALF_WALL_SIZE)
-    boxes[2].rotation.x = -90 * (PI / 180)
-
-    // left
-    boxes[3].position.set(-HALF_WALL_SIZE, 0, -HALF_WALL_SIZE)
-    boxes[3].rotation.y = 90 * (PI / 180)
-
-    // bottom
-    boxes[4].position.set(0, 0, -WALL_SIZE)
-
-    return <group>{boxes.map((box, i) => <primitive object={box} key={i} />)}</group>
+  for (let i = 0; i < 5; ++i) {
+    boxes.push(new THREE.Mesh(geometry, material))
   }
 
-  // a floor with a hole in the center
-  _setupFloor() {
-    const tilesArray = []
-    const geometry = new THREE.PlaneBufferGeometry(WALL_SIZE, WALL_SIZE)
-    const material = new THREE.MeshLambertMaterial({
-      color: MAIN_COLOR,
-    })
+  // back
+  boxes[0].position.set(0, HALF_WALL_SIZE, -HALF_WALL_SIZE)
+  boxes[0].rotation.x = 90 * (PI / 180)
 
-    for (let i = 0; i < 8; i++) {
-      tilesArray.push(new THREE.Mesh(geometry, material))
-    }
+  // right
+  boxes[1].position.set(HALF_WALL_SIZE, 0, -HALF_WALL_SIZE)
+  boxes[1].rotation.y = -90 * (PI / 180)
 
-    tilesArray[0].position.set(-WALL_SIZE, WALL_SIZE, 0)
-    tilesArray[1].position.set(0, WALL_SIZE, 0)
-    tilesArray[2].position.set(WALL_SIZE, WALL_SIZE, 0)
-    tilesArray[3].position.set(-WALL_SIZE, 0, 0)
-    tilesArray[4].position.set(WALL_SIZE, 0, 0)
-    tilesArray[5].position.set(-WALL_SIZE, -WALL_SIZE, 0)
-    tilesArray[6].position.set(0, -WALL_SIZE, 0)
-    tilesArray[7].position.set(WALL_SIZE, -WALL_SIZE, 0)
+  // front
+  boxes[2].position.set(0, -HALF_WALL_SIZE, -HALF_WALL_SIZE)
+  boxes[2].rotation.x = -90 * (PI / 180)
 
-    tilesArray.forEach(function(tile) {
-      tile.receiveShadow = true
-    })
+  // left
+  boxes[3].position.set(-HALF_WALL_SIZE, 0, -HALF_WALL_SIZE)
+  boxes[3].rotation.y = 90 * (PI / 180)
 
-    return (
-      <group>
-        {tilesArray.map((tile, i) => {
-          return <primitive object={tile} key={i} />
-        })}
+  // bottom
+  boxes[4].position.set(0, 0, -WALL_SIZE)
+
+  return <group>{boxes.map((box, i) => <primitive object={box} key={i} />)}</group>
+}
+
+const Floor = () => {
+  const tilesArray = []
+  const geometry = new THREE.PlaneBufferGeometry(WALL_SIZE, WALL_SIZE)
+  const material = new THREE.MeshLambertMaterial({
+    color: MAIN_COLOR,
+  })
+
+  for (let i = 0; i < 8; i++) {
+    tilesArray.push(new THREE.Mesh(geometry, material))
+  }
+
+  tilesArray[0].position.set(-WALL_SIZE, WALL_SIZE, 0)
+  tilesArray[1].position.set(0, WALL_SIZE, 0)
+  tilesArray[2].position.set(WALL_SIZE, WALL_SIZE, 0)
+  tilesArray[3].position.set(-WALL_SIZE, 0, 0)
+  tilesArray[4].position.set(WALL_SIZE, 0, 0)
+  tilesArray[5].position.set(-WALL_SIZE, -WALL_SIZE, 0)
+  tilesArray[6].position.set(0, -WALL_SIZE, 0)
+  tilesArray[7].position.set(WALL_SIZE, -WALL_SIZE, 0)
+
+  tilesArray.forEach(function(tile) {
+    tile.receiveShadow = true
+  })
+
+  return (
+    <group>
+      {tilesArray.map((tile, i) => {
+        return <primitive object={tile} key={i} />
+      })}
+    </group>
+  )
+}
+
+const FlippantSquares = () => {
+  const rotation = [-60 * (PI / 180), 0, -45 * (PI / 180)]
+  return (
+    <group>
+      <group rotation={rotation}>
+        <Well />
+        <Floor />
+        <Tiles />
       </group>
-    )
-  }
-
-  _setupLights() {
-    return (
-      <group>
-        <directionalLight
-          color={MAIN_COLOR}
-          intensity={1.25}
-          position={[-WALL_SIZE, -WALL_SIZE, 1]}
-          castShadow
-          shadowDarkness={0.5}
-        />
-        <mesh position={[-WALL_SIZE, -WALL_SIZE, 1]} scale={[0.1, 0.1, 0.1]}>
-          <boxGeometry attach="geometry" />
-          <meshBasicMaterial color={MAIN_COLOR} attach="material" />
-        </mesh>
-        <directionalLight color={MAIN_COLOR} intensity={1.5} position={[WALL_SIZE, WALL_SIZE, 1]} />
-      </group>
-    )
-  }
-
-  _setupTiles() {
-    return <Tiles />
-  }
-
-  constructor() {
-    super()
-    this.Box = this._setupBox()
-    this.Floor = this._setupFloor()
-    this.Lights = this._setupLights()
-    this.Cubes = this._setupTiles()
-  }
-
-  render() {
-    return (
-      <group rotation={[-60 * (PI / 180), 0, -45 * (PI / 180)]}>
-        {/*this.Box*/}
-        {this.Floor}
-        {this.Cubes}
-        {this.Lights}
-      </group>
-    )
-  }
+      <Lights />
+    </group>
+  )
 }
 
 export { FlippantSquares }
