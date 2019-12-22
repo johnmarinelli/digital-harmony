@@ -3,7 +3,7 @@ import { extend, useRender } from 'react-three-fiber'
 import * as THREE from 'three'
 import { Transport } from 'tone'
 import clock from '../../util/Clock'
-import { withSong } from '../420/WithSong'
+import { withSong } from '../HoC/WithSong'
 
 import { ShadowEnabledBox, StripedLight } from '../FloatingSphereLights'
 

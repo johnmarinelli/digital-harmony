@@ -1,7 +1,7 @@
 import React from 'react'
 import { extend } from 'react-three-fiber'
 import { Rings } from './sound-enabled/Rings'
-import { withSong } from './420/WithSong'
+import { withSong } from './HoC/WithSong'
 import Background from './Background'
 import { BaseController } from './controllers/Base'
 

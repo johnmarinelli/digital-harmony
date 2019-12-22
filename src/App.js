@@ -116,14 +116,14 @@ const Main = () => {
     set({ top: e.target.scrollTop })
   }, [])
 
-  //const voronoi3DScale = <DatNumber path="voronoi3DScale" label="Voronoi3D Scale" min={0} max={50} step={0.05} />
   clock.start()
   return (
     <>
       <DatGui />
       <Canvas
+        antialias="false"
         className="canvasContainer"
-        shadowMap={{ enabled: true, type: THREE.BasicShadowMap }}
+        shadowMap={{ enabled: true, type: THREE.PCFShadowMap }}
         pixelRatio={window.devicePixelRatio}
       >
         <Monolith top={top} />

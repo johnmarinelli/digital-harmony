@@ -9,7 +9,7 @@ import { EnvironmentMap } from '../EnvironmentMap'
 import { loadHDREnvironmentMap, loadEnvironmentMapUrls } from '../../util/Loaders'
 import { getScrollableHeight } from '../../util/ScrollHelper'
 
-import { withSong } from '../420/WithSong'
+import { withSong } from '../HoC/WithSong'
 import { Rings } from '../sound-enabled/Rings'
 
 import { MoireEffect } from '../MoireEffect'
@@ -37,6 +37,7 @@ import events from 'events'
 import Player from '../../sound-player/Player'
 import { ReturnToSender } from '../ReturnToSender'
 import { FlippantSquares } from '../FlippantSquares'
+import { VirtualTrack, VirtualTrackComponent, MovingCamera } from '../../MovingCamera/index'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -68,9 +69,37 @@ const Effects = React.memo(({ factor }) => {
   )
 })
 
+const TRACK = new VirtualTrack([
+  new THREE.Vector3(0, 0, 0),
+  new THREE.Vector3(0, 0, -5),
+  new THREE.Vector3(2, 1, -10),
+  new THREE.Vector3(5, 3, -11),
+  new THREE.Vector3(7, 7, -15),
+])
+
+const LOOK_AT_TRACK = new VirtualTrack([
+  new THREE.Vector3(0, 0, -5),
+  new THREE.Vector3(1, 0, -10),
+  new THREE.Vector3(3, 1, -11),
+  new THREE.Vector3(6, 3, -11),
+  new THREE.Vector3(8, 5, -13),
+  new THREE.Vector3(10, 7, -15),
+])
+
+const MovingCameraComponent = () => {
+  const { camera } = useThree()
+
+  const movingCamera = new MovingCamera(camera, {
+    lookAt: LOOK_AT_TRACK,
+    camera: TRACK,
+  })
+}
+
 class FirstStory extends BaseController {
   constructor() {
     super()
+    this.track = TRACK
+    this.lookAtTrack = LOOK_AT_TRACK
     const songComponents = [
       <Rings
         amplitude={2}
@@ -93,10 +122,20 @@ class FirstStory extends BaseController {
         name="piano"
       />,
     ]
+    this.movingCamera = new MovingCamera()
+  }
+
+  CameraTrack = () => {
+    return <VirtualTrackComponent path={this.track.trackSpline} />
+  }
+
+  LookAtTrack = () => {
+    return <VirtualTrackComponent path={this.lookAtTrack.trackSpline} />
   }
 
   render() {
     const { top, renderer } = this.props
+
     const cubeTexture = loadEnvironmentMapUrls('daylight-bridge', [
       'posx.jpg',
       'negx.jpg',
@@ -126,39 +165,16 @@ class FirstStory extends BaseController {
     // see: https://tonejs.github.io/docs/13.8.25/Players
     return (
       <scene ref={this.sceneRef}>
-        <ScrollingStory top={top} BackgroundComponent={null}>
-          <StorySegment>
-            <FlippantSquares />
-          </StorySegment>
-          {/*
-          <StorySegment>
-            <ReturnToSender top={top} />
-          </StorySegment>
-          */}
-          {/* <StorySegment>{this.Song}</StorySegment>*/}
-          <StorySegment>
-            <Glassblown />
-            <Sprinkler />
-          </StorySegment>
-          <StorySegment>
-            <MoireEffect totalTimeInSeconds={5} />
-            <FiftyNote />
-            <FloatingSpaghetti />
-          </StorySegment>
-          <StorySegment>
-            <EnvironmentMapHDR
-              factor={top.interpolate([0, 1000], [0, 1])}
-              hdrEnvMap={hdrEnvMap}
-              envMap={pisaCubeTexture}
-            />
-          </StorySegment>
-          {/*
-          <StorySegment>
-            <EnvironmentMap cubeTexture={cubeTexture} />
-          </StorySegment>
-          */}
-        </ScrollingStory>
-        <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
+        <group>
+          {this.CameraTrack()}
+          {this.LookAtTrack()}
+          <ScrollingStory top={top} BackgroundComponent={null}>
+            <StorySegment>
+              <FlippantSquares />
+            </StorySegment>
+          </ScrollingStory>
+          <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
+        </group>
       </scene>
     )
   }

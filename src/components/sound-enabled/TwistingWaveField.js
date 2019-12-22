@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import { Transport } from 'tone'
 import { AudioEnabledShaderMaterial } from '../../materials/AudioEnabled'
-import { withSong } from '../420/WithSong'
+import { withSong } from '../HoC/WithSong'
 import clock from '../../util/Clock'
 import { extend, useRender } from 'react-three-fiber'
 import * as THREE from 'three'

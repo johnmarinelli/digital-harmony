@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
+import { useRender } from 'react-three-fiber'
 import { useSprings, animated } from 'react-spring/three'
+import clock from '../util/Clock'
 import * as THREE from 'three'
 
 const CUBE_SIZE = 1 /* width, height */
@@ -18,73 +20,42 @@ const randomAngle = () => THREE.Math.degToRad(Math.round(Math.random()) * (Math.
 const random = () => {
   return {
     color: colors[Math.round(Math.random() * (colors.length - 1))],
-    rotation: [randomAngle(), randomAngle(), 0],
+    rotation: [randomAngle(), 0, 0],
   }
 }
 
-/*
+const Floor = () => {
+  const tilesArray = []
+  const geometry = new THREE.BoxBufferGeometry(WALL_SIZE, WALL_SIZE, 0.05)
+  const material = new THREE.MeshPhongMaterial({
+    color: MAIN_COLOR,
+  })
 
-  return <primitive object={cube} />
-*/
-const Tiles = props => {
-  const minDuration = 3,
-    maxDuration = 6,
-    minDelay = 0.5,
-    maxDelay = 6,
-    attrOptions = ['x', 'y']
-  let x, y, row, col
-
-  let cubes = new Array(TOTAL_CUBES).fill(null)
-  x = 0
-  y = 0
-  row = 0
-  col = 0
-
-  const [springs, set] = useSprings(cubes.length, i => ({
-    from: random(),
-    ...random(),
-    config: { mass: 20, tension: 500, friction: 200 },
-  }))
-
-  useEffect(() => void setInterval(() => set(i => ({ ...random(), delay: (i + 1) * 50 })), 2000), [])
-  for (let i = 0; i < TOTAL_CUBES; ++i) {
-    if (i % GRID === 0) {
-      col = 1
-      row++
-    } else {
-      col++
-    }
-
-    x = -(GRID * CUBE_SIZE / 2 - CUBE_SIZE * col + CUBE_SIZE / 2)
-    y = -(GRID * CUBE_SIZE / 2 - CUBE_SIZE * row + CUBE_SIZE / 2)
-
-    const spring = springs[i]
-    const { rotation, color } = spring
-
-    cubes[i] = (
-      <animated.mesh position={[x, y, 0]} rotation={rotation} key={i} castShadow receiveShadow>
-        <boxGeometry args={[CUBE_SIZE, CUBE_SIZE, 0.05]} attach="geometry" />
-        <animated.meshLambertMaterial color={color} attach="material" />
-      </animated.mesh>
-    )
+  for (let i = 0; i < 8; i++) {
+    tilesArray.push(new THREE.Mesh(geometry, material))
   }
-  return <group>{cubes}</group>
-}
 
-const Lights = () => {
-  const lightPosition = [-WALL_SIZE, 2, -1]
+  tilesArray[0].position.set(-WALL_SIZE, WALL_SIZE, 0)
+  tilesArray[1].position.set(0, WALL_SIZE, 0)
+  tilesArray[2].position.set(WALL_SIZE, WALL_SIZE, 0)
+  tilesArray[3].position.set(-WALL_SIZE, 0, 0)
+  tilesArray[4].position.set(WALL_SIZE, 0, 0)
+  tilesArray[5].position.set(-WALL_SIZE, -WALL_SIZE, 0)
+  tilesArray[6].position.set(0, -WALL_SIZE, 0)
+  tilesArray[7].position.set(WALL_SIZE, -WALL_SIZE, 0)
+
+  tilesArray.forEach(function(tile) {
+    tile.receiveShadow = true
+  })
+
   return (
     <group>
-      <directionalLight color={MAIN_COLOR} intensity={1} position={lightPosition} castShadow shadowDarkness={0.5} />
-      <mesh position={lightPosition} scale={[0.1, 0.1, 0.1]}>
-        <boxGeometry attach="geometry" />
-        <meshBasicMaterial color={MAIN_COLOR} attach="material" />
-      </mesh>
-      <directionalLight color={MAIN_COLOR} intensity={1.2} position={[WALL_SIZE, WALL_SIZE, 1]} />
+      {tilesArray.map((tile, i) => {
+        return <primitive object={tile} key={i} />
+      })}
     </group>
   )
 }
-
 const Well = () => {
   const boxes = []
 
@@ -120,37 +91,91 @@ const Well = () => {
   return <group>{boxes.map((box, i) => <primitive object={box} key={i} />)}</group>
 }
 
-const Floor = () => {
-  const tilesArray = []
-  const geometry = new THREE.PlaneBufferGeometry(WALL_SIZE, WALL_SIZE)
-  const material = new THREE.MeshLambertMaterial({
-    color: MAIN_COLOR,
-  })
+const Lights = props => {
+  const lightAPosition = props.lightAPosition || [-WALL_SIZE, 2, 1]
+  const lightBPosition = props.lightBPosition || [WALL_SIZE, WALL_SIZE, 1]
 
-  for (let i = 0; i < 8; i++) {
-    tilesArray.push(new THREE.Mesh(geometry, material))
-  }
+  const lightScale = [0.15, 0.15, 0.15]
 
-  tilesArray[0].position.set(-WALL_SIZE, WALL_SIZE, 0)
-  tilesArray[1].position.set(0, WALL_SIZE, 0)
-  tilesArray[2].position.set(WALL_SIZE, WALL_SIZE, 0)
-  tilesArray[3].position.set(-WALL_SIZE, 0, 0)
-  tilesArray[4].position.set(WALL_SIZE, 0, 0)
-  tilesArray[5].position.set(-WALL_SIZE, -WALL_SIZE, 0)
-  tilesArray[6].position.set(0, -WALL_SIZE, 0)
-  tilesArray[7].position.set(WALL_SIZE, -WALL_SIZE, 0)
+  const lightARef = useRef()
+  const lightBRef = useRef()
 
-  tilesArray.forEach(function(tile) {
-    tile.receiveShadow = true
+  useRender(() => {
+    const now = clock.getElapsedTime()
+    const { current: lightA } = lightARef
+    const { current: lightB } = lightARef
+
+    if (lightA && lightB) {
+      lightA.position.x += Math.sin(now) * 0.025
+      //lightA.position.z += Math.cos(now) * 0.025
+    }
   })
 
   return (
     <group>
-      {tilesArray.map((tile, i) => {
-        return <primitive object={tile} key={i} />
-      })}
+      <group position={lightAPosition} ref={lightARef}>
+        <directionalLight color={MAIN_COLOR} intensity={1} castShadow />
+        <mesh scale={lightScale}>
+          <boxGeometry attach="geometry" />
+          <meshBasicMaterial color={0xffffff} attach="material" />
+        </mesh>
+      </group>
+      <group position={lightBPosition} ref={lightBRef}>
+        <directionalLight color={MAIN_COLOR} intensity={1.2} />
+        <mesh scale={lightScale}>
+          <boxGeometry attach="geometry" />
+          <meshBasicMaterial color={0xababab} attach="material" />
+        </mesh>
+      </group>
     </group>
   )
+}
+
+const Tiles = props => {
+  const rotation = props.rotation || [0, 0, 0]
+  const minDuration = 3,
+    maxDuration = 6,
+    minDelay = 0.5,
+    maxDelay = 6,
+    attrOptions = ['x', 'y']
+  let x, y, row, col
+
+  let cubes = new Array(TOTAL_CUBES).fill(null)
+  x = 0
+  y = 0
+  row = 0
+  col = 0
+
+  const [springs, set] = useSprings(cubes.length, i => ({
+    from: random(),
+    ...random(),
+    config: { mass: 20, tension: 500, friction: 200 },
+  }))
+
+  useEffect(() => void setInterval(() => set(i => ({ ...random(), delay: (i + 1) * 50 })), 5000), [])
+  for (let i = 0; i < TOTAL_CUBES; ++i) {
+    if (i % GRID === 0) {
+      col = 1
+      row++
+    } else {
+      col++
+    }
+
+    x = -(GRID * CUBE_SIZE / 2 - CUBE_SIZE * col + CUBE_SIZE / 2)
+    y = -(GRID * CUBE_SIZE / 2 - CUBE_SIZE * row + CUBE_SIZE / 2)
+
+    const spring = springs[i]
+    const { rotation, color } = spring
+    const bumpMap = new THREE.TextureLoader().load(`/textures/circle.png`)
+
+    cubes[i] = (
+      <animated.mesh position={[x, y, 0]} rotation={rotation} key={i} castShadow receiveShadow>
+        <boxGeometry args={[CUBE_SIZE, CUBE_SIZE, 0.05]} attach="geometry" />
+        <animated.meshPhongMaterial color={0xffffff} bumpMap={bumpMap} attach="material" />
+      </animated.mesh>
+    )
+  }
+  return <group rotation={rotation}>{cubes}</group>
 }
 
 const FlippantSquares = () => {
@@ -158,11 +183,13 @@ const FlippantSquares = () => {
   return (
     <group>
       <group rotation={rotation}>
+        {/*
         <Well />
+        */}
         <Floor />
         <Tiles />
       </group>
-      <Lights />
+      <Lights lightAPosition={[0, 2, 2]} lightBPosition={[0, 0, -100]} />
     </group>
   )
 }
