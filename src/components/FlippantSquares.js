@@ -5,7 +5,7 @@ import clock from '../util/Clock'
 import * as THREE from 'three'
 
 const CUBE_SIZE = 1 /* width, height */
-const GRID = 3 /* cols, rows */
+const GRID = 4 /* cols, rows */
 const TOTAL_CUBES = GRID * GRID
 const WALL_SIZE = CUBE_SIZE * GRID
 const HALF_WALL_SIZE = WALL_SIZE / 2
@@ -106,7 +106,7 @@ const Lights = props => {
     const { current: lightB } = lightARef
 
     if (lightA && lightB) {
-      lightA.position.x += Math.sin(now) * 0.025
+      //lightA.position.x += Math.sin(now) * 0.025
       //lightA.position.z += Math.cos(now) * 0.025
     }
   })
@@ -152,7 +152,7 @@ const Tiles = props => {
     config: { mass: 20, tension: 500, friction: 200 },
   }))
 
-  useEffect(() => void setInterval(() => set(i => ({ ...random(), delay: (i + 1) * 50 })), 5000), [])
+  useEffect(() => void setInterval(() => set(i => ({ ...random(), delay: (i + 1) * 50 })), 2000), [])
   for (let i = 0; i < TOTAL_CUBES; ++i) {
     if (i % GRID === 0) {
       col = 1
@@ -181,15 +181,15 @@ const Tiles = props => {
 const FlippantSquares = () => {
   const rotation = [-60 * (PI / 180), 0, -45 * (PI / 180)]
   return (
-    <group>
+    <group position={[0, -2.0, 0]}>
       <group rotation={rotation}>
         {/*
         <Well />
+        <Lights lightAPosition={[0, 2, 2]} lightBPosition={[0, 0, -100]} />
         */}
         <Floor />
         <Tiles />
       </group>
-      <Lights lightAPosition={[0, 2, 2]} lightBPosition={[0, 0, -100]} />
     </group>
   )
 }

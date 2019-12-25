@@ -38,6 +38,7 @@ import Player from '../../sound-player/Player'
 import { ReturnToSender } from '../ReturnToSender'
 import { FlippantSquares } from '../FlippantSquares'
 import { VirtualTrack, VirtualTrackComponent, MovingCamera } from '../../MovingCamera/index'
+import { WindCloth } from '../WindCloth'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -166,12 +167,16 @@ class FirstStory extends BaseController {
     return (
       <scene ref={this.sceneRef}>
         <group>
+          {/*
           {this.CameraTrack()}
           {this.LookAtTrack()}
+          */}
           <ScrollingStory top={top} BackgroundComponent={null}>
             <StorySegment>
+              <WindCloth />
               <FlippantSquares />
             </StorySegment>
+            <StorySegment />
           </ScrollingStory>
           <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
         </group>
