@@ -42,9 +42,9 @@ const PianoKey = props => {
   )
 
   return (
-    <animated.mesh position={position} ref={meshRef} rotation={spring.rotation}>
+    <animated.mesh position={position} ref={meshRef} rotation={spring.rotation} castShadow receiveShadow>
       <boxGeometry args={[width, height, depth]} attach="geometry" />
-      <meshBasicMaterial color={color} attach="material" />
+      <meshPhongMaterial color={color} attach="material" />
     </animated.mesh>
   )
 }
@@ -61,7 +61,15 @@ const Keys = props => {
     const width = Math.max(1.1, Noise.perlin2(x, y) * 5)
     const height = 0.2
     const depth = 0.2
-    const key = <PianoKey position={[x, y, 0]} key={i} dimensions={[width, height, depth]} midiKey={60 + i} />
+    const key = (
+      <PianoKey
+        position={[x, y, 0]}
+        key={i}
+        dimensions={[width, height, depth]}
+        midiKey={60 + i}
+        color={0x111111 * (i / numKeys) * 0xefefef}
+      />
+    )
     keys.push(key)
   }
 
@@ -85,10 +93,44 @@ const CenterLine = props => {
   )
 }
 
+const randomPosition = () => {
+  return {
+    position: [2, Math.random() * 2, 5],
+  }
+}
+
+const MovingLight = props => {
+  const [spring, set] = useSpring(() => ({
+    from: { position: [-3, 0, 5] },
+    config: { mass: 20, tension: 500, friction: 200 },
+  }))
+  useEffect(() => void setInterval(() => set(i => ({ ...randomPosition() })), 5000), [])
+
+  return (
+    <animated.group position={spring.position}>
+      <mesh scale={[0.2, 0.2, 0.2]}>
+        <boxGeometry attach="geometry" />
+        <meshBasicMaterial color={0xffffff} attach="material" />
+      </mesh>
+      <pointLight color={0xefefef} intensity={0.7} angle={0.2} penumbra={1} castShadow />
+    </animated.group>
+  )
+}
+
+const Background = props => {
+  return (
+    <mesh position={[0, 0, -1]} scale={[8, 8, 8]} receiveShadow>
+      <planeGeometry attach="geometry" />
+      <meshPhongMaterial color={0x383838} attach="material" />
+    </mesh>
+  )
+}
+
 const AbstractPiano = props => {
   return (
     <group>
-      <spotLight color={0xffffff} intensity={0.7} position={[3, 0, 2]} angle={0.2} penumbra={1} castShadow />
+      <Background />
+      <MovingLight />
       <CenterLine />
       <Keys />
     </group>
