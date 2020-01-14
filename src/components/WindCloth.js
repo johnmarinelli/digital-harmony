@@ -8,8 +8,8 @@ import clock from '../util/Clock'
 const R = 0.2
 
 const clothMass = 1 // 1 kg in total
-const clothSize = 32 // 1 meter
-const Nx = 12
+const clothSize = 10 // 1 meter
+const Nx = 24
 const Ny = 12
 const mass = clothMass / Nx * Ny
 
@@ -127,7 +127,7 @@ function useCannon({ ...props }, fn, deps = []) {
 
 const Cloth = props => {
   const position = props.position || [0, 0, 0]
-  const clothTexture = THREE.ImageUtils.loadTexture('/textures/cloth/circuit_pattern.png') // circuit_pattern.png
+  const clothTexture = THREE.ImageUtils.loadTexture('/textures/cloth/circuit_pattern.png')
   clothTexture.wrapS = clothTexture.wrapT = THREE.RepeatWrapping
   clothTexture.anisotropy = 16
 

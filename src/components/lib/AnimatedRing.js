@@ -45,4 +45,4 @@ const AnimatedRing = ({
   })
 }
 
-export default AnimatedRing
+export { AnimatedRing }

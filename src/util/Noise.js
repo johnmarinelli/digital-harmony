@@ -16,7 +16,6 @@
  */
 
 let noise = {}
-
 ;(function(global) {
   var module = noise
 
@@ -550,6 +549,7 @@ let noise = {}
   }
 
   // 2D Perlin Noise
+  // x, y must be in range (0,1)
   module.perlin2 = function(x, y) {
     // Find unit grid cell containing point
     var X = Math.floor(x),

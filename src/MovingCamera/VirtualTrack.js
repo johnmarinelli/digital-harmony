@@ -32,8 +32,6 @@ class VirtualTrack {
     this.trackLength = this.trackSpline.getLength()
     this.trackCounter = 0.0
     this.trackGeometry = new THREE.TubeBufferGeometry(this.trackSpline, 100, 3, 3, false)
-
-    console.log(this.trackSpline)
   }
 
   updateTrackCounter(d) {

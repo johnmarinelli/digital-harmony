@@ -39,6 +39,10 @@ import { ReturnToSender } from '../ReturnToSender'
 import { FlippantSquares } from '../FlippantSquares'
 import { VirtualTrack, VirtualTrackComponent, MovingCamera } from '../../MovingCamera/index'
 import { WindCloth } from '../WindCloth'
+import { AbstractPiano } from '../AbstractPiano'
+import { FlippantHexagonGrid } from '../Hexagons/Hexagon'
+import { AnimatedRing } from '../lib/AnimatedRing'
+import { DEG_TO_RAD } from '../../util/Constants.js'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -173,10 +177,21 @@ class FirstStory extends BaseController {
           */}
           <ScrollingStory top={top} BackgroundComponent={null}>
             <StorySegment>
-              <WindCloth />
-              <FlippantSquares />
+              <AbstractPiano />
             </StorySegment>
-            <StorySegment />
+            <StorySegment>
+              <FlippantHexagonGrid
+                position={[-1.0, 0.75, -0.25]}
+                rotation={[-15 * DEG_TO_RAD, 0, -15 * DEG_TO_RAD]}
+                size={2}
+              />
+              <FlippantHexagonGrid size={3} />
+              <FlippantHexagonGrid
+                position={[1.0, -0.75, 0.25]}
+                rotation={[15 * DEG_TO_RAD, 0, 15 * DEG_TO_RAD]}
+                size={4}
+              />
+            </StorySegment>
           </ScrollingStory>
           <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
         </group>
