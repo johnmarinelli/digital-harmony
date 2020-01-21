@@ -14,9 +14,6 @@ const MIDI_NOTE_ON = 144
 /* eslint-disable-next-line */
 const MIDI_NOTE_OFF = 128
 
-const A0 = 21
-const C8 = 88
-
 const NUM_LAST_NOTES = 5
 class WebMidiWrapper {
   constructor() {
@@ -29,7 +26,7 @@ class WebMidiWrapper {
 
     this.noteArray = {}
 
-    for (let i = A0; i < C8; ++i) {
+    for (let i = 21; i < 100; ++i) {
       this.noteArray[i] = Object.assign({}, NoteMapping)
     }
 
@@ -125,6 +122,18 @@ class WebMidiWrapper {
         }
       },
       `MIDI#${noteNumber}Press`
+    )
+  }
+
+  onNoteRelease(fn, noteNumber) {
+    this.addListener(
+      'noteoff',
+      note => {
+        if (note.number === noteNumber) {
+          fn(note)
+        }
+      },
+      `MIDI#${noteNumber}Release`
     )
   }
 }

@@ -7,17 +7,6 @@ import clock from '../util/Clock'
 import { DEG_TO_RAD } from '../util/Constants.js'
 import midi from '../util/WebMidi'
 
-const NoteModel = props => {
-  return (
-    <group>
-      <mesh>
-        <sphereGeometry attach="geometry" />
-        <meshBasicMaterial attach="material" />
-      </mesh>
-    </group>
-  )
-}
-
 Noise.seed(0.1)
 const PianoKey = props => {
   const meshRef = useRef()
@@ -28,21 +17,58 @@ const PianoKey = props => {
   const midiKey = props.midiKey || 68
 
   const [spring, set] = useSpring(() => ({
-    from: { rotation: [0, 0, 0] },
+    from: { rotation: [0, 0, 0], position },
     config: { mass: 20, tension: 500, friction: 200 },
   }))
+
+  let extraData = {
+    originalPosition: position,
+    numTimesPressed: 0,
+    direction: 1,
+    movementAmount: 0.5,
+  }
+
+  const getDirectionBasedOnPosition = currentPosition => {
+    const xBound = 1.0
+
+    if (currentPosition.x > xBound && extraData.direction === 1) {
+      return -1
+    } else if (currentPosition.x < -xBound && extraData.direction === -1) {
+      return 1
+    }
+    return extraData.direction
+  }
 
   useEffect(
     () => {
       midi.onNotePress(note => {
-        set({ rotation: [0, Math.abs(Math.random() * 1000.0 * DEG_TO_RAD), 0] })
+        const { current: mesh } = meshRef
+        const currentRotation = mesh.rotation
+        const currentPosition = mesh.position
+
+        extraData.direction = getDirectionBasedOnPosition(currentPosition)
+
+        const newPosition = [2.0, currentPosition.y, currentPosition.z + extraData.movementAmount]
+        const newRotation = [currentRotation.x + 25 * Math.PI * DEG_TO_RAD, currentRotation.y, currentRotation.z]
+
+        set({ rotation: newRotation, position: newPosition })
+
+        extraData.numTimesPressed++
+      }, midiKey)
+
+      midi.onNoteRelease(note => {
+        const { current: mesh } = meshRef
+        const currentPosition = mesh.position
+
+        const newPosition = [extraData.originalPosition[0], currentPosition.y, extraData.originalPosition[2]]
+        set({ position: newPosition })
       }, midiKey)
     },
     [spring]
   )
 
   return (
-    <animated.mesh position={position} ref={meshRef} rotation={spring.rotation} castShadow receiveShadow>
+    <animated.mesh position={spring.position} ref={meshRef} rotation={spring.rotation} castShadow receiveShadow>
       <boxGeometry args={[width, height, depth]} attach="geometry" />
       <meshPhongMaterial color={color} attach="material" />
     </animated.mesh>
@@ -50,15 +76,14 @@ const PianoKey = props => {
 }
 
 const Keys = props => {
-  const numKeys = 10
+  const numKeys = 9
 
   const keys = []
   for (let i = 0; i < numKeys; ++i) {
-    //const x = Noise.perlin2(i / 10, (i + 1) / 10) * 2
-    //const y = Noise.perlin2(i / 10, (i - 1) / 10) * 5
-    const x = THREE.Math.lerp(-1, 1, i / numKeys)
+    //const x = THREE.Math.lerp(-1, 1, i / numKeys)
+    const x = -2
     const y = THREE.Math.lerp(2, -2, i / numKeys)
-    const width = Math.max(1.1, Noise.perlin2(x, y) * 5)
+    const width = 1.75
     const height = 0.2
     const depth = 0.2
     const key = (
@@ -66,7 +91,7 @@ const Keys = props => {
         position={[x, y, 0]}
         key={i}
         dimensions={[width, height, depth]}
-        midiKey={60 + i}
+        midiKey={48 + i}
         color={0x111111 * (i / numKeys) * 0xefefef}
       />
     )
@@ -93,7 +118,7 @@ const CenterLine = props => {
   )
 }
 
-const randomPosition = () => {
+const randomLightPosition = () => {
   return {
     position: [2, Math.random() * 2, 5],
   }
@@ -102,9 +127,9 @@ const randomPosition = () => {
 const MovingLight = props => {
   const [spring, set] = useSpring(() => ({
     from: { position: [-3, 0, 5] },
-    config: { mass: 20, tension: 500, friction: 200 },
+    config: { mass: 1, tension: 500, friction: 20 },
   }))
-  useEffect(() => void setInterval(() => set(i => ({ ...randomPosition() })), 5000), [])
+  useEffect(() => void setInterval(() => set(i => ({ ...randomLightPosition() })), 5000), [])
 
   return (
     <animated.group position={spring.position}>
