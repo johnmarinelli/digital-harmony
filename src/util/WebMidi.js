@@ -19,6 +19,9 @@ class WebMidiWrapper {
   constructor() {
     this.keyboard = null
 
+    this.notesCurrentlyDown = new Array(10).fill(false)
+
+    this.numNotesCurrentlyDown = 0
     this.noteOnListeners = {}
     this.noteOffListeners = {}
 
@@ -71,18 +74,38 @@ class WebMidiWrapper {
     }
     this.lastNotes.push(number)
     this.lastNoteOnStartedAt = this.noteArray[number].startedAt
-    const noteOnListenerNames = Object.keys(this.noteOnListeners)
 
-    noteOnListenerNames.forEach(
-      listenerName =>
-        listenerName === 'undefined'
-          ? console.error('Attempted to access undefined listener name.')
-          : this.noteOnListeners[listenerName](this.noteArray[number])
-    )
+    this.numNotesCurrentlyDown++
+    const idx = this.notesCurrentlyDown.indexOf(number)
+    if (idx === -1) {
+      let ctr = 0
+      while (ctr !== 10) {
+        if (this.notesCurrentlyDown[ctr] === false) {
+          this.notesCurrentlyDown[ctr] = number
+          break
+        }
+        ++ctr
+      }
+    }
+
+    const noteOnListenerNames = Object.keys(this.noteOnListeners)
+    noteOnListenerNames.forEach(listenerName => {
+      if (listenerName === 'undefined') {
+        console.error('Attempted to access undefined listener name.')
+      } else {
+        const entry = this.noteOnListeners[listenerName]
+        if (entry instanceof Function) {
+          entry(this.noteArray[number])
+        } else if (entry instanceof Array) {
+          for (let i = 0; i < entry.length; ++i) {
+            entry[i](this.noteArray[number])
+          }
+        }
+      }
+    })
   }
 
   noteOff = event => {
-    //console.log(event)
     const { note: { number } } = event
 
     this.noteArray[number].number = number
@@ -92,28 +115,65 @@ class WebMidiWrapper {
 
     //this.noteArray[number].startedAt = 0.0
     this.noteArray[number].noteOnVelocity = 0.0
-    const noteOffListenerNames = Object.keys(this.noteOffListeners)
 
-    noteOffListenerNames.forEach(
-      listenerName =>
-        listenerName === 'undefined'
-          ? console.error('Attempted to access undefined listener name.')
-          : this.noteOffListeners[listenerName](this.noteArray[number], number)
-    )
+    this.numNotesCurrentlyDown--
+    const idx = this.notesCurrentlyDown.indexOf(number)
+    if (idx !== -1) {
+      this.notesCurrentlyDown[idx] = false
+    }
+
+    const noteOffListenerNames = Object.keys(this.noteOffListeners)
+    noteOffListenerNames.forEach(listenerName => {
+      if (listenerName === 'undefined') {
+        console.error('Attempted to access undefined listener name.')
+      } else {
+        const entry = this.noteOffListeners[listenerName]
+        if (entry instanceof Function) {
+          entry(this.noteArray[number])
+        } else if (entry instanceof Array) {
+          for (let i = 0; i < entry.length; ++i) {
+            entry[i](this.noteArray[number])
+          }
+        }
+      }
+    })
   }
 
   // z. B. addListener('noteon', listener, listenerName)
   addListener(event, listener, listenerName) {
     if (event === 'noteon') {
-      this.noteOnListeners[listenerName] = listener
+      const entry = this.noteOnListeners[listenerName]
+      // if entry exists already
+      if (entry !== undefined) {
+        if (entry instanceof Array) {
+          entry.push(listener)
+        } else if (entry instanceof Function) {
+          const newEntry = [entry, listener]
+          this.noteOnListeners[listenerName] = newEntry
+        }
+      } else {
+        this.noteOnListeners[listenerName] = listener
+      }
     } else if (event === 'noteoff') {
-      this.noteOffListeners[listenerName] = listener
+      const entry = this.noteOffListeners[listenerName]
+      // if entry exists already
+      if (entry !== undefined) {
+        if (entry instanceof Array) {
+          entry.push(listener)
+        } else if (entry instanceof Function) {
+          const newEntry = [entry, listener]
+          this.noteOffListeners[listenerName] = newEntry
+        }
+      } else {
+        this.noteOffListeners[listenerName] = listener
+      }
     } else {
       this.keyboard.addListener(event, 'all', listener)
     }
   }
 
   onNotePress(fn, noteNumber) {
+    const listenerName = `MIDI#${noteNumber}Press`
     this.addListener(
       'noteon',
       note => {
@@ -121,7 +181,7 @@ class WebMidiWrapper {
           fn(note)
         }
       },
-      `MIDI#${noteNumber}Press`
+      listenerName
     )
   }
 

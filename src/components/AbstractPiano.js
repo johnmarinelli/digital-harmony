@@ -8,6 +8,7 @@ import { DEG_TO_RAD } from '../util/Constants.js'
 import midi from '../util/WebMidi'
 
 Noise.seed(0.1)
+
 const PianoKey = props => {
   const meshRef = useRef()
   const position = props.position || [0, 0, 0]
@@ -23,20 +24,7 @@ const PianoKey = props => {
 
   let extraData = {
     originalPosition: position,
-    numTimesPressed: 0,
-    direction: 1,
     movementAmount: 0.5,
-  }
-
-  const getDirectionBasedOnPosition = currentPosition => {
-    const xBound = 1.0
-
-    if (currentPosition.x > xBound && extraData.direction === 1) {
-      return -1
-    } else if (currentPosition.x < -xBound && extraData.direction === -1) {
-      return 1
-    }
-    return extraData.direction
   }
 
   useEffect(
@@ -46,14 +34,10 @@ const PianoKey = props => {
         const currentRotation = mesh.rotation
         const currentPosition = mesh.position
 
-        extraData.direction = getDirectionBasedOnPosition(currentPosition)
-
         const newPosition = [2.0, currentPosition.y, currentPosition.z + extraData.movementAmount]
         const newRotation = [currentRotation.x + 25 * Math.PI * DEG_TO_RAD, currentRotation.y, currentRotation.z]
 
         set({ rotation: newRotation, position: newPosition })
-
-        extraData.numTimesPressed++
       }, midiKey)
 
       midi.onNoteRelease(note => {
@@ -75,8 +59,87 @@ const PianoKey = props => {
   )
 }
 
+const ChordLight = props => {
+  const groupRef = useRef()
+  const midiKey = props.midiKey
+  const color = props.color || 0xffffff
+  const position = props.position || [0, 0, 0]
+
+  const [spring, set] = useSpring(() => ({
+    from: { rotation: [0, 0, 0], position },
+    config: { mass: 20, tension: 500, friction: 200 },
+  }))
+
+  let extraData = {
+    movementAmount: 1.0,
+    originalPosition: position,
+  }
+
+  useEffect(
+    () => {
+      midi.onNotePress(note => {
+        if (midi.numNotesCurrentlyDown > 2) {
+          const { current: group } = groupRef
+          const currentRotation = group.rotation
+          const currentPosition = group.position
+
+          const newPosition = [currentPosition.x, currentPosition.y - 0.3, currentPosition.z + extraData.movementAmount]
+          const newRotation = [currentRotation.x + 25 * Math.PI * DEG_TO_RAD, currentRotation.y, currentRotation.z]
+
+          set({ rotation: newRotation, position: newPosition })
+        }
+      }, midiKey)
+
+      midi.onNoteRelease(note => {
+        const { current: group } = groupRef
+        const currentPosition = group.position
+
+        const newPosition = [extraData.originalPosition[0], currentPosition.y, extraData.originalPosition[2]]
+        set({ position: newPosition })
+      }, midiKey)
+    },
+    [spring]
+  )
+
+  return (
+    <animated.group position={spring.position} ref={groupRef}>
+      <mesh position={[0.1, 0.1, 0.1]}>
+        <sphereGeometry args={[0.1]} attach="geometry" />
+        <meshPhongMaterial color={0xffffff} attach="material" />
+      </mesh>
+      <mesh position={[-0.1, 0.1, 0.1]}>
+        <sphereGeometry args={[0.1]} attach="geometry" />
+        <meshPhongMaterial color={0xffffff} attach="material" />
+      </mesh>
+      <mesh position={[0.1, -0.1, 0.1]}>
+        <sphereGeometry args={[0.1]} attach="geometry" />
+        <meshPhongMaterial color={0xffffff} attach="material" />
+      </mesh>
+      <spotLight color={color} intensity={0.1} />
+    </animated.group>
+  )
+}
+
+const ChordLights = props => {
+  const numLights = 12
+
+  const lights = []
+
+  for (let i = 0; i < numLights; ++i) {
+    const x = Math.random() * 2
+    const y = THREE.Math.lerp(2, -2, i / numLights)
+    const z = Math.random()
+    const color = 0xffffff * (i / numLights)
+    const midiKey = 48 + i + 1
+
+    lights.push(<ChordLight position={[x, y, z]} color={color} midiKey={midiKey} key={i} />)
+  }
+
+  return <group>{lights}</group>
+}
+
 const Keys = props => {
-  const numKeys = 9
+  const numKeys = 25
 
   const keys = []
   for (let i = 0; i < numKeys; ++i) {
@@ -84,7 +147,7 @@ const Keys = props => {
     const x = -2
     const y = THREE.Math.lerp(2, -2, i / numKeys)
     const width = 1.75
-    const height = 0.2
+    const height = 0.2 / (numKeys / 9)
     const depth = 0.2
     const key = (
       <PianoKey
@@ -137,7 +200,7 @@ const MovingLight = props => {
         <boxGeometry attach="geometry" />
         <meshBasicMaterial color={0xffffff} attach="material" />
       </mesh>
-      <pointLight color={0xefefef} intensity={0.7} angle={0.2} penumbra={1} castShadow />
+      <pointLight color={0xefefef} intensity={0.3} angle={0.2} penumbra={1} castShadow />
     </animated.group>
   )
 }
@@ -158,6 +221,7 @@ const AbstractPiano = props => {
       <MovingLight />
       <CenterLine />
       <Keys />
+      <ChordLights />
     </group>
   )
 }
