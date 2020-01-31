@@ -42,9 +42,11 @@ const PianoKey = props => {
 
       midi.onNoteRelease(note => {
         const { current: mesh } = meshRef
-        const currentPosition = mesh.position
-
-        const newPosition = [extraData.originalPosition[0], currentPosition.y, extraData.originalPosition[2]]
+        const newPosition = [
+          extraData.originalPosition[0],
+          extraData.originalPosition[1],
+          extraData.originalPosition[2],
+        ]
         set({ position: newPosition })
       }, midiKey)
     },
@@ -59,87 +61,92 @@ const PianoKey = props => {
   )
 }
 
-const ChordLight = props => {
+const TripletClusters = props => {
   const groupRef = useRef()
   const midiKey = props.midiKey
-  const color = props.color || 0xffffff
+  const color = props.color || 0x383838
   const position = props.position || [0, 0, 0]
 
   const [spring, set] = useSpring(() => ({
-    from: { rotation: [0, 0, 0], position },
-    config: { mass: 20, tension: 500, friction: 200 },
+    from: { rotation: [0, 0, 0], position, color },
+    config: { mass: 50, tension: 0, friction: 1 },
   }))
 
   let extraData = {
     movementAmount: 1.0,
     originalPosition: position,
+    originalColor: color,
   }
 
   useEffect(
     () => {
       midi.onNotePress(note => {
-        if (midi.numNotesCurrentlyDown > 2) {
-          const { current: group } = groupRef
-          const currentRotation = group.rotation
-          const currentPosition = group.position
+        const { current: group } = groupRef
+        const currentRotation = group.rotation
+        const currentPosition = group.position
 
-          const newPosition = [currentPosition.x, currentPosition.y - 0.3, currentPosition.z + extraData.movementAmount]
-          const newRotation = [currentRotation.x + 25 * Math.PI * DEG_TO_RAD, currentRotation.y, currentRotation.z]
+        const newPosition = [currentPosition.x, currentPosition.y - 0.3, currentPosition.z + extraData.movementAmount]
+        const newRotation = [currentRotation.x, currentRotation.y + 25 * Math.PI * DEG_TO_RAD, currentRotation.z]
 
-          set({ rotation: newRotation, position: newPosition })
-        }
+        const newColor = 0xfafafa
+
+        set({ rotation: newRotation, position: newPosition, color: newColor })
       }, midiKey)
 
       midi.onNoteRelease(note => {
         const { current: group } = groupRef
         const currentPosition = group.position
 
-        const newPosition = [extraData.originalPosition[0], currentPosition.y, extraData.originalPosition[2]]
-        set({ position: newPosition })
+        const newPosition = [
+          extraData.originalPosition[0],
+          extraData.originalPosition[1],
+          extraData.originalPosition[2],
+        ]
+        set({ position: newPosition, color: extraData.originalColor })
       }, midiKey)
     },
     [spring]
   )
 
   return (
-    <animated.group position={spring.position} ref={groupRef}>
+    <animated.group position={spring.position} rotation={spring.rotation} ref={groupRef}>
       <mesh position={[0.1, 0.1, 0.1]}>
-        <sphereGeometry args={[0.1]} attach="geometry" />
-        <meshPhongMaterial color={0xffffff} attach="material" />
+        <dodecahedronGeometry args={[0.1]} attach="geometry" />
+        <animated.meshPhongMaterial color={spring.color} attach="material" />
       </mesh>
       <mesh position={[-0.1, 0.1, 0.1]}>
-        <sphereGeometry args={[0.1]} attach="geometry" />
-        <meshPhongMaterial color={0xffffff} attach="material" />
+        <dodecahedronGeometry args={[0.1]} attach="geometry" />
+        <animated.meshPhongMaterial color={spring.color} attach="material" />
       </mesh>
       <mesh position={[0.1, -0.1, 0.1]}>
-        <sphereGeometry args={[0.1]} attach="geometry" />
-        <meshPhongMaterial color={0xffffff} attach="material" />
+        <dodecahedronGeometry args={[0.1]} attach="geometry" />
+        <animated.meshPhongMaterial color={spring.color} attach="material" />
       </mesh>
-      <spotLight color={color} intensity={0.1} />
     </animated.group>
   )
 }
 
-const ChordLights = props => {
-  const numLights = 12
+const Scale = [53, 56, 57, 58, 59, 60, 62, 63, 65, 66, 67, 68, 70, 71]
+const TripletClustersGroup = props => {
+  const numTripletClusters = Scale.length
 
   const lights = []
 
-  for (let i = 0; i < numLights; ++i) {
+  for (let i = 0; i < numTripletClusters; ++i) {
     const x = Math.random() * 2
-    const y = THREE.Math.lerp(2, -2, i / numLights)
+    const y = THREE.Math.lerp(2, -2, i / numTripletClusters)
     const z = Math.random()
-    const color = 0xffffff * (i / numLights)
-    const midiKey = 48 + i + 1
+    const midiKey = Scale[i]
 
-    lights.push(<ChordLight position={[x, y, z]} color={color} midiKey={midiKey} key={i} />)
+    lights.push(<TripletClusters position={[x, y, z]} midiKey={midiKey} key={i} />)
   }
 
   return <group>{lights}</group>
 }
 
+const Cm = [48, 51, 55]
 const Keys = props => {
-  const numKeys = 25
+  const numKeys = 3
 
   const keys = []
   for (let i = 0; i < numKeys; ++i) {
@@ -150,35 +157,12 @@ const Keys = props => {
     const height = 0.2 / (numKeys / 9)
     const depth = 0.2
     const key = (
-      <PianoKey
-        position={[x, y, 0]}
-        key={i}
-        dimensions={[width, height, depth]}
-        midiKey={48 + i}
-        color={0x111111 * (i / numKeys) * 0xefefef}
-      />
+      <PianoKey position={[x, y, 0]} key={i} dimensions={[width, height, depth]} midiKey={Cm[i]} color={0x383838} />
     )
     keys.push(key)
   }
 
   return <group>{keys}</group>
-}
-
-const CenterLine = props => {
-  const numPoints = 10
-  let vertices = []
-  let turtle = new THREE.Vector3(0, 3, -0.1)
-
-  for (let i = 0; i < numPoints; ++i) {
-    const pos = turtle.add(new THREE.Vector3(0, -0.5, 0))
-    vertices.push(pos.clone())
-  }
-  return (
-    <mesh>
-      <meshLine attach="geometry" vertices={vertices} />
-      <meshLineMaterial attach="material" transparent lineWidth={0.1} color={0xa0a0a0} />
-    </mesh>
-  )
 }
 
 const randomLightPosition = () => {
@@ -190,7 +174,7 @@ const randomLightPosition = () => {
 const MovingLight = props => {
   const [spring, set] = useSpring(() => ({
     from: { position: [-3, 0, 5] },
-    config: { mass: 1, tension: 500, friction: 20 },
+    config: { mass: 10, tension: 500, friction: 20 },
   }))
   useEffect(() => void setInterval(() => set(i => ({ ...randomLightPosition() })), 5000), [])
 
@@ -209,7 +193,7 @@ const Background = props => {
   return (
     <mesh position={[0, 0, -1]} scale={[8, 8, 8]} receiveShadow>
       <planeGeometry attach="geometry" />
-      <meshPhongMaterial color={0x383838} attach="material" />
+      <meshPhongMaterial color={0x383838} attach="material" opacity={0.5} side={THREE.DoubleSide} transparent />
     </mesh>
   )
 }
@@ -219,9 +203,9 @@ const AbstractPiano = props => {
     <group>
       <Background />
       <MovingLight />
-      <CenterLine />
+      {/* <CenterLine />*/}
       <Keys />
-      <ChordLights />
+      <TripletClustersGroup />
     </group>
   )
 }
