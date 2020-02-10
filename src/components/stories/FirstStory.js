@@ -43,6 +43,7 @@ import { AbstractPiano } from '../AbstractPiano'
 import { FlippantHexagonGrid } from '../Hexagons/Hexagon'
 import { AnimatedRing } from '../lib/AnimatedRing'
 import { DEG_TO_RAD } from '../../util/Constants.js'
+import { Clusters } from '../Clusters'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -176,6 +177,9 @@ class FirstStory extends BaseController {
           {this.LookAtTrack()}
           */}
           <ScrollingStory top={top} BackgroundComponent={null}>
+            <StorySegment>
+              <Clusters />
+            </StorySegment>
             <StorySegment>
               <AbstractPiano />
             </StorySegment>

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "cannon": "^0.6.2",
+    "clusters": "^0.0.4",
     "dat.gui": "^0.7.5",
     "obj2gltf": "^3.0.4",
     "react": "^16.9.0",
