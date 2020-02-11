@@ -55,6 +55,7 @@ class WebMidiWrapper {
 
   noteOn = event => {
     const { note: { number } } = event
+    console.log(number)
 
     // edge case for VMPK
     if (event.timestamp === 0) {

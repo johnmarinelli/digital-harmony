@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useSpring, animated } from 'react-spring/three'
 import { useRender } from 'react-three-fiber'
 import * as THREE from 'three'
@@ -8,6 +8,8 @@ import { DEG_TO_RAD } from '../util/Constants.js'
 import midi from '../util/WebMidi'
 
 Noise.seed(0.1)
+
+const ClusterColorPalette = [0xfff000]
 
 const PianoKey = props => {
   const meshRef = useRef()
@@ -22,11 +24,16 @@ const PianoKey = props => {
     config: { mass: 20, tension: 500, friction: 200 },
   }))
 
+  const [colorSpring, setColorSpring] = useSpring(() => ({
+    from: { color },
+    config: { mass: 50, tension: 0, friction: 1 },
+  }))
+
   let extraData = {
     originalPosition: position,
     movementAmount: 0.5,
+    originalColor: color,
   }
-
   useEffect(
     () => {
       midi.onNotePress(note => {
@@ -37,6 +44,9 @@ const PianoKey = props => {
         const newPosition = [2.0, currentPosition.y, currentPosition.z + extraData.movementAmount]
         const newRotation = [currentRotation.x + 25 * Math.PI * DEG_TO_RAD, currentRotation.y, currentRotation.z]
 
+        const color2 = 0x000fff
+
+        setColorSpring({ color: color2 })
         set({ rotation: newRotation, position: newPosition })
       }, midiKey)
 
@@ -47,16 +57,17 @@ const PianoKey = props => {
           extraData.originalPosition[1],
           extraData.originalPosition[2],
         ]
+        setColorSpring({ color: extraData.originalColor })
         set({ position: newPosition })
       }, midiKey)
     },
-    [spring]
+    [spring, colorSpring]
   )
 
   return (
     <animated.mesh position={spring.position} ref={meshRef} rotation={spring.rotation} castShadow receiveShadow>
       <boxGeometry args={[width, height, depth]} attach="geometry" />
-      <meshPhongMaterial color={color} attach="material" />
+      <animated.meshPhongMaterial color={colorSpring.color} attach="material" />
     </animated.mesh>
   )
 }
@@ -88,7 +99,7 @@ const TripletClusters = props => {
         const newPosition = [currentPosition.x, currentPosition.y - 0.3, currentPosition.z + extraData.movementAmount]
         const newRotation = [currentRotation.x, currentRotation.y + 25 * Math.PI * DEG_TO_RAD, currentRotation.z]
 
-        const newColor = 0xfafafa
+        const newColor = 0xfff000
 
         set({ rotation: newRotation, position: newPosition, color: newColor })
       }, midiKey)
@@ -126,9 +137,9 @@ const TripletClusters = props => {
   )
 }
 
-const Scale = [53, 56, 57, 58, 59, 60, 62, 63, 65, 66, 67, 68, 70, 71]
+const ClustersNotes = [67, 69, 70, 72]
 const TripletClustersGroup = props => {
-  const numTripletClusters = Scale.length
+  const numTripletClusters = ClustersNotes.length
 
   const lights = []
 
@@ -136,7 +147,7 @@ const TripletClustersGroup = props => {
     const x = Math.random() * 2
     const y = THREE.Math.lerp(2, -2, i / numTripletClusters)
     const z = Math.random()
-    const midiKey = Scale[i]
+    const midiKey = ClustersNotes[i]
 
     lights.push(<TripletClusters position={[x, y, z]} midiKey={midiKey} key={i} />)
   }
@@ -144,9 +155,9 @@ const TripletClustersGroup = props => {
   return <group>{lights}</group>
 }
 
-const Cm = [48, 51, 55]
+const BigKeyNotes = [48, 51, 55, 58, 62]
 const Keys = props => {
-  const numKeys = 3
+  const numKeys = BigKeyNotes.length
 
   const keys = []
   for (let i = 0; i < numKeys; ++i) {
@@ -157,7 +168,13 @@ const Keys = props => {
     const height = 0.2 / (numKeys / 9)
     const depth = 0.2
     const key = (
-      <PianoKey position={[x, y, 0]} key={i} dimensions={[width, height, depth]} midiKey={Cm[i]} color={0x383838} />
+      <PianoKey
+        position={[x, y, 0]}
+        key={i}
+        dimensions={[width, height, depth]}
+        midiKey={BigKeyNotes[i]}
+        color={0x383838}
+      />
     )
     keys.push(key)
   }

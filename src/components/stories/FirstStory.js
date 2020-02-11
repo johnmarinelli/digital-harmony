@@ -178,9 +178,6 @@ class FirstStory extends BaseController {
           */}
           <ScrollingStory top={top} BackgroundComponent={null}>
             <StorySegment>
-              <Clusters />
-            </StorySegment>
-            <StorySegment>
               <AbstractPiano />
             </StorySegment>
             <StorySegment>
@@ -197,6 +194,7 @@ class FirstStory extends BaseController {
               />
             </StorySegment>
           </ScrollingStory>
+          <StorySegment>{/*<Clusters /> */}</StorySegment>
           <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
         </group>
       </scene>
