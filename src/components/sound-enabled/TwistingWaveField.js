@@ -20,6 +20,7 @@ const WaveField = props => {
   let group = useRef()
 
   const position = props.position || [0, 0, 0]
+  const rotation = props.rotation || [0, 0, 0]
 
   const numLines = props.waveformResolution || 64
   const numPoints = props.numPoints || 30
@@ -133,7 +134,7 @@ const WaveField = props => {
   })
 
   return (
-    <group position={position} {...props} ref={groupRef}>
+    <group position={position} rotation={rotation} ref={groupRef}>
       {geometries.map((geometry, i) => {
         return <anim.line key={i} geometry={geometry} material={materials[i]} />
       })}
@@ -151,7 +152,6 @@ class TwistingWaveFields extends React.PureComponent {
         <WaveField
           position={[-i * 2, 0, 0]}
           waveformResolution={128}
-          size={10}
           color={new THREE.Color(0xffff00)}
           opacity={1.0}
           name={tracks[i]}

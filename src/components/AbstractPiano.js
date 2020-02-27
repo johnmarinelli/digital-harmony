@@ -106,7 +106,6 @@ const TripletClusters = props => {
 
       midi.onNoteRelease(note => {
         const { current: group } = groupRef
-        const currentPosition = group.position
 
         const newPosition = [
           extraData.originalPosition[0],

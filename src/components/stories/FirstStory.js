@@ -22,7 +22,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { DrunkPass } from '../../postprocessing/DrunkPass'
 import { Video } from '../Video'
 import { VideoBackground } from '../VideoBackground'
-import { FloatingSphereLights } from '../sound-enabled/FloatingSphereLights.js'
+import { FloatingSphereLights } from '../sound-enabled/FloatingSphereLights'
 
 import { EnvironmentMapHDR } from '../EnvironmentMapHDR'
 import { BaseController } from '../controllers/Base'
@@ -108,27 +108,29 @@ class FirstStory extends BaseController {
     this.lookAtTrack = LOOK_AT_TRACK
     const songComponents = [
       <Rings
-        amplitude={2}
+        amplitude={0}
         name="battery"
-        position={[0.5, 0, 1.5]}
+        position={[50, 0, 1.5]}
         waveformResolution={16}
-        rotateX={0}
+        rotateX={Math.PI * 90}
         rotateY={0}
-        rotateZ={Math.PI * 0.25}
+        rotateZ={0}
         size={18}
         hue={0.7}
         scale={0.35}
       />,
       <TwistingWaveField
-        position={[-4.5, 0, 0]}
+        position={[-0.5, 0, 0]}
+        rotation={[0, 0, 0]}
         waveformResolution={128}
-        size={10}
         color={new THREE.Color(0xffff00)}
         opacity={1.0}
         name="piano"
       />,
     ]
-    this.movingCamera = new MovingCamera()
+    const Song = withSong(songComponents, 'sadette', 2)
+    extend({ Song })
+    this.Song = <Song />
   }
 
   CameraTrack = () => {
@@ -180,6 +182,7 @@ class FirstStory extends BaseController {
             <StorySegment>
               <AbstractPiano />
             </StorySegment>
+            <StorySegment>{this.Song}</StorySegment>
             <StorySegment>
               <FlippantHexagonGrid
                 position={[-1.0, 0.75, -0.25]}
@@ -193,8 +196,12 @@ class FirstStory extends BaseController {
                 size={4}
               />
             </StorySegment>
+            {/*
+            <StorySegment>
+              <FloatingSphereLights boxDimensions={[6, 36, 6]} boxYPosition={-12} />
+            </StorySegment>
+            */}
           </ScrollingStory>
-          <StorySegment>{/*<Clusters /> */}</StorySegment>
           <Effects factor={top.interpolate([0, 150], [0.8, 0.7])} />
         </group>
       </scene>
