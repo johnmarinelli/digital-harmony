@@ -29,7 +29,8 @@ class WebMidiWrapper {
 
     this.noteArray = {}
 
-    for (let i = 21; i < 100; ++i) {
+    // for an 88 key Roland FP 30
+    for (let i = 21; i < 108; ++i) {
       this.noteArray[i] = Object.assign({}, NoteMapping)
     }
 
@@ -55,7 +56,6 @@ class WebMidiWrapper {
 
   noteOn = event => {
     const { note: { number } } = event
-    console.log(number)
 
     // edge case for VMPK
     if (event.timestamp === 0) {

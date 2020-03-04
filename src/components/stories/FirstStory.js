@@ -44,6 +44,7 @@ import { FlippantHexagonGrid } from '../Hexagons/Hexagon'
 import { AnimatedRing } from '../lib/AnimatedRing'
 import { DEG_TO_RAD } from '../../util/Constants.js'
 import { Clusters } from '../Clusters'
+import { HighlightedNotesGrid } from '../midi-enabled/HighlightedNotesGrid'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -180,9 +181,11 @@ class FirstStory extends BaseController {
           */}
           <ScrollingStory top={top} BackgroundComponent={null}>
             <StorySegment>
+              <HighlightedNotesGrid />
+            </StorySegment>
+            <StorySegment>
               <AbstractPiano />
             </StorySegment>
-            <StorySegment>{this.Song}</StorySegment>
             <StorySegment>
               <FlippantHexagonGrid
                 position={[-1.0, 0.75, -0.25]}
