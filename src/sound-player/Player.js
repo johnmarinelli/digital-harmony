@@ -4,13 +4,14 @@ import Tone from 'tone'
 const { Gain, Panner3D } = Tone
 
 class SoundPlayer {
-  constructor({ position, name, folder, segments, eventEmitterRef }) {
+  constructor({ position, name, folder, segments, eventEmitterRef, loop = false }) {
     this.name = name
     this.folder = folder
     this.segments = segments
     this.numSamples = 64
     this.eventEmitterRef = eventEmitterRef
     this.position = position
+    this.loop = loop
 
     this.init()
     this.update(position)

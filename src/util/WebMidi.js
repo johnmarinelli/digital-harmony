@@ -48,10 +48,60 @@ class WebMidiWrapper {
         return
       }
 
-      this.keyboard = WebMidi.inputs[0]
-      this.keyboard.addListener('noteon', 'all', this.noteOn)
-      this.keyboard.addListener('noteoff', 'all', this.noteOff)
+      //this.keyboard = WebMidi.inputs[0]
+      this.keyboard = WebMidi.getInputByName('Roland FP30') || WebMidi.getInputByName('VMPK Output') || null
+      if (this.keyboard) {
+        this.keyboard.addListener('noteon', 'all', this.noteOn)
+        this.keyboard.addListener('noteoff', 'all', this.noteOff)
+      }
+
+      this.abletonNoteOnListeners = {}
+      this.abletonNoteOffListeners = {}
+
+      this.ableton = WebMidi.getInputByName('IAC Driver Bus 1')
+      if (this.ableton) {
+        this.ableton.addListener('noteon', 1, this.abletonNoteOn)
+        this.ableton.addListener('noteoff', 1, this.abletonNoteOff)
+      }
     }, true)
+  }
+
+  abletonNoteOn = event => {
+    const noteOnListenerNames = Object.keys(this.abletonNoteOnListeners)
+    noteOnListenerNames.forEach(listenerName => {
+      if (listenerName === 'undefined') {
+        console.error('Attempted to access undefined listener name.')
+      } else {
+        const { note } = event
+        const entry = this.abletonNoteOnListeners[listenerName]
+        if (entry instanceof Function) {
+          entry(note)
+        } else if (entry instanceof Array) {
+          for (let i = 0; i < entry.length; ++i) {
+            entry[i](note)
+          }
+        }
+      }
+    })
+  }
+
+  abletonNoteOff = event => {
+    const noteOffListenerNames = Object.keys(this.abletonNoteOffListeners)
+    noteOffListenerNames.forEach(listenerName => {
+      if (listenerName === 'undefined') {
+        console.error('Attempted to access undefined listener name.')
+      } else {
+        const { note } = event
+        const entry = this.abletonNoteOffListeners[listenerName]
+        if (entry instanceof Function) {
+          entry(note)
+        } else if (entry instanceof Array) {
+          for (let i = 0; i < entry.length; ++i) {
+            entry[i](note)
+          }
+        }
+      }
+    })
   }
 
   noteOn = event => {
@@ -138,6 +188,36 @@ class WebMidiWrapper {
         }
       }
     })
+  }
+
+  addAbletonListener(event, listener, listenerName) {
+    if (event === 'noteon') {
+      const entry = this.abletonNoteOnListeners[listenerName]
+      // if entry exists already
+      if (entry !== undefined) {
+        if (entry instanceof Array) {
+          entry.push(listener)
+        } else if (entry instanceof Function) {
+          const newEntry = [entry, listener]
+          this.abletonNoteOnListeners[listenerName] = newEntry
+        }
+      } else {
+        this.abletonNoteOnListeners[listenerName] = listener
+      }
+    } else if (event === 'noteoff') {
+      const entry = this.abletonNoteOffListeners[listenerName]
+      // if entry exists already
+      if (entry !== undefined) {
+        if (entry instanceof Array) {
+          entry.push(listener)
+        } else if (entry instanceof Function) {
+          const newEntry = [entry, listener]
+          this.abletonNoteOffListeners[listenerName] = newEntry
+        }
+      } else {
+        this.abletonNoteOffListeners[listenerName] = listener
+      }
+    }
   }
 
   // z. B. addListener('noteon', listener, listenerName)
