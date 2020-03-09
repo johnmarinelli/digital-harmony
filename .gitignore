@@ -23,7 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # assets
-/public/videos
-/public/audio
-/public/textures
-/public/models
+/public/videos/**/*
+/public/audio/**/*
+/public/textures/**/*
+/public/models/**/*
