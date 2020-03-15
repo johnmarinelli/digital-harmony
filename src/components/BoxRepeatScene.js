@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { animated as anim } from 'react-spring/three'
 import { LissajousKnot } from '../util/Lissajous'
 import Background from './Background'
-import GlitchRepeater from './GlitchRepeater'
+import { GlitchRepeater } from './GlitchRepeater'
 import { BaseController } from './controllers/Base'
 
 class BoxRepeatScene extends BaseController {

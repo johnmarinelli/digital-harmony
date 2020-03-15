@@ -1,5 +1,6 @@
 import WebMidi from 'webmidi'
 import clock from '../util/Clock'
+import { NUM_ABLETON_MIDI_CHANNELS } from '../util/Constants'
 
 const NoteMapping = {
   on: false,
@@ -55,25 +56,31 @@ class WebMidiWrapper {
         this.keyboard.addListener('noteoff', 'all', this.noteOff)
       }
 
-      this.abletonNoteOnListeners = {}
-      this.abletonNoteOffListeners = {}
+      this.abletonNoteOnListeners = []
+      this.abletonNoteOffListeners = []
+      for (let i = 0; i < NUM_ABLETON_MIDI_CHANNELS; ++i) {
+        this.abletonNoteOnListeners.push({})
+        this.abletonNoteOffListeners.push({})
+      }
 
       this.ableton = WebMidi.getInputByName('IAC Driver Bus 1')
       if (this.ableton) {
-        this.ableton.addListener('noteon', 1, this.abletonNoteOn)
-        this.ableton.addListener('noteoff', 1, this.abletonNoteOff)
+        this.ableton.addListener('noteon', 'all', this.abletonNoteOn)
+        this.ableton.addListener('noteoff', 'all', this.abletonNoteOff)
       }
     }, true)
   }
 
   abletonNoteOn = event => {
-    const noteOnListenerNames = Object.keys(this.abletonNoteOnListeners)
+    let { channel } = event
+    channel--
+    const noteOnListenerNames = Object.keys(this.abletonNoteOnListeners[channel])
     noteOnListenerNames.forEach(listenerName => {
       if (listenerName === 'undefined') {
         console.error('Attempted to access undefined listener name.')
       } else {
         const { note } = event
-        const entry = this.abletonNoteOnListeners[listenerName]
+        const entry = this.abletonNoteOnListeners[channel][listenerName]
         if (entry instanceof Function) {
           entry(note)
         } else if (entry instanceof Array) {
@@ -86,13 +93,15 @@ class WebMidiWrapper {
   }
 
   abletonNoteOff = event => {
-    const noteOffListenerNames = Object.keys(this.abletonNoteOffListeners)
+    let { channel } = event
+    channel--
+    const noteOffListenerNames = Object.keys(this.abletonNoteOffListeners[channel])
     noteOffListenerNames.forEach(listenerName => {
       if (listenerName === 'undefined') {
         console.error('Attempted to access undefined listener name.')
       } else {
         const { note } = event
-        const entry = this.abletonNoteOffListeners[listenerName]
+        const entry = this.abletonNoteOffListeners[channel][listenerName]
         if (entry instanceof Function) {
           entry(note)
         } else if (entry instanceof Array) {
@@ -190,32 +199,41 @@ class WebMidiWrapper {
     })
   }
 
-  addAbletonListener(event, listener, listenerName) {
+  // remember that Ableton is index base-1
+  // the CALLER is expected to pass the correct `channel` to this function.
+  addAbletonListener = (event, listener, channel, listenerName) => {
     if (event === 'noteon') {
-      const entry = this.abletonNoteOnListeners[listenerName]
+      // this conditional is to fix a
+      // weird bug where this.abletonNoteOnListeners is not defined sometimes.
+      if (!this.abletonNoteOnListeners) return
+
+      const channelEntries = this.abletonNoteOnListeners[channel]
+      const entry = channelEntries[listenerName]
       // if entry exists already
       if (entry !== undefined) {
         if (entry instanceof Array) {
+          // if there is already a list of functions
           entry.push(listener)
         } else if (entry instanceof Function) {
+          // if there is only one function
           const newEntry = [entry, listener]
-          this.abletonNoteOnListeners[listenerName] = newEntry
+          this.abletonNoteOnListeners[channel][listenerName] = newEntry
         }
       } else {
-        this.abletonNoteOnListeners[listenerName] = listener
+        this.abletonNoteOnListeners[channel][listenerName] = listener
       }
     } else if (event === 'noteoff') {
-      const entry = this.abletonNoteOffListeners[listenerName]
+      const entry = this.abletonNoteOffListeners[channel][listenerName]
       // if entry exists already
       if (entry !== undefined) {
         if (entry instanceof Array) {
           entry.push(listener)
         } else if (entry instanceof Function) {
           const newEntry = [entry, listener]
-          this.abletonNoteOffListeners[listenerName] = newEntry
+          this.abletonNoteOffListeners[channel][listenerName] = newEntry
         }
       } else {
-        this.abletonNoteOffListeners[listenerName] = listener
+        this.abletonNoteOffListeners[channel][listenerName] = listener
       }
     }
   }

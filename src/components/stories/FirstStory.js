@@ -44,7 +44,8 @@ import { FlippantHexagonGrid } from '../Hexagons/Hexagon'
 import { AnimatedRing } from '../lib/AnimatedRing'
 import { DEG_TO_RAD } from '../../util/Constants.js'
 import { Clusters } from '../Clusters'
-import { HighlightedNotesGrid, KickDrum, KickDrumWithPlayer } from '../midi-enabled/HighlightedNotesGrid'
+import { KickDrum } from '../midi-enabled/KickDrum'
+import { HiHat } from '../midi-enabled/HiHat'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -181,7 +182,8 @@ class FirstStory extends BaseController {
           */}
           <ScrollingStory top={top} BackgroundComponent={null}>
             <StorySegment>
-              <KickDrumWithPlayer />
+              <KickDrum rotateX={Math.PI * 0.4} numRings={32} />
+              <HiHat />
             </StorySegment>
             <StorySegment>
               <AbstractPiano />

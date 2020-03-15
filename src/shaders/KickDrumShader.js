@@ -10,10 +10,10 @@ uniform mat4 projectionMatrix;
 uniform float size;
 uniform float amplitude;
 uniform float radius;
-uniform float waveformResolution;
+uniform float numPointsPerRing;
+uniform float amplitudeValue;
 
 attribute float reference;
-uniform float waveform[32];
 
 float rand(float n){return fract(sin(n) * 43758.5453123);}
 
@@ -24,21 +24,15 @@ float fnoise(float p){
 }
 
 void main() {
-	float ref = reference * float(waveformResolution);
+	float ref = reference * float(numPointsPerRing);
 
   // this will create a nicely spaced circle
-  float angle = ((ref+1.)/float(waveformResolution)) * 6.28318530718;
-
-  // what happens when we mess with it?
-  //float angle = ((ref+1.)/float(waveformResolution)) * 6.28318530718 * rand(ref);
-
-  float offset = waveform[int(ref)] * amplitude;
-  //float offset = fnoise(ref) * 1.0;
-
+  float angle = ((ref+1.)/float(numPointsPerRing)) * 6.28318530718;
+  float offset = amplitudeValue;
 	vec3 pos = vec3( cos(angle), 0.0, sin(angle) );
   pos *= radius + offset * 0.5 + (amplitude * 0.165);
 
-  vec4 mvPosition = modelViewMatrix * vec4( pos.x, pos.y + offset * 2., pos.z, 1.0 );
+  vec4 mvPosition = modelViewMatrix * vec4( pos.x, pos.y + offset, pos.z, 1.0 );
 
 	// Apply Size Attenuation (make smaller when further)
 	gl_PointSize = size * (1.0 / length( mvPosition.xyz ));

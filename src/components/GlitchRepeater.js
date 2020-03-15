@@ -4,8 +4,17 @@ import clock from '../util/Clock'
 import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
 
-const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn, wireframe = false }) => {
+const GlitchRepeater = ({
+  mesh,
+  position,
+  numRepeats,
+  frameBreak,
+  updateFn,
+  wireframe = false,
+  extraRenderFunction = null,
+}) => {
   const groupRef = useRef()
+  mesh = mesh || new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), new THREE.MeshBasicMaterial({ color: 0xff0000 }))
   numRepeats = numRepeats || 25
   frameBreak = frameBreak || 10
 
@@ -61,6 +70,11 @@ const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn, wire
 
     main.rotation.x += 0.01
     main.rotation.z += 0.005
+
+    if (extraRenderFunction != null) {
+      extraRenderFunction(groupRef.current)
+    }
+
     numFrames++
   })
 
@@ -68,7 +82,6 @@ const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn, wire
   const repeaterProps = wireframe
     ? {
         wireframe,
-        transparent: true,
         color: 'purple',
       }
     : {}
@@ -81,11 +94,11 @@ const GlitchRepeater = ({ mesh, position, numRepeats, frameBreak, updateFn, wire
       {geometries.map((geometry, i) => {
         return (
           <anim.mesh key={i} geometry={geometry}>
-            <anim.lineBasicMaterial attach="material" color={Math.random() * 0xffffff} {...repeaterProps} />
+            <anim.meshBasicMaterial attach="material" color={Math.random() * 0xffffff} transparent {...repeaterProps} />
           </anim.mesh>
         )
       })}
     </group>
   )
 }
-export default GlitchRepeater
+export { GlitchRepeater }
