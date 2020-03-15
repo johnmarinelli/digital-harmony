@@ -44,6 +44,8 @@ const GlitchRepeater = ({
     const main = children[0]
 
     // like numFrames % 8 === 0, but cheaper
+    // this is what staggers the animation.
+    // it determines the space between each "repeat".
     if ((numFrames & 7) === 0) {
       for (let i = children.length - 1; i > 0; --i) {
         let current = children[i]
@@ -88,13 +90,31 @@ const GlitchRepeater = ({
 
   return (
     <group position={position} ref={groupRef}>
-      <anim.mesh name="mainMesh" geometry={mesh.geometry}>
-        <anim.lineBasicMaterial attach="material" color="pink" />
+      <anim.mesh geometry={mesh.geometry}>
+        {wireframe ? (
+          <anim.lineBasicMaterial attach="material" transparent color="pink" />
+        ) : (
+          <anim.meshBasicMaterial attach="material" transparent color="pink" />
+        )}
       </anim.mesh>
       {geometries.map((geometry, i) => {
         return (
           <anim.mesh key={i} geometry={geometry}>
-            <anim.meshBasicMaterial attach="material" color={Math.random() * 0xffffff} transparent {...repeaterProps} />
+            {wireframe ? (
+              <anim.lineBasicMaterial
+                attach="material"
+                color={Math.random() * 0xffffff}
+                transparent
+                {...repeaterProps}
+              />
+            ) : (
+              <anim.meshBasicMaterial
+                attach="material"
+                color={Math.random() * 0xffffff}
+                transparent
+                {...repeaterProps}
+              />
+            )}
           </anim.mesh>
         )
       })}

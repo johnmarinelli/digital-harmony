@@ -46,6 +46,7 @@ import { DEG_TO_RAD } from '../../util/Constants.js'
 import { Clusters } from '../Clusters'
 import { KickDrum } from '../midi-enabled/KickDrum'
 import { HiHat } from '../midi-enabled/HiHat'
+import { Bass } from '../midi-enabled/Bass'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -184,6 +185,7 @@ class FirstStory extends BaseController {
             <StorySegment>
               <KickDrum rotateX={Math.PI * 0.4} numRings={32} />
               <HiHat />
+              <Bass />
             </StorySegment>
             <StorySegment>
               <AbstractPiano />

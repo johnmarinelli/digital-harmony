@@ -1,4 +1,5 @@
-import { ExtendableFloatArray, noise } from './Dependencies'
+import { ExtendableFloatArray } from './Dependencies'
+import { noise } from '../util/Noise'
 
 let TWO_PI = 2 * Math.PI
 let angle

@@ -2,12 +2,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useSpring, animated } from 'react-spring/three'
 import { useRender } from 'react-three-fiber'
 import * as THREE from 'three'
-import { Noise } from '../util/Noise'
 import clock from '../util/Clock'
 import { DEG_TO_RAD } from '../util/Constants.js'
 import midi from '../util/WebMidi'
-
-Noise.seed(0.1)
 
 const ClusterColorPalette = [0xfff000]
 

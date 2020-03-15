@@ -137,23 +137,11 @@ const random = () => {
   }
 }
 
-const FlippantHexagonGrid = props => {
-  const size = props.size || 5
-  const cellSize = props.cellSize || 1.0
+const HexagonGrid = opts => {
+  const size = opts.size || 5
   const _hashDelimiter = '.'
-  const _cellShape = HexagonShape()
-  const _scale = 0.95
-  const position = props.position || [0, 0, 0]
-  const rotation = props.rotation || [0, 0, 0]
-
-  let _cellWidth = -Infinity,
-    _cellLength = -Infinity,
-    extrudeSettings = {},
-    cells = {},
-    numCells = 0,
-    _vec3 = new THREE.Vector3()
-  let _geoCache = {}
-
+  let cells = {},
+    numCells = 0
   const cellToHash = cell => {
     return cell.q + _hashDelimiter + cell.r + _hashDelimiter + cell.s
   }
@@ -184,6 +172,20 @@ const FlippantHexagonGrid = props => {
       }
     }
   }
+
+  generate()
+  return cells
+}
+
+const HexagonGridTiles = (cells, opts) => {
+  const cellSize = opts.cellSize || 1.0
+  const _cellShape = HexagonShape()
+
+  let _cellWidth = -Infinity,
+    _cellLength = -Infinity,
+    extrudeSettings = {},
+    _vec3 = new THREE.Vector3()
+  let _geoCache = {}
 
   const generateTile = (cell, scale, material) => {
     const height = Math.min(1, Math.abs(cell.h))
@@ -245,8 +247,27 @@ const FlippantHexagonGrid = props => {
     return tiles
   }
 
-  generate({})
-  const tiles = generateTiles({})
+  return generateTiles({})
+}
+
+const FlippantHexagonGrid = props => {
+  const size = props.size || 5
+  const cellSize = props.cellSize || 1.0
+  const _hashDelimiter = '.'
+  const _cellShape = HexagonShape()
+  const _scale = 0.95
+  const position = props.position || [0, 0, 0]
+  const rotation = props.rotation || [0, 0, 0]
+
+  let _cellWidth = -Infinity,
+    _cellLength = -Infinity,
+    extrudeSettings = {},
+    cells = HexagonGrid({}),
+    numCells = 0,
+    _vec3 = new THREE.Vector3()
+  let _geoCache = {}
+
+  const tiles = HexagonGridTiles(cells, {})
 
   const [springs, set] = useSprings(tiles.length, i => ({
     from: {

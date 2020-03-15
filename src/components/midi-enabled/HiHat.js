@@ -3,6 +3,7 @@ import { useRender } from 'react-three-fiber'
 import * as THREE from 'three'
 import midi from '../../util/WebMidi'
 import clock from '../../util/Clock'
+import { noise } from '../../util/Noise'
 import { useSpring, useSprings, animated } from 'react-spring/three'
 import { hihat } from '../signal-generators/hihat'
 import { GlitchRepeater } from '../GlitchRepeater'
@@ -26,7 +27,7 @@ const HiHat = props => {
       yCoord = Math.sin(i / 60 + phase) * hihatValue
       hihatWaveformData[i] = yCoord
     }
-    for (let i = children.length - 1; i > 0; --i) {
+    for (let i = children.length - 1; i >= 0; --i) {
       child = children[i]
       child.material.opacity = hihatWaveformData[signalBandwidth - i] * 10
     }
@@ -34,7 +35,17 @@ const HiHat = props => {
 
   return (
     <GlitchRepeater
-      position={new THREE.Vector3(-2.0, 0.0, 0.0)}
+      position={new THREE.Vector3(-2.0, 2.5, 1.0)}
+      mesh={new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xff0000 }))}
+      updateFn={t => {
+        const xSpan = 6
+        const xStart = -2
+        const p = (t % xSpan) / xSpan
+        const x = THREE.Math.lerp(xStart, xStart + xSpan, p)
+        const y = noise(t + 1, t)
+
+        return [x, y, 0]
+      }}
       extraRenderFunction={renderHook}
       numRepeats={signalBandwidth}
     />
