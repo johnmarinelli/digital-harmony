@@ -165,8 +165,7 @@ const KickDrum = props => {
 
   const { signal, triggerFn } = kick()
   const width = numRings
-  let yDot = 0,
-    kickValue = 0,
+  let kickValue = 0,
     phase = 0,
     yCoord = 0,
     kickWaveformData = new Array(width).fill(0)
@@ -174,10 +173,7 @@ const KickDrum = props => {
   const render = () => {
     for (let i = 0; i < width; ++i) {
       kickValue = signal.value
-
-      yDot = Math.sin(i / 60 + phase) * kickValue
-
-      yCoord = yDot
+      yCoord = Math.sin(i / 60 + phase) * kickValue
       kickWaveformData[i] = yCoord
     }
     //increasing phase means that the kick wave will

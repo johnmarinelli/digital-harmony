@@ -3,6 +3,7 @@ import { animated as anim } from 'react-spring/three'
 import clock from '../util/Clock'
 import * as THREE from 'three'
 import { useRender } from 'react-three-fiber'
+import { lerpHexColor } from '../util/HexadecimalLerp'
 
 const GlitchRepeater = ({
   mesh,
@@ -10,6 +11,8 @@ const GlitchRepeater = ({
   numRepeats,
   frameBreak,
   updateFn,
+  beginColor,
+  endColor,
   wireframe = false,
   extraRenderFunction = null,
 }) => {
@@ -88,6 +91,14 @@ const GlitchRepeater = ({
       }
     : {}
 
+  const colorPalette = []
+  beginColor = beginColor || 0x111111
+  endColor = endColor || 0xeeeeee
+  for (let i = 0; i < numRepeats; ++i) {
+    const color = lerpHexColor(beginColor, endColor, i / numRepeats)
+    colorPalette.push(color)
+  }
+
   return (
     <group position={position} ref={groupRef}>
       <anim.mesh geometry={mesh.geometry}>
@@ -108,12 +119,7 @@ const GlitchRepeater = ({
                 {...repeaterProps}
               />
             ) : (
-              <anim.meshBasicMaterial
-                attach="material"
-                color={Math.random() * 0xffffff}
-                transparent
-                {...repeaterProps}
-              />
+              <anim.meshBasicMaterial attach="material" color={colorPalette[i]} transparent {...repeaterProps} />
             )}
           </anim.mesh>
         )

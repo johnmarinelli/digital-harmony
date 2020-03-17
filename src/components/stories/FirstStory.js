@@ -194,13 +194,13 @@ class FirstStory extends BaseController {
               <FlippantHexagonGrid
                 position={[-1.0, 0.75, -0.25]}
                 rotation={[-15 * DEG_TO_RAD, 0, -15 * DEG_TO_RAD]}
-                size={2}
+                dimensions={[2, 2]}
               />
-              <FlippantHexagonGrid size={3} />
+              <FlippantHexagonGrid dimensions={[3, 3]} />
               <FlippantHexagonGrid
                 position={[1.0, -0.75, 0.25]}
                 rotation={[15 * DEG_TO_RAD, 0, 15 * DEG_TO_RAD]}
-                size={4}
+                dimensions={[4, 4]}
               />
             </StorySegment>
             {/*

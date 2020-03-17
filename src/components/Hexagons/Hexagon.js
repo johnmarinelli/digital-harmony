@@ -133,12 +133,12 @@ const randomAngle = () => THREE.Math.degToRad(Math.round(Math.random()) * (Math.
 const random = () => {
   return {
     rotationY: randomAngle(),
-    translateY: Math.random() * 10,
+    translateY: Math.random() * 1,
   }
 }
 
-const HexagonGrid = opts => {
-  const size = opts.size || 5
+const generateHexagonGrid = opts => {
+  const dimensions = opts.dimensions || [3, 3]
   const _hashDelimiter = '.'
   let cells = {},
     numCells = 0
@@ -160,12 +160,16 @@ const HexagonGrid = opts => {
 
   const generate = () => {
     let x, y, z, c
+    const width = dimensions[0]
+    const height = dimensions[1]
+    const halfWidth = Math.floor(width / 2)
+    const halfHeight = Math.floor(height / 2)
 
-    for (x = -size; x < size + 1; ++x) {
-      for (y = -size; y < size + 1; ++y) {
+    for (x = -halfWidth; x < halfWidth + 1; ++x) {
+      for (y = -halfHeight; y < halfHeight + 1; ++y) {
         // axial coordinates
         z = -x - y
-        if (Math.abs(x) <= size && Math.abs(y) <= size && Math.abs(z) <= size) {
+        if (Math.abs(x) <= halfWidth && Math.abs(y) <= halfHeight /*&& Math.abs(z) <= size */) {
           c = new Cell(x, y, z)
           addCell(c)
         }
@@ -251,7 +255,7 @@ const HexagonGridTiles = (cells, opts) => {
 }
 
 const FlippantHexagonGrid = props => {
-  const size = props.size || 5
+  const dimensions = props.dimensions || [3, 3]
   const cellSize = props.cellSize || 1.0
   const _hashDelimiter = '.'
   const _cellShape = HexagonShape()
@@ -262,7 +266,7 @@ const FlippantHexagonGrid = props => {
   let _cellWidth = -Infinity,
     _cellLength = -Infinity,
     extrudeSettings = {},
-    cells = HexagonGrid({}),
+    cells = generateHexagonGrid({ dimensions }),
     numCells = 0,
     _vec3 = new THREE.Vector3()
   let _geoCache = {}
@@ -315,4 +319,4 @@ const FlippantHexagonGrid = props => {
   )
 }
 
-export { FlippantHexagonGrid }
+export { HexagonGridTiles, generateHexagonGrid, FlippantHexagonGrid }
