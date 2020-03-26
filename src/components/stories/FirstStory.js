@@ -32,7 +32,7 @@ import { FloatingSpaghetti } from '../lib/FloatingSpaghetti'
 import { Sprinkler } from '../lib/Sprinkler'
 import { SoundEnabledBackground } from '../sound-enabled/Background'
 import { TwistingWaveField } from '../sound-enabled/TwistingWaveField'
-import Background from '../Background'
+import Background, { ShaderBackground } from '../Background'
 import events from 'events'
 import Player from '../../sound-player/Player'
 import { ReturnToSender } from '../ReturnToSender'
@@ -47,6 +47,9 @@ import { Clusters } from '../Clusters'
 import { KickDrum } from '../midi-enabled/KickDrum'
 import { HiHat } from '../midi-enabled/HiHat'
 import { Bass } from '../midi-enabled/Bass'
+import { Snare } from '../midi-enabled/Snare'
+import { Lead } from '../midi-enabled/Lead'
+import { VertexShader, FragmentShader } from '../../shaders/FirstStory'
 
 applySpring({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass, EnvironmentMapHDR })
 extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
@@ -163,10 +166,12 @@ class FirstStory extends BaseController {
     )
     const scrollMax = getScrollableHeight()
     const BackgroundComponent = (
-      <Background
+      <ShaderBackground
+        vertexShader={VertexShader}
+        fragmentShader={FragmentShader}
         color={top.interpolate(
           [0, scrollMax * 0.25, scrollMax * 0.33, scrollMax * 0.5, scrollMax],
-          ['#e82968', '#e0c919', '#504006', '#e32f01', '#333333']
+          ['#fefefe', '#e0c919', '#504006', '#e32f01', '#333333']
         )}
       />
     )
@@ -181,11 +186,13 @@ class FirstStory extends BaseController {
           {this.CameraTrack()}
           {this.LookAtTrack()}
           */}
-          <ScrollingStory top={top} BackgroundComponent={null}>
+          <ScrollingStory top={top} BackgroundComponent={BackgroundComponent}>
             <StorySegment>
-              <KickDrum rotateX={Math.PI * 0.4} numRings={32} />
+              <KickDrum position={[-2, 2, 0]} rotateX={Math.PI * 0.6} rotateZ={Math.PI * -0.2} numRings={32} />
               <HiHat />
-              <Bass />
+              <Lead />
+              <Bass position={[-1.5, -2, 1]} />
+              <Snare position={[2, 1.5, -3]} />
             </StorySegment>
             <StorySegment>
               <AbstractPiano />

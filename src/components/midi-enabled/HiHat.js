@@ -36,7 +36,7 @@ const HiHat = props => {
   return (
     <GlitchRepeater
       position={new THREE.Vector3(-2.0, 2.5, 1.0)}
-      mesh={new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xff0000 }))}
+      mesh={new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xfefefe }))}
       updateFn={t => {
         const xSpan = 6
         const xStart = -2

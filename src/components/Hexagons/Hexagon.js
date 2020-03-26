@@ -292,8 +292,8 @@ const FlippantHexagonGrid = props => {
 
   return (
     <group position={position} rotation={rotation}>
-      <ambientLight intensity={0.2} />
-      <pointLight position={[1, 1, 2]} intensity={0.8} />
+      {/*<ambientLight intensity={0.2} /> */}
+      {/*<pointLight position={[1, 1, 2]} intensity={0.8} /> */}
       <group scale={[0.1, 0.1, 0.1]} rotation-x={-90 * DEG_TO_RAD}>
         {tiles.map((tile, i) => {
           const spring = springs[i]

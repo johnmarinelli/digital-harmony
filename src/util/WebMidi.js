@@ -67,8 +67,13 @@ class WebMidiWrapper {
       if (this.ableton) {
         this.ableton.addListener('noteon', 'all', this.abletonNoteOn)
         this.ableton.addListener('noteoff', 'all', this.abletonNoteOff)
+        this.ableton.addListener('controlchange', 'all', this.abletonControlSignal)
       }
     }, true)
+  }
+
+  abletonControlSignal = event => {
+    console.log(event)
   }
 
   abletonNoteOn = event => {

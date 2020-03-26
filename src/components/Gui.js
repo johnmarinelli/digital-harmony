@@ -98,6 +98,10 @@ class GuiImpl {
       octahedronScale: { x: 1, y: 1, z: 1, all: 1 },
       octahedronRotation: { x: 1, y: 1, z: 1 },
       subjectStateOverride: false,
+      flockingCenteringFactor: 1,
+      flockingHomeX: 0,
+      flockingHomeY: 0,
+      flockingHomeZ: 0,
     }
 
     this.setOptions = this.setOptions.bind(this)

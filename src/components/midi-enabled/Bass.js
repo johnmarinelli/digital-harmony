@@ -11,6 +11,7 @@ import { generateHexagonGrid, HexagonGridTiles } from '../Hexagons/Hexagon'
 import { bass } from '../signal-generators/bass'
 
 const Bass = props => {
+  const position = props.position || [0, 0, 0]
   const parentRef = useRef()
   const dimensions = [50, 5]
   const cells = generateHexagonGrid({ dimensions })
@@ -54,7 +55,7 @@ const Bass = props => {
   useRender(render)
   midi.addAbletonListener('noteon', triggerFn, 2, 'BassListener')
   return (
-    <group position={[0, -2, 1]} scale={[0.1, 0.1, 0.1]} ref={parentRef}>
+    <group position={position} scale={[0.1, 0.1, 0.1]} ref={parentRef}>
       {tiles.map((tile, i) => {
         const { worldPosition: position } = tile
         return (
@@ -65,7 +66,7 @@ const Bass = props => {
             scale={[0.5, 0.5, 0.7]}
             key={i}
           >
-            <meshPhongMaterial color={lerpHexColor(beginColor, endColor, i / tiles.length)} attach="material" />
+            <meshBasicMaterial color={lerpHexColor(beginColor, endColor, i / tiles.length)} attach="material" />
           </mesh>
         )
       })}

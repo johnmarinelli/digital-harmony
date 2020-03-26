@@ -105,7 +105,7 @@ const GlitchRepeater = ({
         {wireframe ? (
           <anim.lineBasicMaterial attach="material" transparent color="pink" />
         ) : (
-          <anim.meshBasicMaterial attach="material" transparent color="pink" />
+          <anim.meshBasicMaterial attach="material" transparent color={colorPalette[0]} />
         )}
       </anim.mesh>
       {geometries.map((geometry, i) => {

@@ -6,6 +6,14 @@ import GuiOptions from '../components/Gui'
 import clock from '../util/Clock'
 import { VertexShader, FragmentShader, Uniforms } from '../shaders/Background'
 
+/* example:
+  <Background
+    color={top.interpolate(
+      [0, scrollMax * 0.25, scrollMax * 0.33, scrollMax * 0.5, scrollMax],
+      ['#e82968', '#e0c919', '#504006', '#e32f01', '#333333']
+    )}
+  />
+*/
 const Background = ({ color, receiveShadow = false, depthTest = false }) => {
   const { gl, viewport } = useThree()
   const { width, height } = viewport
@@ -75,10 +83,10 @@ export const ShaderBackground = ({
     }
     */
   })
-  const material = <anim.shaderMaterial attach="material" vertexShader={vs} fragmentShader={fs} uniforms={uniforms} />
+  const material = <shaderMaterial attach="material" vertexShader={vs} fragmentShader={fs} uniforms={uniforms} />
 
   return (
-    <mesh ref={mesh} scale={[width, height, 1.0]} receiveShadow>
+    <mesh position={[0, 0, -5]} ref={mesh} scale={[width * 3, height * 3, 1]} receiveShadow>
       <planeBufferGeometry attach="geometry" args={[1, 1]} />
       {material}
     </mesh>

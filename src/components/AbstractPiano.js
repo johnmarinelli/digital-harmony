@@ -215,7 +215,7 @@ const AbstractPiano = props => {
   return (
     <group>
       <Background />
-      <MovingLight />
+      {/* <MovingLight /> */}
       {/* <CenterLine />*/}
       <Keys />
       <TripletClustersGroup />
