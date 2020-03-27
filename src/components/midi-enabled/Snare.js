@@ -57,10 +57,10 @@ const Snare = props => {
   return (
     <group position={position}>
       <animated.mesh position={[0, -1, 0]} rotation={krSpring.rotation} geometry={rect2Geometry}>
-        <meshBasicMaterial color={0xefefef} attach="material" />
+        <meshBasicMaterial color={0xa0a0a0} attach="material" />
       </animated.mesh>
       <animated.mesh rotation={krSpring.rotation} position={[1, 0, -0.3]} geometry={krGeometry}>
-        <meshBasicMaterial color={0xfefefe} attach="material" />
+        <meshBasicMaterial color={0x262626} attach="material" />
       </animated.mesh>
     </group>
   )

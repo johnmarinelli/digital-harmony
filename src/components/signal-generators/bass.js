@@ -2,7 +2,7 @@ import { PulseOscillator, AudioNode, Filter, Oscillator, AmplitudeEnvelope, Freq
 
 const bass = () => {
   const audioNode = new AudioNode()
-  const envelope = new AmplitudeEnvelope({ attack: 0.1, decay: 1.5, sustain: 0 }).connect(audioNode)
+  const envelope = new AmplitudeEnvelope({ attack: 0.1, decay: 3, sustain: 0 }).connect(audioNode)
   const filter = new Filter({
     frequency: 600,
     Q: 8,

@@ -176,6 +176,8 @@ class FirstStory extends BaseController {
       />
     )
 
+    const lightpos = [0,2,5]
+
     // todo: implement mechanism for withSong that allows for cross-component
     // Player integration
     // see: https://tonejs.github.io/docs/13.8.25/Players
@@ -186,13 +188,24 @@ class FirstStory extends BaseController {
           {this.CameraTrack()}
           {this.LookAtTrack()}
           */}
-          <ScrollingStory top={top} BackgroundComponent={BackgroundComponent}>
+          <ScrollingStory top={top} BackgroundComponent={null}>
             <StorySegment>
               <KickDrum position={[-2, 2, 0]} rotateX={Math.PI * 0.6} rotateZ={Math.PI * -0.2} numRings={32} />
               <HiHat />
               <Lead />
-              <Bass position={[-1.5, -2, 1]} />
+              <Bass position={[-2, -1.5, 1]} />
               <Snare position={[2, 1.5, -3]} />
+              <group position={lightpos}>
+                <directionalLight color={0xababab} castShadow intensity={0.3} />
+                <mesh>
+                  <boxGeometry  attach="geometry" />
+                  <meshBasicMaterial color={0xff0000} attach="material" side={THREE.DoubleSide} />
+                </mesh>
+              </group>
+              <mesh position={[0,0,-5]} receiveShadow>
+                <planeGeometry args={[13,13]} attach="geometry" />
+                <meshPhongMaterial color={0xfefefe} attach="material"/>
+              </mesh>
             </StorySegment>
             <StorySegment>
               <AbstractPiano />

@@ -144,9 +144,9 @@ const KickDrum = props => {
 
   for (let i = 0; i < numRings; ++i) {
     ref = i / numRings
-    const hueVal = typeof hue === 'function' ? hue(ref) : hue
-    const satVal = typeof sat === 'function' ? sat(ref) : sat
-    const litVal = typeof lit === 'function' ? lit(ref) : lit
+    const hueVal = typeof hue === 'function' ? hue(1.0 - ref) : hue
+    const satVal = typeof sat === 'function' ? sat(1.0 - ref) : sat
+    const litVal = typeof lit === 'function' ? lit(1.0 - ref) : lit
     const ring = new RingPoints({
       radius: i * 0.05 + 0.5,
       numPointsPerRing,

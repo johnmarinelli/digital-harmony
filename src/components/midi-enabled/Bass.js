@@ -24,16 +24,8 @@ const Bass = props => {
     phase = 0,
     waveformData = new Array(width).fill(0)
 
-  const [springs, set] = useSprings(tiles.length, i => ({
-    from: {
-      translateY: 0,
-    },
-    translateY: -1,
-    config: { mass: 20, tension: 500, friction: 170 },
-  }))
-
-  const beginColor = 0x111111
-  const endColor = 0xeeeeee
+  const beginColor = 0xbbbbbb
+  const endColor = 0x111111
 
   const render = () => {
     for (let i = 0; i < width; ++i) {
@@ -41,8 +33,6 @@ const Bass = props => {
       yCoord = Math.sin(i / 60 + phase) * bassValue * 5
       waveformData[i] = yCoord
     }
-    //increasing phase means that the kick wave will
-    //not be standing and looks more dynamic
     phase++
     const parent = parentRef.current
     const children = parent.children
@@ -55,7 +45,7 @@ const Bass = props => {
   useRender(render)
   midi.addAbletonListener('noteon', triggerFn, 2, 'BassListener')
   return (
-    <group position={position} scale={[0.1, 0.1, 0.1]} ref={parentRef}>
+    <group position={position} rotation={[0, 0, 0]} scale={[0.1, 0.1, 0.1]} ref={parentRef}>
       {tiles.map((tile, i) => {
         const { worldPosition: position } = tile
         return (
@@ -65,6 +55,7 @@ const Bass = props => {
             geometry={tile.geometry}
             scale={[0.5, 0.5, 0.7]}
             key={i}
+            castShadow
           >
             <meshBasicMaterial color={lerpHexColor(beginColor, endColor, i / tiles.length)} attach="material" />
           </mesh>

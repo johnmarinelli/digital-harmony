@@ -31,7 +31,7 @@ const Background = ({ color, receiveShadow = false, depthTest = false }) => {
     material.color.set(colorOverride ? feelsLike : color)
   })
   return (
-    <mesh scale={[width, height, 1]} ref={meshRef}>
+    <mesh position={[0,0,-5]} scale={[width * 3, height * 3, 1]} ref={meshRef}>
       <planeGeometry attach="geometry" args={[1, 1]} />
       <anim.meshBasicMaterial color={color} attach="material" depthTest={depthTest} receiveShadow={receiveShadow} />
     </mesh>
