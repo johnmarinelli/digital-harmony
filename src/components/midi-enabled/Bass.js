@@ -1,19 +1,14 @@
 import React, { useRef } from 'react'
-import { useSpring, useSprings, animated } from 'react-spring/three'
 import { useRender } from 'react-three-fiber'
-import * as THREE from 'three'
 import midi from '../../util/WebMidi'
-import clock from '../../util/Clock'
-import { DEG_TO_RAD } from '../../util/Constants'
 import { lerpHexColor } from '../../util/HexadecimalLerp'
-import { noise } from '../../util/Noise'
 import { generateHexagonGrid, HexagonGridTiles } from '../Hexagons/Hexagon'
 import { bass } from '../signal-generators/bass'
 
 const Bass = props => {
   const position = props.position || [0, 0, 0]
   const parentRef = useRef()
-  const dimensions = [50, 5]
+  const dimensions = [50, 50]
   const cells = generateHexagonGrid({ dimensions })
   const tiles = HexagonGridTiles(cells, {})
 
@@ -24,8 +19,8 @@ const Bass = props => {
     phase = 0,
     waveformData = new Array(width).fill(0)
 
-  const beginColor = 0xbbbbbb
-  const endColor = 0x111111
+  const beginColor = 0x333333
+  const endColor = 0x999999
 
   const render = () => {
     for (let i = 0; i < width; ++i) {
@@ -45,7 +40,7 @@ const Bass = props => {
   useRender(render)
   midi.addAbletonListener('noteon', triggerFn, 2, 'BassListener')
   return (
-    <group position={position} rotation={[0, 0, 0]} scale={[0.1, 0.1, 0.1]} ref={parentRef}>
+    <group position={position} rotation={[0, 0, 0]} scale={[0.5, 0.5, 0.5]} ref={parentRef}>
       {tiles.map((tile, i) => {
         const { worldPosition: position } = tile
         return (
@@ -55,9 +50,8 @@ const Bass = props => {
             geometry={tile.geometry}
             scale={[0.5, 0.5, 0.7]}
             key={i}
-            castShadow
           >
-            <meshBasicMaterial color={lerpHexColor(beginColor, endColor, i / tiles.length)} attach="material" />
+            <meshPhongMaterial color={lerpHexColor(beginColor, endColor, i / tiles.length)} attach="material" />
           </mesh>
         )
       })}

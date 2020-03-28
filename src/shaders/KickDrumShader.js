@@ -25,8 +25,6 @@ float fnoise(float p){
 
 void main() {
 	float ref = reference * float(numPointsPerRing);
-
-  // this will create a nicely spaced circle
   float angle = ((ref+1.)/float(numPointsPerRing)) * 6.28318530718 * rand(ref);
   float offset = amplitudeValue;
 	vec3 pos = vec3( cos(angle), 0.0, sin(angle) );

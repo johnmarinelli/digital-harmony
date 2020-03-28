@@ -162,7 +162,7 @@ class FirstStory extends BaseController {
       renderer
     )
     const scrollMax = getScrollableHeight()
-    const BackgroundComponent = (
+    /*
       <ShaderBackground
         vertexShader={VertexShader}
         fragmentShader={FragmentShader}
@@ -171,9 +171,38 @@ class FirstStory extends BaseController {
           ['#fefefe', '#e0c919', '#504006', '#e32f01', '#333333']
         )}
       />
-    )
+      */
+    const BackgroundComponent = <Background color={0xfefefe} />
 
-    const lightpos = [0, 2, 5]
+    const lightpos = [0, 3, 6]
+    const wallColor = 0xffffff
+    const walls = (
+      <group>
+        {/* L + R */}
+        <mesh rotation={[0, Math.PI * 0.5, 0]} position={[-5, 0, 0]} receiveShadow>
+          <planeGeometry args={[20, 10]} attach="geometry" />
+          <meshPhongMaterial color={wallColor} attach="material" />
+        </mesh>
+        <mesh rotation={[0, Math.PI * -0.5, 0]} position={[5, 0, 0]} receiveShadow>
+          <planeGeometry args={[20, 10]} attach="geometry" />
+          <meshPhongMaterial color={wallColor} attach="material" />
+        </mesh>
+        {/* back */}
+        <mesh position={[0, 0, -9.5]} receiveShadow>
+          <planeGeometry args={[10, 10]} attach="geometry" />
+          <meshPhongMaterial color={wallColor} attach="material" />
+        </mesh>
+        {/* T + B */}
+        <mesh rotation={[Math.PI * 0.475, 0, 0]} position={[0, 5, 0]} receiveShadow>
+          <planeGeometry args={[10, 20]} attach="geometry" />
+          <meshPhongMaterial color={wallColor} attach="material" />
+        </mesh>
+        <mesh rotation={[Math.PI * -0.475, 0, 0]} position={[0, -5, 0]} receiveShadow>
+          <planeGeometry args={[10, 20]} attach="geometry" />
+          <meshPhongMaterial color={wallColor} attach="material" />
+        </mesh>
+      </group>
+    )
 
     // todo: implement mechanism for withSong that allows for cross-component
     // Player integration
@@ -187,24 +216,18 @@ class FirstStory extends BaseController {
           */}
           <ScrollingStory top={top} BackgroundComponent={BackgroundComponent}>
             <StorySegment>
-              <KickDrum position={[-2, 2, 0]} rotateX={Math.PI * 0.6} rotateZ={Math.PI * -0.2} numRings={32} />
+              <KickDrum position={[0, 2.5, -4]} scale={12} rotateX={Math.PI * 0.5} numRings={32} size={48} />
+              <KickDrum position={[0, 2.5, -3]} scale={1.5} rotateX={Math.PI * 0.5} numRings={32} size={48} />
               <HiHat />
-              <Lead />
-              <Bass position={[-2, -1.5, 1]} />
-              <Snare position={[2, 1.5, -3]} />
+              <Snare position={[0, 1, 0]} />
+              <Bass position={[-1, -4, 1]} />
               <group position={lightpos}>
-                <directionalLight color={0xababab} castShadow intensity={0.3} />
+                <pointLight color={0xffffff} castShadow intensity={1} />
                 <mesh>
                   <boxGeometry attach="geometry" />
-                  <meshBasicMaterial color={0xff0000} attach="material" side={THREE.DoubleSide} />
+                  <meshBasicMaterial color={0xff0000} attach="material" />
                 </mesh>
               </group>
-              {/*
-              <mesh position={[0,0,-5]} receiveShadow>
-                <planeGeometry args={[13,13]} attach="geometry" />
-                <meshPhongMaterial color={0xfefefe} attach="material"/>
-              </mesh>
-              */}
             </StorySegment>
             <StorySegment>
               <AbstractPiano />

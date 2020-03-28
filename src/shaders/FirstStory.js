@@ -39,10 +39,10 @@ float tnoise(vec2 co){
 void main(void) {
     vec2 uv = (gl_FragCoord.xy * 2. - resolution.xy) / 40.;
     float n = tnoise(uv);
-    gl_FragColor = vec4(sin(time * n * 7. + n * 3.141592653589793 * 2.) * 0.5);
+    gl_FragColor = vec4(sin(time * n * 7. + n * 3.141592653589793 * 2.) * 0.5 + 0.5);
     gl_FragColor += sin((uv.x - uv.y) *30.) / 2.;
     gl_FragColor += rand(uv)/2.;
-    gl_FragColor /= 16.;
+    gl_FragColor /= 4.;
 }
 `
 

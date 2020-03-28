@@ -2,7 +2,6 @@ import React, { useRef } from 'react'
 import { useRender } from 'react-three-fiber'
 import * as THREE from 'three'
 import midi from '../../util/WebMidi'
-import clock from '../../util/Clock'
 import { VertexShader, FragmentShader } from '../../shaders/KickDrumShader'
 import { kick } from '../signal-generators/kick'
 
@@ -137,21 +136,22 @@ const KickDrum = props => {
   numPointsPerRing = numPointsPerRing || 80
   hue = hue || 0
   sat = sat || 0
-  lit = lit || (ref => 1 - ref)
+  lit = lit || (ref => Math.max(1 - ref, 0.3))
   amplitude = amplitude || 1.0
 
   let ref = 0
 
   for (let i = 0; i < numRings; ++i) {
     ref = i / numRings
-    const hueVal = typeof hue === 'function' ? hue(1.0 - ref) : hue
-    const satVal = typeof sat === 'function' ? sat(1.0 - ref) : sat
-    const litVal = typeof lit === 'function' ? lit(1.0 - ref) : lit
+    const hueVal = typeof hue === 'function' ? hue(ref) : hue
+    const satVal = typeof sat === 'function' ? sat(ref) : sat
+    //const litVal = typeof lit === 'function' ? lit(ref) : lit
+    const litVal = Math.min(0.3, ref)
     const ring = new RingPoints({
       radius: i * 0.05 + 0.5,
       numPointsPerRing,
       color: new color.setHSL(hueVal, satVal, litVal),
-      opacity: Math.min(1, THREE.Math.mapLinear(numRings - i, numRings, 1, 4.0, 0.3)),
+      opacity: 1,
       blending: THREE.NormalBlending,
       shape: 'circle',
       size,
