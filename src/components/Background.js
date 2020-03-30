@@ -25,13 +25,17 @@ const Background = ({ color, receiveShadow = false, depthTest = false }) => {
   const meshRef = useRef()
 
   useRender(() => {
-    const { options: { colorOverride, feelsLike } } = GuiOptions
-    const { current: { material } } = meshRef
+    const {
+      options: { colorOverride, feelsLike },
+    } = GuiOptions
+    const {
+      current: { material },
+    } = meshRef
 
     material.color.set(colorOverride ? feelsLike : color)
   })
   return (
-    <mesh position={[0,0,-5]} scale={[width * 3, height * 3, 1]} ref={meshRef}>
+    <mesh position={[0, 0, -5]} scale={[width * 10, height * 10, 1]} ref={meshRef}>
       <planeGeometry attach="geometry" args={[1, 1]} />
       <anim.meshBasicMaterial color={color} attach="material" depthTest={depthTest} receiveShadow={receiveShadow} />
     </mesh>

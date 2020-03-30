@@ -58,9 +58,11 @@ class WebMidiWrapper {
 
       this.abletonNoteOnListeners = []
       this.abletonNoteOffListeners = []
+      this.abletonControlChangeListeners = []
       for (let i = 0; i < NUM_ABLETON_MIDI_CHANNELS; ++i) {
         this.abletonNoteOnListeners.push({})
         this.abletonNoteOffListeners.push({})
+        this.abletonControlChangeListeners.push({})
       }
 
       this.ableton = WebMidi.getInputByName('IAC Driver Bus 1')
@@ -73,7 +75,23 @@ class WebMidiWrapper {
   }
 
   abletonControlSignal = event => {
-    console.log(event)
+    let { channel } = event
+    channel--
+    const controlChangeListenerNames = Object.keys(this.abletonControlChangeListeners[channel])
+    controlChangeListenerNames.forEach(listenerName => {
+      if (listenerName === 'undefined') {
+        console.error('Attempted to access undefined listener name.')
+      } else {
+        const entry = this.abletonControlChangeListeners[channel][listenerName]
+        if (entry instanceof Function) {
+          entry(event)
+        } else if (entry instanceof Array) {
+          for (let i = 0; i < entry.length; ++i) {
+            entry[i](event)
+          }
+        }
+      }
+    })
   }
 
   abletonNoteOn = event => {
@@ -119,7 +137,9 @@ class WebMidiWrapper {
   }
 
   noteOn = event => {
-    const { note: { number } } = event
+    const {
+      note: { number },
+    } = event
 
     // edge case for VMPK
     if (event.timestamp === 0) {
@@ -171,7 +191,9 @@ class WebMidiWrapper {
   }
 
   noteOff = event => {
-    const { note: { number } } = event
+    const {
+      note: { number },
+    } = event
 
     this.noteArray[number].number = number
     this.noteArray[number].on = false
@@ -239,6 +261,19 @@ class WebMidiWrapper {
         }
       } else {
         this.abletonNoteOffListeners[channel][listenerName] = listener
+      }
+    } else if (event === 'controlchange') {
+      const entry = this.abletonControlChangeListeners[channel][listenerName]
+      // if entry exists already
+      if (entry !== undefined) {
+        if (entry instanceof Array) {
+          entry.push(listener)
+        } else if (entry instanceof Function) {
+          const newEntry = [entry, listener]
+          this.abletonControlChangeListeners[channel][listenerName] = newEntry
+        }
+      } else {
+        this.abletonControlChangeListeners[channel][listenerName] = listener
       }
     }
   }

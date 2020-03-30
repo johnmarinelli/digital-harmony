@@ -23,9 +23,6 @@ const DatGui = () => {
   //globalFolder.open()
   const firstSceneFolder = gui.addFolder('First Scene')
   firstSceneFolder.add(GuiOptions.options, 'flockingCenteringFactor', 1, 25, 1).name('Flocking Factor')
-  firstSceneFolder.add(GuiOptions.options, 'flockingHomeX', -3, 3, 0.3).name('Flocking Home X')
-  firstSceneFolder.add(GuiOptions.options, 'flockingHomeY', -3, 3, 0.3).name('Flocking Home Y')
-  firstSceneFolder.add(GuiOptions.options, 'flockingHomeZ', -3, 3, 0.3).name('Flocking Home Z')
   firstSceneFolder.open()
   //const secondSceneFolder = gui.addFolder('Second Scene')
   const lissajousKnotSceneFolder = gui.addFolder('Lissajous Knot Scene')
@@ -101,14 +98,8 @@ const DatGui = () => {
       GuiOptions.options.octahedronRotation.z = value
     })
     .listen()
-  fifthSceneFolder
-    .add(GuiOptions.options, 'octahedronOpacity', 0.0, 1.0, 0.05)
-    .name('Opacity')
-    .listen()
-  fifthSceneFolder
-    .addColor(GuiOptions.options, 'octahedronColor')
-    .name('Color')
-    .listen()
+  fifthSceneFolder.add(GuiOptions.options, 'octahedronOpacity', 0.0, 1.0, 0.05).name('Opacity').listen()
+  fifthSceneFolder.addColor(GuiOptions.options, 'octahedronColor').name('Color').listen()
   fifthSceneFolder.add(GuiOptions.options, 'subjectStateOverride').name('Override ^')
   //fifthSceneFolder.open()
 

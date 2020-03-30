@@ -3,20 +3,19 @@ import { useSpring, useSprings, animated } from 'react-spring/three'
 import { useRender } from 'react-three-fiber'
 import midi from '../../util/WebMidi'
 import { Flocking } from '../Flocking'
+import GuiOptions from '../Gui'
 
 const Lead = props => {
-  const triggerFn = e => {
-    console.log(e)
-  }
+  const position = props.position || [0, 0, 0]
 
   const controlChangeFn = e => {
-    console.log(e)
+    const pct = e.value / 127
+    GuiOptions.options.flockingCenteringFactor = 1 + 20 * pct
   }
 
-  midi.addAbletonListener('noteon', triggerFn, 4, 'LeadListener')
-  midi.addAbletonListener('controlchange', controlChangeFn, 4, 'LeadListener')
+  midi.addAbletonListener('controlchange', controlChangeFn, 4, 'LeadCCListener')
 
-  return <Flocking scale={[0.3, 0.3, 0.3]} />
+  return <Flocking rotateX={Math.PI * 0.5} position={position} scale={[0.3, 0.3, 0.3]} />
 }
 
 export { Lead }

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import * as THREE from 'three'
-import { useRender, extend, useThree } from 'react-three-fiber'
+import { animated, useRender, extend, useThree } from 'react-three-fiber'
 import { apply as applySpring } from 'react-spring/three'
 import { StorySegment, ScrollingStory } from './ScrollingStory'
 import { FiftyNote } from '../models/UkCurrency'
@@ -8,6 +8,7 @@ import { Nefertiti } from '../models/Nefertiti'
 import { EnvironmentMap } from '../EnvironmentMap'
 import { loadHDREnvironmentMap, loadEnvironmentMapUrls } from '../../util/Loaders'
 import { getScrollableHeight } from '../../util/ScrollHelper'
+import clock from '../../util/Clock'
 
 import { withSong } from '../HoC/WithSong'
 import { Rings } from '../sound-enabled/Rings'
@@ -57,11 +58,19 @@ extend({ EffectComposer, RenderPass, GlitchPass, ShaderPass, DrunkPass })
 const Effects = React.memo(({ factor }) => {
   const { gl, scene, camera, size } = useThree()
   const composer = useRef()
+  const glitchPassRef = useRef()
   useEffect(() => {
     composer.current.setSize(size.width, size.height)
   }, [size])
 
   useRender(() => {
+    /*
+    if (glitchPassRef.current) {
+      const time = clock.getElapsedTime()
+      const factor = THREE.Math.lerp(0.6, 0.0, time / 18)
+      glitchPassRef.current.setFactor(factor)
+    }
+    */
     composer.current.render()
   }, true)
 
@@ -73,6 +82,7 @@ const Effects = React.memo(({ factor }) => {
         args={[FXAAShader]}
         uniforms-resolution-value={[1 / size.width, 1 / size.height]}
       />
+      {/*<glitchPass ref={glitchPassRef} attachArray="passes" factor={0.6} /> */}
       <DrunkPass factor={factor} shouldRenderToScreen={true} />
     </effectComposer>
   )
@@ -97,11 +107,23 @@ const LOOK_AT_TRACK = new VirtualTrack([
 
 const MovingCameraComponent = () => {
   const { camera } = useThree()
+  useRender(() => {
+    let t = clock.getElapsedTime()
+    //console.log(camera.position)
+    camera.position.x = Math.sin(t * 0.25)
+    camera.position.y = Math.cos(t * 0.25)
+    camera.position.z = 5 + Math.cos(t * 0.1)
+    camera.lookAt(0, 1.5, 0)
+  })
 
+  /*
   const movingCamera = new MovingCamera(camera, {
     lookAt: LOOK_AT_TRACK,
     camera: TRACK,
   })
+
+*/
+  return null
 }
 
 class FirstStory extends BaseController {
@@ -214,6 +236,7 @@ class FirstStory extends BaseController {
           {this.CameraTrack()}
           {this.LookAtTrack()}
           */}
+          <MovingCameraComponent />
           <ScrollingStory top={top} BackgroundComponent={BackgroundComponent}>
             <StorySegment>
               <KickDrum position={[0, 2.5, -4]} scale={12} rotateX={Math.PI * 0.5} numRings={32} size={48} />
@@ -221,6 +244,7 @@ class FirstStory extends BaseController {
               <HiHat />
               <Snare position={[0, 1, 0]} />
               <Bass position={[-1, -4, 1]} />
+              <Lead position={[0, 2.5, -1.5]} />
               <group position={lightpos}>
                 <pointLight color={0xffffff} castShadow intensity={1} />
                 <mesh>

@@ -16,7 +16,7 @@ import { Pass } from './Pass.js'
  * @author alteredq / http://alteredqualia.com/
  */
 
-var GlitchPass = function(dt_size) {
+var GlitchPass = function (dt_size) {
   Pass.call(this)
   if (DigitalGlitch === undefined) console.error('THREE.GlitchPass relies on THREE.DigitalGlitch')
   var shader = DigitalGlitch
@@ -39,13 +39,17 @@ var GlitchPass = function(dt_size) {
 GlitchPass.prototype = Object.assign(Object.create(Pass.prototype), {
   constructor: GlitchPass,
 
-  render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+  setFactor(factor) {
+    this.factor = factor
+  },
+
+  render: function (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
     const factor = Math.max(0, this.factor)
     this.uniforms['tDiffuse'].value = readBuffer.texture
     this.uniforms['seed'].value = Math.random() * factor //default seeding
     this.uniforms['byp'].value = 0
     if (factor) {
-      this.uniforms['amount'].value = Math.random() / 90 * factor
+      this.uniforms['amount'].value = (Math.random() / 90) * factor
       this.uniforms['angle'].value = _Math.randFloat(-Math.PI, Math.PI) * factor
       this.uniforms['distortion_x'].value = _Math.randFloat(0, 1) * factor
       this.uniforms['distortion_y'].value = _Math.randFloat(0, 1) * factor
@@ -65,7 +69,7 @@ GlitchPass.prototype = Object.assign(Object.create(Pass.prototype), {
     }
   },
 
-  generateHeightmap: function(dt_size) {
+  generateHeightmap: function (dt_size) {
     var data_arr = new Float32Array(dt_size * dt_size * 3)
     var length = dt_size * dt_size
 

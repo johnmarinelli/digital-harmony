@@ -66,11 +66,6 @@ class Boid {
   }
 
   step(flock) {
-    /*
-    this.home.x = GuiOptions.options.flockingHomeX
-    this.home.y = GuiOptions.options.flockingHomeY
-    this.home.z = GuiOptions.options.flockingHomeZ
-    */
     this.accumulate(flock)
     this.update()
   }
