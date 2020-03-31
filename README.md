@@ -1,5 +1,6 @@
-03 Nov 2019
-## important info
+this is an ongoing project to help me create audiograms to promote my music on instagram.
+
+## notes for me
 
 # public/audio/split.py
 example usage:
