@@ -13,7 +13,7 @@
     "react-scripts": "2.1.8",
     "react-spring": "^8.0.14",
     "react-three-fiber": "^3.0.6",
-    "three": "^0.107.0",
+    "three": "^0.125.0",
     "threejs-meshline": "^2.0.9",
     "tone": "^13.8.25",
     "webmidi": "^2.3.2"
